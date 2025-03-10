@@ -2,7 +2,9 @@
     <body class="flex items-center justify-center min-h-screen bg-gray-100 px-4">
         <div class="mx-auto mt-20 mb-20 bg-white p-6 sm:p-8 rounded-lg shadow-2xl w-full max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg xl:max-w-xl">
             <h2 class="text-xl sm:text-2xl font-bold text-center mb-4 sm:mb-6">Enter your Measurements</h2>
-            <form>
+            <form method="POST" action="{{ route('avatar.store') }}">
+                @csrf
+            
                 <div class="mt-4">
                     <x-input-label for="name" :value="__('Name')" />
                     <x-text-input id="name" 

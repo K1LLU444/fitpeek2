@@ -5,6 +5,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\AvatarController;
 
 
 // Default home page
@@ -57,6 +58,12 @@ Route::get('/tryon', function () {
 Route::get('/aboutus', function () {
     return view('aboutus');
 })->middleware(['auth', 'verified'])->name('aboutus');
+
+Route::post('/avatar/store', [AvatarController::class, 'store'])->name('avatar.store');
+
+Route::get('/avatar/success', function () {
+    return view('avatar.success');
+})->middleware(['auth', 'verified'])->name('avatar.success');
 
 
 require __DIR__.'/auth.php';
