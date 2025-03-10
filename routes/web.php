@@ -2,16 +2,21 @@
 
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
-use App\Http\Controllers\Auth\RegisteredUserController;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\AvatarController;
 
-
 // Default home page
+
 Route::get('/', function () {
-    return view('welcome');
-});
+    if (Auth::check()) {
+        return redirect()->route('dashboard'); // Redirect logged-in users to dashboard
+    }
+    return view('welcome'); // Show homepage only to guests
+})->name('home');
+
 
 // Registration Routes
 Route::get('/register', [RegisteredUserController::class, 'create'])->name('register');
@@ -44,10 +49,12 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-// Create Avatar
-Route::get('/createavatar', function () {
-    return view('createavatar');
-})->middleware(['auth', 'verified'])->name('createavatar');
+// Avatar Routes
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/createavatar', [AvatarController::class, 'create'])->name('avatar.create');
+    Route::post('/createavatar', [AvatarController::class, 'store'])->name('avatar.store');
+    Route::put('/createavatar/{id}', [AvatarController::class, 'update'])->name('avatar.update');
+});
 
 // Try-on
 Route::get('/tryon', function () {
@@ -59,11 +66,9 @@ Route::get('/aboutus', function () {
     return view('aboutus');
 })->middleware(['auth', 'verified'])->name('aboutus');
 
-Route::post('/avatar/store', [AvatarController::class, 'store'])->name('avatar.store');
-
+// Avatar Success Page
 Route::get('/avatar/success', function () {
     return view('avatar.success');
 })->middleware(['auth', 'verified'])->name('avatar.success');
-
 
 require __DIR__.'/auth.php';

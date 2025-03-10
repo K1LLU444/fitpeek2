@@ -35,7 +35,7 @@
                     <option>Large</option>
                 </select>
 
-                <button class="w-full bg-[#a68a75] text-white font-semibold py-2 mt-4 rounded-lg hover:bg-[#8c7663] transition-all duration-300">
+                <button class="w-full bg-accent-color text-white font-semibold py-2 mt-4 rounded-lg hover:bg-accent-hover transition-all duration-300">
                     Try-on
                 </button>
             </div>

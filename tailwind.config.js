@@ -19,7 +19,8 @@ export default {
                 "primary-color": "#111110",
                 "secondary-color": "#A28879",
                 "highlight-color": "#F7F1F0",
-                "accent-color": "#515051",
+                "accent-color": "#a68a75",
+                "accent-hover": "#8c7663",
             }
         },
     },

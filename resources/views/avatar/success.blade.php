@@ -7,7 +7,7 @@
             <!-- Buttons Section -->
             <div class="flex justify-center mt-6 space-x-4">
                 <!-- Back to Dashboard Button -->
-                <a href="{{ route('dashboard') }}" class="px-4 py-2 bg-green-600 text-black rounded-lg shadow hover:bg-green-700 transition">
+                <a href="{{ route('dashboard') }}" class="px-4 py-2 bg-accent-color text-white rounded-lg shadow hover:bg-green-700 transition">
                     Back to Dashboard
                 </a>
             </div>
