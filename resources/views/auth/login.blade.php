@@ -4,7 +4,7 @@
             <!-- Session Status -->
             <x-auth-session-status class="mb-4" :status="session('status')" />
             
-            <div class="flex justify-center">
+            <div class="flex justify-center mb-4">
                 <x-application-logo class="h-16 w-auto ml-10" />
             </div>
 
@@ -51,10 +51,13 @@
                 </div>
 
                 <!-- Submit Button -->
-                <div class="flex justify-center mt-6">
+                <div class="flex flex-col justify-center mt-6">
                     <x-primary-button class="rounded-3xl text-white bg-[#F886B5] hover:bg-[#e075a3] transition duration-300 px-6 py-2">
-                        {{ __('Sign In') }}
+                        {{ __('Log In') }}
                     </x-primary-button>
+                    <a class="text-center text-sm  text-gray-600 hover:underline hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 mt-2" href="{{ route('register') }}">
+                        {{ __('Create an account') }}
+                    </a>
                 </div>
             </form>
         </div>

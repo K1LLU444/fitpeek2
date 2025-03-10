@@ -3,7 +3,8 @@
         <div class="bg-white shadow-lg rounded-lg p-8 max-w-md w-full">
             <!-- Logo -->
             <div class="flex justify-center mb-4">
-                <img src="{{ asset('images/logo_fitpeek.svg') }}" alt="FitPeek Logo" class="h-20 w-auto">
+                <x-application-logo class="h-16 w-auto ml-10" />
+
             </div>
             
             <h2 class="text-2xl font-bold text-center">Let's get started</h2>
@@ -66,11 +67,11 @@
                 </div>
 
                 <div class="flex flex-col items-center mt-4">
-                    <x-primary-button class="w-40 rounded-3xl text-white bg-[#F886B5] hover:bg-[#e075a3] transition duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F886B5] dark:focus-visible:ring-white">
+                    <x-primary-button class="w-full rounded-3xl text-white transition duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F886B5] dark:focus-visible:ring-white">
                         {{ __('Create Account') }}
                     </x-primary-button>
-                    <a class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 mt-2" href="{{ route('login') }}">
-                        {{ __('Sign In') }}
+                    <a class="text-sm text-gray-600 hover:underline hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 mt-2" href="{{ route('login') }}">
+                        {{ __('Already have an account?') }}
                     </a>
                 </div>
             </form>

@@ -1,7 +1,7 @@
 <x-app-layout>
     <div class="w-full">
         <div class="mt-1">
-            <img src="{{ asset('images/bghomepage.png') }}" 
+            <img src="{{ asset('images/banner-home.jpg') }}" 
                  alt="Home Page Background" 
                  class="w-full mb-10">
         </div> 

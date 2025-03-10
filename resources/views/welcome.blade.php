@@ -26,27 +26,20 @@
 
         <div class="flex space-x-4 ml-20">
             <nav class="-mx-3 flex flex-1 justify-end">
-                @auth
-                <a
-                    href="{{ url('/dashboard') }}"
-                    class="rounded-md px-3 py-2 text-black ring-1 ring-transparent transition hover:text-black/70 focus:outline-none focus-visible:ring-[#FF2D20] dark:hover:text-white/80 dark:focus-visible:ring-white">
-                    Home Page
-                </a>
-                @else
+
                 <form action="{{ route('login') }}" method="GET">
-                    <x-primary-button class=" sm:text-lg ml-10 shadow-xl">
-                        SIGN IN
+                    <x-primary-button class="w-3/4 sm:text-lg ml-10 shadow-xl">
+                        Log In
                     </x-primary-button>
                 </form>
 
                 @if (Route::has('register'))
                     <form action="{{ route('register') }}" method="GET">
-                        <x-primary-button class="sm:text-lg ml-10 shadow-xl">
-                            CREATE ACCOUNT
+                        <x-primary-button class="w-3/4 sm:text-lg ml-10 shadow-xl">
+                            Sign In
                         </x-primary-button>
                     </form>
                 @endif
-            @endauth
             </nav>
         </div>
     </div>
