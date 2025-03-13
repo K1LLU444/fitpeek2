@@ -2,7 +2,7 @@
     <div class="w-full">
         <div class="mt-1">
             <img src="{{ asset('images/banner-home.jpg') }}" 
-                 alt="Home Page Background." 
+                 alt="Home Page Background" 
                  class="w-full mb-10">
         </div> 
         
@@ -66,7 +66,7 @@
                         <label class="text-sm font-medium">Price Range</label>
                         <div class="flex justify-between text-sm text-gray-500">
                             <span>₱0</span>
-                            <span>₱100</span>
+                            <span>₱1000+</span>
                         </div>
                         <input type="range" class="w-full mt-1">
                     </div>
