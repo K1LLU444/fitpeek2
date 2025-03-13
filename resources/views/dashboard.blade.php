@@ -2,7 +2,7 @@
     <div class="w-full">
         <div class="mt-1">
             <img src="{{ asset('images/banner-home.jpg') }}" 
-                 alt="Home Page Background." 
+                 alt="Home Page Background <3" 
                  class="w-full mb-10">
         </div> 
         
