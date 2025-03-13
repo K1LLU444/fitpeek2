@@ -66,7 +66,7 @@
                         <label class="text-sm font-medium">Price Range</label>
                         <div class="flex justify-between text-sm text-gray-500">
                             <span>₱0</span>
-                            <span>₱100</span>
+                            <span>₱1000+</span>
                         </div>
                         <input type="range" class="w-full mt-1">
                     </div>
