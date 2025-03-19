@@ -69,7 +69,6 @@
             <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                 {{ __('Home') }}
             </x-responsive-nav-link>
-            </x-responsive-nav-link>
             <x-responsive-nav-link :href="route('avatar.create')" :active="request()->routeIs('avatar.create')">
                 {{ __('Your Avatar') }}
             </x-responsive-nav-link>
