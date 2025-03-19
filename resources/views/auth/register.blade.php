@@ -13,6 +13,21 @@
             <form method="POST" action="{{ route('register') }}">
                 @csrf
                 
+                    <!-- Name -->
+                <div>
+                    <x-input-label for="name" :value="__('Username')" />
+                    <x-text-input 
+                        id="name" 
+                        class="block mt-1 w-full placeholder-gray-600 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500" 
+                        placeholder="Enter your username" 
+                        type="text" 
+                        name="name" 
+                        :value="old('name')" 
+                        required autofocus autocomplete="name" />
+                    <x-input-error :messages="$errors->get('name')" class="mt-2" />
+                </div>
+
+
                 <!-- Email Address -->
                 <div class="mt-4">
                     <x-input-label for="email" :value="__('Email')" />
