@@ -1,17 +1,12 @@
 <x-app-layout>
     <div class="w-full">
-        <div class="mt-1">
+        <div class="mt-[60px]">
             <img src="{{ asset('images/banner-home.jpg') }}" 
-                 alt="Home Page Background." 
+                 alt="Home Page Background" 
                  class="w-full mb-10">
         </div> 
         
-        <div class="block md:hidden px-4 mb-4">
-            <button @click="openFilters = !openFilters" 
-                class="w-full bg-gray-200 py-2 rounded-lg text-gray-700 font-semibold text-center">
-                Filter
-            </button>
-        </div>
+        
 
         <!-- Main Grid Layout -->
         <div class="grid grid-cols-1 lg:grid-cols-3 bg-gray-100">
@@ -115,7 +110,7 @@
                                 placeholder="Paste here the link" 
                                 class="rounded-3xl p-2 shadow-sm w-full pl-10 text-gray-700 border border-gray-300">
                         </div>
-                        <button class="bg-black text-white px-4 py-2 rounded-lg w-full sm:w-auto">Submit</button>
+                        <button class="bg-accent-color text-white px-4 py-2 rounded-lg w-full sm:w-auto">Submit</button>
                     </div>
                 </div>
 
