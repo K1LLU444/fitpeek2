@@ -48,9 +48,9 @@
         </div>
 
         <!-- Horizontal Scroll Section -->
-        <div class="bg-gray-100 min-h-screen p-4 sm:p-6 mt-6 sm:mt-8">
+        <div class="bg-gray-100 p-4 sm:p-6 mt-6 sm:mt-8">
             <div class="max-w-7xl mx-auto">
-                <h2 class="text-lg sm:text-xl font-semibold mb-3 text-left">Previous picks</h2>
+                <h2 class="text-lg sm:text-xl font-semibold mb-3 text-left">Recommended</h2>
 
                 <!-- Scrollable container with Next/Prev buttons -->
                 <div class="relative">
@@ -83,23 +83,6 @@
                         </svg>
                     </button>
                 </div>
-
-                <h2 class="text-lg sm:text-xl font-semibold mb-3 mt-6 sm:mt-8 text-left">For you</h2>
-
-                <!-- Scrollable container with Next/Prev buttons -->
-                <div class="relative">
-                    <div id="scrollContainerForYou" class="scroll-container whitespace-nowrap p-2 flex scroll-smooth">
-                        <div class="flex space-x-4 pb-4">
-                            <x-horizontalscrollbar class="w-[160px] md:w-[180px]" image="image.jpg" text="Product 1" price="10" />
-                            <x-horizontalscrollbar class="w-[160px] md:w-[180px]" image="image.jpg" text="Product 2" price="20" />
-                            <x-horizontalscrollbar class="w-[160px] md:w-[180px]" image="image.jpg" text="Product 3" price="30" />
-                            <x-horizontalscrollbar class="w-[160px] md:w-[180px]" image="image.jpg" text="Product 4" price="40" />
-                            <x-horizontalscrollbar class="w-[160px] md:w-[180px]" image="image.jpg" text="Product 5" price="50" />
-                            <x-horizontalscrollbar class="w-[160px] md:w-[180px]" image="image.jpg" text="Product 3" price="30" />
-                            <x-horizontalscrollbar class="w-[160px] md:w-[180px]" image="image.jpg" text="Product 4" price="40" />
-                            <x-horizontalscrollbar class="w-[160px] md:w-[180px]" image="image.jpg" text="Product 5" price="50" />
-                        </div>
-                    </div>
 
                     <!-- Next Button (Right) -->
                     <button id="nextBtnForYou" class="absolute top-1/2 right-0 transform -translate-y-1/2 bg-gray-200 hover:bg-gray-300 p-2 rounded-full shadow-lg">
