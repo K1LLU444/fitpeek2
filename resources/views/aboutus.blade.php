@@ -1,11 +1,16 @@
 <x-app-layout>
     <body>
-        <div class="w-full">
+        <div class="w-full mt-[80px]">
             <!-- About Us Section -->
-            <section class="text-center py-16 bg-white px-4 ">
-                <h1 class="text-4xl font-bold">About Us</h1>
-                <p class="text-gray-500">PICTURE BG NITO</p>
-            </section>
+            <div class="relative w-full mt-8">
+                <img src="{{ asset('images/aboutbg.jpg') }}" 
+                    alt="About Us Background" 
+                    class="w-screen mb-10">
+
+                <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-black text-4xl md:text-6xl font-bold drop-shadow-lg">
+                    About Us
+                </div>
+            </div>
 
             <!-- Vision Section -->
             <section class="flex flex-col md:flex-row items-center bg-[#9B7C69] text-white p-6 md:p-10 bg-secondary-color">
