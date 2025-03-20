@@ -6,8 +6,6 @@
                  class="w-full mb-10">
         </div> 
         
-        
-
         <!-- Main Grid Layout -->
         <div class="grid grid-cols-1 lg:grid-cols-3 bg-gray-100">
             <div x-data="{ openFilters: true }" 
