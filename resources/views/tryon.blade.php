@@ -83,27 +83,13 @@
                         </svg>
                     </button>
                 </div>
-
-                    <!-- Next Button (Right) -->
-                    <button id="nextBtnForYou" class="absolute top-1/2 right-0 transform -translate-y-1/2 bg-gray-200 hover:bg-gray-300 p-2 rounded-full shadow-lg">
-                        <svg class="h-6 w-6 text-gray-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"></path>
-                        </svg>
-                    </button>
-
-                    <!-- Previous Button (Left) -->
-                    <button id="prevBtnForYou" class="absolute top-1/2 left-0 transform -translate-y-1/2 bg-gray-200 hover:bg-gray-300 p-2 rounded-full shadow-lg">
-                        <svg class="h-6 w-6 text-gray-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"></path>
-                        </svg>
-                    </button>
                 </div>
             </div>
         </div>
         
 <!-- JavaScript for Scrolling Functionality -->
 <script>
-    // Scroll Next/Previous for Previous Picks
+    // Scroll Next/Previous for REcommended
     document.getElementById('nextBtnPrev').addEventListener('click', function () {
         document.getElementById('scrollContainerPrev').scrollBy({ left: 300, behavior: 'smooth' });
     });
@@ -112,14 +98,6 @@
         document.getElementById('scrollContainerPrev').scrollBy({ left: -300, behavior: 'smooth' });
     });
 
-    // Scroll Next/Previous for "For You" section
-    document.getElementById('nextBtnForYou').addEventListener('click', function () {
-        document.getElementById('scrollContainerForYou').scrollBy({ left: 300, behavior: 'smooth' });
-    });
-
-    document.getElementById('prevBtnForYou').addEventListener('click', function () {
-        document.getElementById('scrollContainerForYou').scrollBy({ left: -300, behavior: 'smooth' });
-    });
 </script>
         <x-footer />
     </body>
