@@ -16,7 +16,11 @@
         <!-- Product Details Section -->
         <div class="flex flex-col md:flex-row bg-white p-4 sm:p-6 rounded-lg max-w-4xl mx-auto mt-20 gap-4 sm:gap-6 shadow-md">
             <div class="w-full md:w-1/2 flex justify-center items-center bg-gray-200 rounded-lg p-4 sm:p-6">
+<<<<<<< HEAD
                 <div class="bg-gray-300 w-[180px] sm:w-[220px] md:w-[280px] lg:w-[350px] h-[220px] sm:h-[260px] md:h-[320px] lg:h-[400px] flex items-center justify-center rounded-md">
+=======
+                <div class="bg-gray-300 w-[180px] sm:w-[220px] md:w-[280px] lg:w-[350px] h-[220px] sm:h-[260px] md:h-[320px] lg:h-[400px] flex items-center justify-center rounded-md">  
+>>>>>>> f3883097760de13ebe1d444374c83a4bf471e021
                         <p>No avatar found</p>
                 </div>
             </div>
@@ -83,27 +87,13 @@
                         </svg>
                     </button>
                 </div>
-
-                    <!-- Next Button (Right) -->
-                    <button id="nextBtnForYou" class="absolute top-1/2 right-0 transform -translate-y-1/2 bg-gray-200 hover:bg-gray-300 p-2 rounded-full shadow-lg">
-                        <svg class="h-6 w-6 text-gray-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"></path>
-                        </svg>
-                    </button>
-
-                    <!-- Previous Button (Left) -->
-                    <button id="prevBtnForYou" class="absolute top-1/2 left-0 transform -translate-y-1/2 bg-gray-200 hover:bg-gray-300 p-2 rounded-full shadow-lg">
-                        <svg class="h-6 w-6 text-gray-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"></path>
-                        </svg>
-                    </button>
                 </div>
             </div>
         </div>
         
 <!-- JavaScript for Scrolling Functionality -->
 <script>
-    // Scroll Next/Previous for Previous Picks
+    // Scroll Next/Previous for REcommended
     document.getElementById('nextBtnPrev').addEventListener('click', function () {
         document.getElementById('scrollContainerPrev').scrollBy({ left: 300, behavior: 'smooth' });
     });
@@ -112,14 +102,6 @@
         document.getElementById('scrollContainerPrev').scrollBy({ left: -300, behavior: 'smooth' });
     });
 
-    // Scroll Next/Previous for "For You" section
-    document.getElementById('nextBtnForYou').addEventListener('click', function () {
-        document.getElementById('scrollContainerForYou').scrollBy({ left: 300, behavior: 'smooth' });
-    });
-
-    document.getElementById('prevBtnForYou').addEventListener('click', function () {
-        document.getElementById('scrollContainerForYou').scrollBy({ left: -300, behavior: 'smooth' });
-    });
 </script>
         <x-footer />
     </body>
