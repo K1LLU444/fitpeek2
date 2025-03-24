@@ -19,6 +19,7 @@
                     <x-text-input 
                         id="name" 
                         class="block mt-1 w-full placeholder-gray-600 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500" 
+                        maxlength="10"
                         placeholder="Enter your username" 
                         type="text" 
                         name="name" 
@@ -33,7 +34,7 @@
                     <x-input-label for="email" :value="__('Email')" />
                     <x-text-input id="email" 
                         class="block mt-1 w-full placeholder-gray-600 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500" 
-                        placeholder="Enter your gmail"
+                        placeholder="Enter your email"
                         type="email" 
                         name="email" 
                         :value="old('email')" 
@@ -46,7 +47,6 @@
                     <x-input-label for="password" :value="__('Password')" />
                     <x-text-input id="password" 
                         class="block mt-1 w-full placeholder-gray-600 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500" 
-                        placeholder="••••••••"
                         type="password"
                         name="password"
                         required autocomplete="new-password" />
@@ -64,7 +64,6 @@
                     <x-input-label for="password_confirmation" :value="__('Confirm Password')" />
                     <x-text-input id="password_confirmation" 
                         class="block mt-1 w-full placeholder-gray-600 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500" 
-                        placeholder="••••••••"
                         type="password"
                         name="password_confirmation" required autocomplete="new-password" />
                     <button type="button" onclick="togglePassword('password_confirmation', 'togglePasswordIcon2')" class="absolute inset-y-0 right-3 top-8 text-gray-500">
