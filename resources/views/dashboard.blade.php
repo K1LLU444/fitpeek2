@@ -106,44 +106,25 @@
                     <h1 class="text-2xl font-semibold mb-4 text-center lg:text-left">What’s your style?</h1>
 
                     <!-- Search Bar + Button (Responsive) -->
-                    <div class="flex flex-col sm:flex-row items-center space-y-3 sm:space-y-0 sm:space-x-2">
+                    <form method="POST" action="{{ route('scrape.product') }}" class="flex flex-col sm:flex-row items-center space-y-3 sm:space-y-0 sm:space-x-2">
+                        @csrf
                         <div class="relative w-full max-w-lg">
                             <img src="{{ asset('images/searchbar.svg') }}" 
                                 alt="Search" 
                                 class="w-5 h-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-600">
                             <input type="text" 
+                                name="product_url"
                                 placeholder="Paste here the link" 
+                                required
                                 class="rounded-3xl p-2 shadow-sm w-full pl-10 text-gray-700 border border-gray-300">
                         </div>
-                        <button class="bg-black text-white px-4 py-2 rounded-lg w-full sm:w-auto">Submit</button>
-                    </div>
+                        <button type="submit" class="bg-black text-white px-4 py-2 rounded-lg w-full sm:w-auto">Submit</button>
+                    </form>
                 </div>
 
                 <div class="max-w-6xl mx-auto space-y-8">
                     <h2 class="text-lg font-semibold mb-3 text-center lg:text-left">Previous Search</h2>
 
-                    @php
-                        $images = [
-                            asset('images/Product1.jpg'),
-                            asset('images/product2.jpg'),
-                            asset('images/product3.jpg'),
-                            asset('images/product4.jpg'),
-                            asset('images/product5.jpg'),
-                            asset('images/product6.jpg')
-                        ];
-                    @endphp
-
-                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 justify-center">
-                        @for ($i = 0; $i < count($images); $i++)
-                            <div class="flex justify-center"> 
-                                <x-card image="{{ $images[$i] }}" text="Product {{ $i + 1 }}" price="{{ rand(100, 999) }}" />
-                            </div>
-                        @endfor
-                    </div>
-                </div>
-
-                <div class="max-w-6xl mx-auto space-y-8">
-                    <h2 class="text-lg font-semibold mb-3 text-center lg:text-left mt-10">Recommended For You</h2>
                     @php
                         $images = [
                             asset('images/Product1.jpg'),

@@ -7,6 +7,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\AvatarController;
+use App\Http\Controllers\ProductScrapeController;
+
 
 // Default home page
 
@@ -57,9 +59,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
 });
 
 // Try-on
+Route::post('/scrape-product', [ProductScrapeController::class, 'scrape'])->middleware(['auth', 'verified'])->name('scrape.product');
+
 Route::get('/tryon', function () {
     return view('tryon');
 })->middleware(['auth', 'verified'])->name('tryon');
+
+
 
 // About Us
 Route::get('/aboutus', function () {
