@@ -7,9 +7,17 @@ from io import BytesIO
 import pytesseract
 import re
 import mysql.connector
+from rembg import remove
+import os
 
-# 👇 Point to your installed Tesseract
+# ✅ Set Tesseract path if needed (Windows)
 pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
+
+
+def slugify(text):
+    text = text.lower()
+    text = re.sub(r'[^a-z0-9]+', '-', text)
+    return text.strip('-')
 
 
 def extract_size_chart_table(image_url):
@@ -17,8 +25,6 @@ def extract_size_chart_table(image_url):
         print(f"📥 Downloading size chart image: {image_url}")
         response = requests.get(image_url)
         img = Image.open(BytesIO(response.content))
-
-        # OCR with layout mode (table-ish)
         custom_config = r'--psm 6'
         raw_text = pytesseract.image_to_string(img, config=custom_config)
 
@@ -41,7 +47,7 @@ def extract_size_chart_table(image_url):
                         'sleeve_length': float(sleeve)
                     })
                 except ValueError:
-                    continue  # Skip rows that aren't parseable
+                    continue
 
         if not data_rows:
             print("⚠️ OCR succeeded, but no valid rows parsed.")
@@ -54,6 +60,25 @@ def extract_size_chart_table(image_url):
     except Exception as e:
         print(f"❌ OCR error: {e}")
         return f"OCR parsing failed: {str(e)}"
+
+
+def remove_background_from_url(image_url, product_name):
+    try:
+        response = requests.get(image_url)
+        input_image = Image.open(BytesIO(response.content)).convert("RGBA")
+        output_image = remove(input_image)
+
+        slug = slugify(product_name)
+        filename = f"cleaned-{slug}.png"
+        output_path = os.path.join("public", "products", filename)
+
+        os.makedirs(os.path.dirname(output_path), exist_ok=True)
+        output_image.save(output_path)
+
+        return f"products/{filename}"
+    except Exception as e:
+        print(f"❌ Background removal failed: {e}")
+        return image_url
 
 
 # 🔍 Scrape the product page
@@ -86,7 +111,6 @@ description = desc_tag.text.strip() if desc_tag else None
 # ✅ Size Chart Image and Data
 size_chart = None
 size_chart_data = None
-
 for img in soup.select('img'):
     src = img.get('src', '')
     alt = img.get('alt', '').lower()
@@ -95,10 +119,13 @@ for img in soup.select('img'):
         size_chart_data = extract_size_chart_table(size_chart)
         break
 
+# ✅ Remove background from front image and save it locally using product name
+cleaned_image = remove_background_from_url(images[0], product_name) if images and product_name else None
+
 # ✅ Final scraped result
 result = {
     "product_url": url,
-    "front_image": images[0] if images else None,
+    "front_image": cleaned_image,  # now a local path like "products/cleaned-shirt-name.png"
     "product_name": product_name,
     "price": price,
     "description": description,
@@ -106,7 +133,6 @@ result = {
     "size_chart_data": size_chart_data
 }
 
-# Output to terminal for debug
 print("\n📦 Final Scraped Data:")
 print(json.dumps(result, indent=2))
 
@@ -116,9 +142,9 @@ def save_to_mysql(data):
     try:
         connection = mysql.connector.connect(
             host='127.0.0.1',
-            user='root',         # ← Change this
-            password='',     # ← Change this
-            database='example_app2'  # ← Change this
+            user='root',          # ← your DB username
+            password='',          # ← your DB password
+            database='example_app2'    # ← your Laravel DB name
         )
         cursor = connection.cursor()
 
@@ -153,9 +179,12 @@ def save_to_mysql(data):
         print(f"❌ DB Error: {err}")
 
     finally:
-        if connection.is_connected():
-            cursor.close()
-            connection.close()
+        try:
+            if connection.is_connected():
+                cursor.close()
+                connection.close()
+        except:
+            pass
 
 
 # Save to DB
