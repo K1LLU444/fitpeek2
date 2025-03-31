@@ -1,8 +1,6 @@
 <x-app-layout>
     <body class="bg-gray-100 px-4 sm:px-6 lg:px-8">
-    @php
-        $product = session('product') ?? \App\Models\Product::latest()->first();
-    @endphp
+
 
         <!-- Product Details Section -->
         <div class="flex flex-col md:flex-row bg-white p-4 sm:p-6 rounded-lg max-w-4xl mx-auto mt-20 gap-4 sm:gap-6 shadow-md">

@@ -11,10 +11,7 @@
             <div class="hidden sm:flex space-x-8">
                 <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                     {{ __('Home') }}
-                </x-nav-link>
-                <x-nav-link :href="route('tryon')" :active="request()->routeIs('tryon')">
-                    {{ __('Try-on') }}
-                </x-nav-link>
+                </x-nav-link> 
                 <x-nav-link :href="route('avatar.create')" :active="request()->routeIs('avatar.create')">
                     {{ __('Your Avatar') }}
                 </x-nav-link>
@@ -71,9 +68,6 @@
         <div class="pt-2 pb-3 space-y-1">
             <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                 {{ __('Home') }}
-            </x-responsive-nav-link>
-            <x-responsive-nav-link :href="route('tryon')" :active="request()->routeIs('tryon')">
-                {{ __('Try-on') }}
             </x-responsive-nav-link>
             <x-responsive-nav-link :href="route('avatar.create')" :active="request()->routeIs('avatar.create')">
                 {{ __('Your Avatar') }}

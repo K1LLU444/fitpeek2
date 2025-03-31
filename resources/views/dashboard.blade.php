@@ -14,7 +14,7 @@
         </div>
 
         <!-- Main Grid Layout -->
-        <div class="grid grid-cols-1 lg:grid-cols-3 bg-gray-100">
+        <div class="grid grid-cols-1 lg:grid-cols-4 bg-gray-100">
             <div x-data="{ openFilters: true }" 
                 :class="{'block': openFilters, 'hidden': !openFilters}" 
                 class="lg:col-span-1 p-4 block md:block rounded-lg md:max-w-96 mx-auto overflow-hidden transition-all duration-300"
@@ -38,7 +38,7 @@
 
                 <!-- Filter Section -->
                 <div class="w-full max-w-96 mx-auto mt-6 p-4 bg-white shadow-md rounded-lg
-                md:h-[500px] lg:h-[550px] overflow-y-auto"">
+                md:h-[500px] lg:h-[550px] overflow-y-auto">
                     <h2 class="text-lg font-semibold mb-2">FILTER</h2>
 
                     <!-- Selected Filters -->
@@ -100,7 +100,7 @@
             </div>
             
             <!-- Main Content -->
-            <div class="lg:col-span-2 p-4">
+            <div class="lg:col-span-3 p-4">
                 <!-- Search Header -->
                 <div class="max-w-6xl mx-auto text-left mb-6">
                     <h1 class="text-2xl font-semibold mb-4 text-center lg:text-left">What’s your style?</h1>
@@ -125,25 +125,22 @@
                 <div class="max-w-6xl mx-auto space-y-8">
                     <h2 class="text-lg font-semibold mb-3 text-center lg:text-left">Previous Search</h2>
 
-                    @php
-                        $images = [
-                            asset('images/Product1.jpg'),
-                            asset('images/product2.jpg'),
-                            asset('images/product3.jpg'),
-                            asset('images/product4.jpg'),
-                            asset('images/product5.jpg'),
-                            asset('images/product6.jpg')
-                        ];
-                    @endphp
-
                     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 justify-center">
-                        @for ($i = 0; $i < count($images); $i++)
-                            <div class="flex justify-center"> 
-                                <x-card image="{{ $images[$i] }}" text="Product {{ $i + 1 }}" price="{{ rand(100, 999) }}" />
+                        @forelse ($products as $product)
+                            <div class="flex justify-center">
+                            <x-card 
+                                :link="route('product.show', $product->id)"
+                                image="{{ asset($product->front_image) }}"
+                                text="{{ $product->product_name }}"
+                                price="{{ $product->price }}"
+                            />
                             </div>
-                        @endfor
+                        @empty
+                            <p class="text-center text-gray-500 col-span-full">No products scraped yet.</p>
+                        @endforelse
                     </div>
                 </div>
+
             </div>
         </div>
     </div> 
