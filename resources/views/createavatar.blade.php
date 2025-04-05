@@ -6,7 +6,7 @@
             <div class="w-full lg:w-2/3">
                 <div class="bg-white p-6 rounded-lg shadow-xl h-full">
                     <h2 class="text-lg font-semibold mb-4">Avatar Preview</h2>
-                    <div class="min-h-[400px] lg:min-h-[990px] bg-gray-200 rounded-md flex items-center justify-center text-gray-500 w-full">
+                    <div class="min-h-[400px] lg:min-h-[1110px] bg-gray-200 rounded-md flex items-center justify-center text-gray-500 w-full">
     No avatar preview yet.
 </div>
 
@@ -48,7 +48,7 @@
 
                         <!-- Measurement Sliders -->
                         @php
-                            $fields = ['bust_size', 'shoulder_width', 'waist_size', 'hip_size', 'height', 'weight', 'arm_length', 'leg_length', 'thigh_circumference'];
+                            $fields = ['bust_size', 'shoulder_width', 'waist_size', 'hip_size', 'height', 'weight', 'arm_length', 'leg_length', 'arm_circumference', 'thigh_circumference'];
                         @endphp
 
                         <div class="grid grid-cols-1 gap-4">
@@ -95,9 +95,111 @@
                             </x-primary-button>
                         </div>
                     </form>
+
+                    <!-- Scroll Help Button -->
+                    <a href="#tutorial"
+                    onclick="event.preventDefault(); document.getElementById('tutorial').scrollIntoView({ behavior: 'smooth' });"
+                    class="text-sm text-gray-700 hover:underline mt-6 block text-center">
+                        How do I get my sizes?
+                    </a>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- Measurement Tutorial Section -->
+<div id="tutorial" class="mt-20 bg-white p-8 rounded-lg shadow-lg">
+    <h2 class="text-2xl font-bold mb-6 text-center">How to Measure Your Body</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-gray-700">
+        <!-- Column 1 -->
+        <div class="space-y-4">
+            {{-- Bust Size --}}
+            <div class="flex flex-col md:flex-row items-center gap-6">
+                <img src="{{ asset('images/tutorial/bust.png') }}" alt="Bust Size" class="w-40 h-40 object-contain" />
+                <div>
+                    <h3 class="text-lg font-semibold">Bust Size</h3>
+                    <p class="text-gray-700">Wrap the tape measure around the fullest part of your chest. Keep it snug but not tight.</p>
+                </div>
+            </div>
+            {{-- Shoulder Width --}}
+            <div class="flex flex-col md:flex-row items-center gap-6">
+                <img src="{{ asset('images/tutorial/shoulder.png') }}" alt="Shoulder Width" class="w-40 h-40 object-contain" />
+                <div>
+                    <h3 class="text-lg font-semibold">Shoulder Width</h3>
+                    <p class="text-gray-700">Measure from one shoulder tip to the other across the back, keeping the tape straight.</p>
+                </div>
+            </div>
+            {{-- Waist Size --}}
+            <div class="flex flex-col md:flex-row items-center gap-6">
+                <img src="{{ asset('images/tutorial/waist.png') }}" alt="Waist Size" class="w-40 h-40 object-contain" />
+                <div>
+                    <h3 class="text-lg font-semibold">Waist Size</h3>
+                    <p class="text-gray-700">Find the narrowest part of your waist (usually above the belly button) and measure around it.</p>
+                </div>
+            </div>
+            {{-- Hip Size --}}
+            <div class="flex flex-col md:flex-row items-center gap-6">
+                <img src="{{ asset('images/tutorial/hip.png') }}" alt="Hip Size" class="w-40 h-40 object-contain" />
+                <div>
+                    <h3 class="text-lg font-semibold">Hip Size</h3>
+                    <p class="text-gray-700">Measure around the widest part of your hips and buttocks while standing naturally.</p>
+                </div>
+            </div>
+            {{-- Height --}}
+            <div class="flex flex-col md:flex-row items-center gap-6">
+                <img src="{{ asset('images/tutorial/height.png') }}" alt="Height" class="w-40 h-40 object-contain" />
+                <div>
+                    <h3 class="text-lg font-semibold">Height</h3>
+                    <p class="text-gray-700">Stand straight and measure from the floor to the top of your head without shoes.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Column 2 -->
+        <div class="space-y-4">
+            {{-- Weight --}}
+            <div class="flex flex-col md:flex-row items-center gap-6">
+                <img src="{{ asset('images/tutorial/weight.png') }}" alt="Weight" class="w-40 h-40 object-contain" />
+                <div>
+                    <h3 class="text-lg font-semibold">Weight</h3>
+                    <p class="text-gray-700">Weigh yourself using a digital or analog scale, preferably in the morning before eating.</p>
+                </div>
+            </div>
+            {{-- Arm Length --}}
+            <div class="flex flex-col md:flex-row items-center gap-6">
+                <img src="{{ asset('images/tutorial/arm-length.png') }}" alt="Arm Length" class="w-40 h-40 object-contain" />
+                <div>
+                    <h3 class="text-lg font-semibold">Arm Length</h3>
+                    <p class="text-gray-700">Measure from the edge of your shoulder down to your wrist, with your arm slightly bent.</p>
+                </div>
+            </div>
+            {{-- Leg Length --}}
+            <div class="flex flex-col md:flex-row items-center gap-6">
+                <img src="{{ asset('images/tutorial/leg-length.png') }}" alt="Leg Length" class="w-40 h-40 object-contain" />
+                <div>
+                    <h3 class="text-lg font-semibold">Leg Length</h3>
+                    <p class="text-gray-700">Measure from the top of your hip bone down to your ankle on the outside of your leg.</p>
+                </div>
+            </div>
+            {{-- Arm Circumference --}}
+            <div class="flex flex-col md:flex-row items-center gap-6">
+                <img src="{{ asset('images/tutorial/arm-circumference.png') }}" alt="Arm Circumference" class="w-40 h-40 object-contain" />
+                <div>
+                    <h3 class="text-lg font-semibold">Arm Circumference</h3>
+                    <p class="text-gray-700">Wrap the tape around the thickest part of your upper arm while relaxed.</p>
                 </div>
             </div>
 
+            {{-- Thigh Circumference --}}
+            <div class="flex flex-col md:flex-row items-center gap-6">
+                <img src="{{ asset('images/tutorial/thigh.png') }}" alt="Thigh Circumference" class="w-40 h-40 object-contain" />
+                <div>
+                    <h3 class="text-lg font-semibold">Thigh Circumference</h3>
+                    <p class="text-gray-700">Wrap the tape around the thickest part of your thigh just below the buttock crease.</p>
+                </div>
+            </div>
+            </div>
         </div>
+    </div>
     </body>
 </x-app-layout>
