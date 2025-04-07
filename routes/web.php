@@ -56,10 +56,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::put('/createavatar/{id}', [AvatarController::class, 'update'])->name('avatar.update');
 });
 
-// Try-on
-Route::get('/tryon', function () {
-    return view('tryon');
-})->middleware(['auth', 'verified'])->name('tryon');
+// Try-on (controller-based with middleware)
+Route::get('/tryon', [AvatarController::class, 'tryon'])
+    ->middleware(['auth', 'verified'])
+    ->name('tryon');
 
 // About Us
 Route::get('/aboutus', function () {

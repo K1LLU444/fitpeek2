@@ -66,6 +66,38 @@ class AvatarController extends Controller
         return redirect()->route('avatar.create')->with('error', 'No avatar found to update.');
     }
     
+    public function tryon()
+    {
+        $avatar = Avatar::where('user_id', Auth::id())->first();
+
+        if (!$avatar) {
+            return redirect()->route('avatar.create')->with('error', 'No avatar found.');
+        }
+
+        // Choose base model based on sex
+        $avatarUrl = $avatar->sex === 'Male'
+            ? asset('avatars/base_model_male.glb')
+            : asset('avatars/base_model_female.glb');
+
+        // Prepare morph data
+        $bodyData = [
+            'bust_size' => $avatar->bust_size,
+            'shoulder_width' => $avatar->shoulder_width,
+            'waist_size' => $avatar->waist_size,
+            'hip_size' => $avatar->hip_size,
+            'height' => $avatar->height,
+            'weight' => $avatar->weight,
+            'arm_length' => $avatar->arm_length,
+            'leg_length' => $avatar->leg_length,
+            'thigh_circumference' => $avatar->thigh_circumference,
+        ];
+
+        return view('tryon', [
+            'avatarUrl' => $avatarUrl,
+            'bodyData' => $bodyData,
+        ]);
+    }
+
 
 
 }

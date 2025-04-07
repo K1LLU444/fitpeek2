@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Test Avatar</title>
+</head>
+<body style="margin: 0;">
+  <div id="avatar-canvas-container" style="width: 350px; height: 400px; background: #f3f3f3;"></div>
+
+  <script>
+      window.avatarModelURL = '/avatars/base_model_male.glb';
+      window.avatarMorphData = {
+          bust_size: 98.5,
+          waist_size: 82.75,
+          hip_size: 96.4,
+          shoulder_width: 46.2,
+          thigh_circumference: 50,
+          arm_length: 60,
+          leg_length: 85.5,
+          height: 175,
+          weight: 70.5
+      };
+  </script>
+
+<!-- THREE.js core -->
+<script src="https://unpkg.com/three@0.152.2/build/three.min.js"></script>
+
+<!-- Add GLTFLoader and OrbitControls globally -->
+<script src="https://unpkg.com/three@0.152.2/examples/js/loaders/GLTFLoader.js"></script>
+<script src="https://unpkg.com/three@0.152.2/examples/js/controls/OrbitControls.js"></script>
+
+<script>
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 1000);
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    renderer.setSize(350, 400);
+    renderer.setPixelRatio(window.devicePixelRatio);
+    document.getElementById('avatar-canvas-container').appendChild(renderer.domElement);
+
+    const light = new THREE.DirectionalLight(0xffffff, 1);
+    light.position.set(2, 2, 2);
+    scene.add(light);
+
+    const controls = new THREE.OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
+    controls.target.set(0, 1.4, 0);
+
+    const loader = new THREE.GLTFLoader();
+    loader.load(window.avatarModelURL, function (gltf) {
+        const model = gltf.scene;
+        model.position.set(0, -1.4, 0);
+        model.rotation.y = Math.PI;
+        scene.add(model);
+
+        const skinnedMesh = model.getObjectByProperty('type', 'SkinnedMesh') || model.children[0];
+        if (skinnedMesh && skinnedMesh.morphTargetInfluences) {
+            const morphDict = skinnedMesh.morphTargetDictionary;
+            const morphInfluences = skinnedMesh.morphTargetInfluences;
+            const data = window.avatarMorphData;
+
+            const morphRanges = {
+                bust_size: [70, 130],
+                waist_size: [50, 100],
+                hip_size: [70, 130],
+                shoulder_width: [30, 60],
+                thigh_circumference: [30, 70],
+                arm_length: [40, 70],
+                leg_length: [60, 120],
+                height: [140, 200],
+                weight: [40, 120]
+            };
+
+            for (let key in data) {
+                const value = data[key];
+                const range = morphRanges[key];
+
+                if (range && morphDict[key] !== undefined) {
+                    const normalized = (value - range[0]) / (range[1] - range[0]);
+                    morphInfluences[morphDict[key]] = THREE.MathUtils.clamp(normalized, 0, 1);
+                }
+            }
+        }
+    }, undefined, function (error) {
+        console.error('GLTF load error:', error);
+    });
+
+    camera.position.set(0, 1.4, 3);
+
+    function animate() {
+        requestAnimationFrame(animate);
+        controls.update();
+        renderer.render(scene, camera);
+    }
+    animate();
+</script>
+
+</body>
+</html>
