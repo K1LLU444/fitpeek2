@@ -8,30 +8,33 @@
         
         <!-- Main Grid Layout -->
         <div class="grid grid-cols-1 lg:grid-cols-3 bg-gray-100">
-            <div x-data="{ openFilters: true }" 
-                :class="{'block': openFilters, 'hidden': !openFilters}" 
-                class="lg:col-span-1 p-4 block md:block rounded-lg md:max-w-96 mx-auto overflow-hidden transition-all duration-300"
-                x-ref="filters" x-show="openFilters"
-                x-transition:enter="transition ease-out duration-300"
-                x-transition:enter-start="opacity-0 transform -translate-y-2"
-                x-transition:enter-end="opacity-100 transform translate-y-0"
-                x-transition:leave="transition ease-in duration-200"
-                x-transition:leave-start="opacity-100 transform translate-y-0"
-                x-transition:leave-end="opacity-0 transform -translate-y-2">
-                
-                <div class="relative w-full">
-                    <img src="{{ asset('images/searchbar.svg') }}" 
-                        alt="Search" 
-                        class="absolute left-3 w-5 h-5 top-1/2 transform -translate-y-1/2 text-gray-600">
-                    
-                    <input type="text" 
-                        placeholder="Search..." 
-                        class="rounded-3xl p-2 shadow-sm w-full pl-10 pr-3 text-gray-700 border border-gray-300 focus:ring-2 focus:ring-gray-400 focus:outline-none">
+            <div x-data="filterToggle" class="lg:col-span-1 p-4 flex flex-col items-center">
+                <!-- Search Bar + Toggle (Mobile Only Layout) -->
+                <div class="w-full max-w-96 flex items-center justify-between lg:block">
+                    <!-- Toggle Filter Button - Visible only on mobile -->
+                    <button @click="toggleFilters"
+                        class="lg:hidden bg-white text-gray-500 shadow-md px-3 py-2 rounded-md hover:bg-gray-200 transition mr-2">
+                        Filters
+                    </button>
+
+                    <!-- Search Bar (Always Visible) -->
+                    <div class="relative flex-1">
+                        <img src="{{ asset('images/searchbar.svg') }}" 
+                            alt="Search" 
+                            class="absolute left-3 w-5 h-5 top-1/2 transform -translate-y-1/2 text-gray-600">
+                        <input type="text" 
+                            placeholder="Search..." 
+                            class="rounded-3xl p-2 shadow-sm w-full pl-10 pr-3 text-gray-700 border border-gray-300 focus:ring-2 focus:ring-gray-400 focus:outline-none">
+                    </div>
                 </div>
 
                 <!-- Filter Section -->
-                <div class="w-full max-w-96 mx-auto mt-6 p-4 bg-white shadow-md rounded-lg
-                md:h-[500px] lg:h-[550px] overflow-y-auto"">
+                <div 
+                    x-show="showFilters"
+                    x-cloak
+                    x-transition
+                    class="w-full max-w-96 mt-4 p-4 bg-white shadow-md rounded-lg overflow-y-auto">
+                    
                     <h2 class="text-lg font-semibold mb-2">FILTER</h2>
 
                     <!-- Selected Filters -->
@@ -91,6 +94,7 @@
                     </div>
                 </div>
             </div>
+
             
             <!-- Main Content -->
             <div class="lg:col-span-2 p-4">
@@ -134,30 +138,28 @@
                         @endfor
                     </div>
                 </div>
-
-                <div class="max-w-6xl mx-auto space-y-8">
-                    <h2 class="text-lg font-semibold mb-3 text-center lg:text-left mt-10">Recommended For You</h2>
-                    @php
-                        $images = [
-                            asset('images/Product1.jpg'),
-                            asset('images/product2.jpg'),
-                            asset('images/product3.jpg'),
-                            asset('images/product4.jpg'),
-                            asset('images/product5.jpg'),
-                            asset('images/product6.jpg')
-                        ];
-                    @endphp
-
-                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 justify-center">
-                        @for ($i = 0; $i < count($images); $i++)
-                            <div class="flex justify-center"> 
-                                <x-card image="{{ $images[$i] }}" text="Product {{ $i + 1 }}" price="{{ rand(100, 999) }}" />
-                            </div>
-                        @endfor
-                    </div>
-                </div>
             </div>
         </div>
     </div> 
     <x-footer />
+
+    <script>
+    document.addEventListener('alpine:init', () => {
+        Alpine.data('filterToggle', () => ({
+            showFilters: window.innerWidth >= 1024,
+            toggleFilters() {
+                // Only toggle on mobile
+                if (window.innerWidth < 1024) {
+                    this.showFilters = !this.showFilters;
+                }
+            },
+            handleResize() {
+                this.showFilters = window.innerWidth >= 1024;
+            },
+            init() {
+                window.addEventListener('resize', () => this.handleResize());
+            }
+        }));
+    });
+</script>
 </x-app-layout>
