@@ -16,17 +16,11 @@
         <!-- Product Details Section -->
         <div class="flex flex-col md:flex-row bg-white p-4 sm:p-6 rounded-lg max-w-4xl mx-auto mt-20 gap-4 sm:gap-6 shadow-md">
             <div class="w-full md:w-1/2 flex justify-center items-center bg-gray-200 rounded-lg p-4 sm:p-6">
-<<<<<<< HEAD
                 <div class="bg-gray-300 w-[180px] sm:w-[220px] md:w-[280px] lg:w-[350px] h-[220px] sm:h-[260px] md:h-[320px] lg:h-[400px] flex items-center justify-center rounded-md">  
                     <div id="avatar-canvas-container" class="w-full h-full">
                         
                     </div>
                 </div>                             
-=======
-                <div class="bg-gray-300 w-[180px] sm:w-[220px] md:w-[280px] lg:w-[350px] h-[220px] sm:h-[260px] md:h-[320px] lg:h-[400px] flex items-center justify-center rounded-md">
-                        <p>No avatar found</p>
-                </div>
->>>>>>> c096a890cf9ccef05de4b472e901f3cfa22a6255
             </div>
 
             <div class="w-full md:w-1/2 bg-white p-4 sm:p-6 rounded-lg shadow-sm">
