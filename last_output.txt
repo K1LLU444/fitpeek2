@@ -2,143 +2,160 @@ INFO: Could not find files for the given pattern(s).
 C:\Python310\lib\site-packages\paddle\utils\cpp_extension\extension_utils.py:711: UserWarning: No ccache found. Please be aware that recompiling all source files may be required. You can download and install ccache from: https://github.com/ccache/ccache/blob/master/doc/INSTALL.md
   warnings.warn(warning_message)
 🖼️ OCR boxes saved to public/debug/ocr_debug.png
-🧐 FLAT TEXT: ['SOCCER GREYJERSEY', 'NCK', 'S ZE CHART', 'ATmTC', 'SIZE', 'WIDTH', 'LENGTH', 'SLEEVES', 'S', '21"', '27"', '8"', 'M', '22"', '27"', '8.5"', 'L', '23"', '28"', '9"', 'XL', '24"', '29"', '9.5"', '2XL', '25"', '30"', '9.5"', '3XL', '26"', '32"', '10"']
-🧠 Routing to: Jersey Parser
-🔍 Detected 4-column jersey table
-🧠 Using: Jersey Parser
+🧐 FLAT TEXT: ['SLEEVE LENGTH', 'WIDTH', 'LENGTH', 'SLEEVE', 'SIZE', 'WIDTH', 'LENGTH', 'LENGTH', 'xS', '20', '24.5', '8', 's', '21', '25.5', '8.5', 'M', '22', '26.5', '9', 'L', '23', '27.5', '9.5', 'XL', '24', '28.5', '10', '2XL', '25', '29.5', '10.5', '3XL', '26', '30.5', '11']
+🧠 Routing to: Generic Parser
+🧠 Using: Generic Parser
 
 🧠 [PaddleOCR Extracted Data]
 [
   {
+    "size": "XS",
+    "width": 20.0,
+    "length": 24.5,
+    "sleeve_length": 8.0
+  },
+  {
     "size": "S",
     "width": 21.0,
-    "length": 27.0,
-    "sleeve_length": 8.0
+    "length": 25.5,
+    "sleeve_length": 8.5
   },
   {
     "size": "M",
     "width": 22.0,
-    "length": 27.0,
-    "sleeve_length": 8.5
+    "length": 26.5,
+    "sleeve_length": 9.0
   },
   {
     "size": "L",
     "width": 23.0,
-    "length": 28.0,
-    "sleeve_length": 9.0
+    "length": 27.5,
+    "sleeve_length": 9.5
   },
   {
     "size": "XL",
     "width": 24.0,
-    "length": 29.0,
-    "sleeve_length": 9.5
+    "length": 28.5,
+    "sleeve_length": 10.0
   },
   {
     "size": "2XL",
     "width": 25.0,
-    "length": 30.0,
-    "sleeve_length": 9.5
+    "length": 29.5,
+    "sleeve_length": 10.5
   },
   {
     "size": "3XL",
     "width": 26.0,
-    "length": 32.0,
-    "sleeve_length": 10.0
+    "length": 30.5,
+    "sleeve_length": 11.0
   }
 ]
 
 📦 Final Scraped Data:
 {
-  "product_url": "https://nckatmtc.com/products/block-pro-dri-fit-jersey-grey",
-  "front_image": "products/cleaned-block-pro-dri-fit-jersey-grey.png",
-  "product_name": "Block Pro Dri-fit Jersey (Grey)",
-  "price": "1495.00",
-  "description": "Product Details:\n\nDri-fit Fabric\nSublimated print design\nRibbed crew neck collar.\n\nWoven tag attached on right of the shirt.\nOversized Box Fit",
-  "size_chart_image": "https://cdn.shopify.com/s/files/1/0715/4630/6796/files/SOCCER_GREY_JERSEY.jpg?v=1743412055",
+  "product_url": "https://nckatmtc.com/products/king-cutter-tee-black",
+  "front_image": "products/cleaned-king-cutter-tee-black.png",
+  "product_name": "King Cutter Tee (Black)",
+  "price": "850.00",
+  "description": "Product Details:\n\nBlack T-Shirt from Nick Automatic\nScreen-printed front design\nRibbed crew neck collar.\nCotton blend\nWoven tag attached on left sleeve of the shirt.\nBox fit",
+  "size_chart_image": "https://cdn.shopify.com/s/files/1/0715/4630/6796/files/NEW-SIZE-CHART-02.png?v=1727846575",
   "size_chart_data": [
+    {
+      "size": "XS",
+      "width": 20.0,
+      "length": 24.5,
+      "sleeve_length": 8.0
+    },
     {
       "size": "S",
       "width": 21.0,
-      "length": 27.0,
-      "sleeve_length": 8.0
+      "length": 25.5,
+      "sleeve_length": 8.5
     },
     {
       "size": "M",
       "width": 22.0,
-      "length": 27.0,
-      "sleeve_length": 8.5
+      "length": 26.5,
+      "sleeve_length": 9.0
     },
     {
       "size": "L",
       "width": 23.0,
-      "length": 28.0,
-      "sleeve_length": 9.0
+      "length": 27.5,
+      "sleeve_length": 9.5
     },
     {
       "size": "XL",
       "width": 24.0,
-      "length": 29.0,
-      "sleeve_length": 9.5
+      "length": 28.5,
+      "sleeve_length": 10.0
     },
     {
       "size": "2XL",
       "width": 25.0,
-      "length": 30.0,
-      "sleeve_length": 9.5
+      "length": 29.5,
+      "sleeve_length": 10.5
     },
     {
       "size": "3XL",
       "width": 26.0,
-      "length": 32.0,
-      "sleeve_length": 10.0
+      "length": 30.5,
+      "sleeve_length": 11.0
     }
   ]
 }
 
 📝 Ready to save to DB with values:
 {
-  "product_url": "https://nckatmtc.com/products/block-pro-dri-fit-jersey-grey",
-  "front_image": "products/cleaned-block-pro-dri-fit-jersey-grey.png",
-  "product_name": "Block Pro Dri-fit Jersey (Grey)",
-  "price": "1495.00",
-  "description": "Product Details:\n\nDri-fit Fabric\nSublimated print design\nRibbed crew neck collar.\n\nWoven tag attached on right of the shirt.\nOversized Box Fit",
-  "size_chart_image": "https://cdn.shopify.com/s/files/1/0715/4630/6796/files/SOCCER_GREY_JERSEY.jpg?v=1743412055",
+  "product_url": "https://nckatmtc.com/products/king-cutter-tee-black",
+  "front_image": "products/cleaned-king-cutter-tee-black.png",
+  "product_name": "King Cutter Tee (Black)",
+  "price": "850.00",
+  "description": "Product Details:\n\nBlack T-Shirt from Nick Automatic\nScreen-printed front design\nRibbed crew neck collar.\nCotton blend\nWoven tag attached on left sleeve of the shirt.\nBox fit",
+  "size_chart_image": "https://cdn.shopify.com/s/files/1/0715/4630/6796/files/NEW-SIZE-CHART-02.png?v=1727846575",
   "size_chart_data": [
+    {
+      "size": "XS",
+      "width": 20.0,
+      "length": 24.5,
+      "sleeve_length": 8.0
+    },
     {
       "size": "S",
       "width": 21.0,
-      "length": 27.0,
-      "sleeve_length": 8.0
+      "length": 25.5,
+      "sleeve_length": 8.5
     },
     {
       "size": "M",
       "width": 22.0,
-      "length": 27.0,
-      "sleeve_length": 8.5
+      "length": 26.5,
+      "sleeve_length": 9.0
     },
     {
       "size": "L",
       "width": 23.0,
-      "length": 28.0,
-      "sleeve_length": 9.0
+      "length": 27.5,
+      "sleeve_length": 9.5
     },
     {
       "size": "XL",
       "width": 24.0,
-      "length": 29.0,
-      "sleeve_length": 9.5
+      "length": 28.5,
+      "sleeve_length": 10.0
     },
     {
       "size": "2XL",
       "width": 25.0,
-      "length": 30.0,
-      "sleeve_length": 9.5
+      "length": 29.5,
+      "sleeve_length": 10.5
     },
     {
       "size": "3XL",
       "width": 26.0,
-      "length": 32.0,
-      "sleeve_length": 10.0
+      "length": 30.5,
+      "sleeve_length": 11.0
     }
   ]
 }
@@ -157,5 +174,5 @@ C:\Python310\lib\site-packages\paddle\utils\cpp_extension\extension_utils.py:711
                 updated_at = NOW()
         
 ✅ Parameters:
-https://nckatmtc.com/products/block-pro-dri-fit-jersey-grey Block Pro Dri-fit Jersey (Grey) products/cleaned-block-pro-dri-fit-jersey-grey.png Ellipsis
+https://nckatmtc.com/products/king-cutter-tee-black King Cutter Tee (Black) products/cleaned-king-cutter-tee-black.png Ellipsis
 ✅ Saved to database.

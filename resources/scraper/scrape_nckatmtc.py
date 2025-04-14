@@ -101,7 +101,7 @@ if main_product:
     nested_imgs = main_product.select('img')
     for img in nested_imgs:
         src = img.get('src', '')
-        if ('.jpg' in src or '.png' in src) and 'nckatmtc.com' in src:
+        if ('.jpg' in src or '.png' in src or 'Artboard' in src) and 'nckatmtc.com' in src:
             if src.startswith('//'):
                 src = 'https:' + src
             images.append(src)
