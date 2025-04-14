@@ -53,14 +53,16 @@
                     <p class="text-gray-500 text-sm mt-4">No description available.</p>
                 @endif
                 <!-- SIZE CHART -->
-                @if($product->size_chart_image)
+                @if (!empty($product->size_chart_image))
                     <div class="mt-4">
                         <p class="text-base sm:text-lg text-gray-800 mt-4 md:text-left">Size Chart:</p>
                         <img src="{{ $product->size_chart_image }}" alt="Size Chart" class="max-w-xs rounded-md shadow mx-auto">
                     </div>
+                @else
+                    <p class="text-gray-500 text-sm mt-4 md:text-center">No size chart found.</p>
                 @endif
                 <!-- SIZES DROPDOWN -->
-                @if ($product->size_chart_data)
+                @if($product->size_chart_data)
                     @php
                         $sizes = collect(json_decode($product->size_chart_data, true))->pluck('size')->unique();
                     @endphp

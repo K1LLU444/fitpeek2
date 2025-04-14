@@ -106,7 +106,7 @@
                     <h1 class="text-2xl font-semibold mb-4 text-center lg:text-left">What’s your style?</h1>
 
                     <!-- Search Bar + Button (Responsive) -->
-                    <form method="POST" action="{{ route('scrape.product') }}" class="flex flex-col sm:flex-row items-center space-y-3 sm:space-y-0 sm:space-x-2">
+                    <form method="POST" action="{{ route('scrape.product') }}" class="flex flex-col sm:flex-row items-center space-y-3 sm:space-y-0 sm:space-x-2" id="scrapeForm">
                         @csrf
                         <div class="relative w-full max-w-lg">
                             <img src="{{ asset('images/searchbar.svg') }}" 
@@ -118,8 +118,34 @@
                                 required
                                 class="rounded-3xl p-2 shadow-sm w-full pl-10 text-gray-700 border border-gray-300">
                         </div>
+                        {{-- Output or error message --}}
+                        @if(session('message'))
+                            <div class="mt-4 text-green-600">{{ session('message') }}</div>
+                        @endif
+                        @if(session('error'))
+                            <div class="mt-4 text-red-600">{{ session('error') }}</div>
+                        @endif
                         <button type="submit" class="bg-black text-white px-4 py-2 rounded-lg w-full sm:w-auto">Submit</button>
                     </form>
+
+                    <div id="loader" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 hidden">
+                        <div class="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+                        <span class="text-white ml-4">Fetching product...</span>
+                    </div>
+
+                    <script>
+                        const form = document.getElementById('scrapeForm');
+
+                        form.addEventListener('submit', function(e) {
+                            e.preventDefault();
+                            document.getElementById('loader').classList.remove('hidden');
+
+                            // Small delay to allow spinner to appear before actual submission
+                            setTimeout(() => {
+                                form.submit();
+                            }, 100); // 100ms is enough
+                        });
+                    </script>
                 </div>
 
                 <div class="max-w-6xl mx-auto space-y-8">
@@ -136,7 +162,7 @@
                             />
                             </div>
                         @empty
-                            <p class="text-center text-gray-500 col-span-full">No products scraped yet.</p>
+                            <p class="text-center text-gray-500 col-span-full">No products found.</p>
                         @endforelse
                     </div>
                 </div>

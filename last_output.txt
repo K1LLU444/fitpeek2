@@ -1,0 +1,161 @@
+INFO: Could not find files for the given pattern(s).
+C:\Python310\lib\site-packages\paddle\utils\cpp_extension\extension_utils.py:711: UserWarning: No ccache found. Please be aware that recompiling all source files may be required. You can download and install ccache from: https://github.com/ccache/ccache/blob/master/doc/INSTALL.md
+  warnings.warn(warning_message)
+🖼️ OCR boxes saved to public/debug/ocr_debug.png
+🧐 FLAT TEXT: ['SOCCER GREYJERSEY', 'NCK', 'S ZE CHART', 'ATmTC', 'SIZE', 'WIDTH', 'LENGTH', 'SLEEVES', 'S', '21"', '27"', '8"', 'M', '22"', '27"', '8.5"', 'L', '23"', '28"', '9"', 'XL', '24"', '29"', '9.5"', '2XL', '25"', '30"', '9.5"', '3XL', '26"', '32"', '10"']
+🧠 Routing to: Jersey Parser
+🔍 Detected 4-column jersey table
+🧠 Using: Jersey Parser
+
+🧠 [PaddleOCR Extracted Data]
+[
+  {
+    "size": "S",
+    "width": 21.0,
+    "length": 27.0,
+    "sleeve_length": 8.0
+  },
+  {
+    "size": "M",
+    "width": 22.0,
+    "length": 27.0,
+    "sleeve_length": 8.5
+  },
+  {
+    "size": "L",
+    "width": 23.0,
+    "length": 28.0,
+    "sleeve_length": 9.0
+  },
+  {
+    "size": "XL",
+    "width": 24.0,
+    "length": 29.0,
+    "sleeve_length": 9.5
+  },
+  {
+    "size": "2XL",
+    "width": 25.0,
+    "length": 30.0,
+    "sleeve_length": 9.5
+  },
+  {
+    "size": "3XL",
+    "width": 26.0,
+    "length": 32.0,
+    "sleeve_length": 10.0
+  }
+]
+
+📦 Final Scraped Data:
+{
+  "product_url": "https://nckatmtc.com/products/block-pro-dri-fit-jersey-grey",
+  "front_image": "products/cleaned-block-pro-dri-fit-jersey-grey.png",
+  "product_name": "Block Pro Dri-fit Jersey (Grey)",
+  "price": "1495.00",
+  "description": "Product Details:\n\nDri-fit Fabric\nSublimated print design\nRibbed crew neck collar.\n\nWoven tag attached on right of the shirt.\nOversized Box Fit",
+  "size_chart_image": "https://cdn.shopify.com/s/files/1/0715/4630/6796/files/SOCCER_GREY_JERSEY.jpg?v=1743412055",
+  "size_chart_data": [
+    {
+      "size": "S",
+      "width": 21.0,
+      "length": 27.0,
+      "sleeve_length": 8.0
+    },
+    {
+      "size": "M",
+      "width": 22.0,
+      "length": 27.0,
+      "sleeve_length": 8.5
+    },
+    {
+      "size": "L",
+      "width": 23.0,
+      "length": 28.0,
+      "sleeve_length": 9.0
+    },
+    {
+      "size": "XL",
+      "width": 24.0,
+      "length": 29.0,
+      "sleeve_length": 9.5
+    },
+    {
+      "size": "2XL",
+      "width": 25.0,
+      "length": 30.0,
+      "sleeve_length": 9.5
+    },
+    {
+      "size": "3XL",
+      "width": 26.0,
+      "length": 32.0,
+      "sleeve_length": 10.0
+    }
+  ]
+}
+
+📝 Ready to save to DB with values:
+{
+  "product_url": "https://nckatmtc.com/products/block-pro-dri-fit-jersey-grey",
+  "front_image": "products/cleaned-block-pro-dri-fit-jersey-grey.png",
+  "product_name": "Block Pro Dri-fit Jersey (Grey)",
+  "price": "1495.00",
+  "description": "Product Details:\n\nDri-fit Fabric\nSublimated print design\nRibbed crew neck collar.\n\nWoven tag attached on right of the shirt.\nOversized Box Fit",
+  "size_chart_image": "https://cdn.shopify.com/s/files/1/0715/4630/6796/files/SOCCER_GREY_JERSEY.jpg?v=1743412055",
+  "size_chart_data": [
+    {
+      "size": "S",
+      "width": 21.0,
+      "length": 27.0,
+      "sleeve_length": 8.0
+    },
+    {
+      "size": "M",
+      "width": 22.0,
+      "length": 27.0,
+      "sleeve_length": 8.5
+    },
+    {
+      "size": "L",
+      "width": 23.0,
+      "length": 28.0,
+      "sleeve_length": 9.0
+    },
+    {
+      "size": "XL",
+      "width": 24.0,
+      "length": 29.0,
+      "sleeve_length": 9.5
+    },
+    {
+      "size": "2XL",
+      "width": 25.0,
+      "length": 30.0,
+      "sleeve_length": 9.5
+    },
+    {
+      "size": "3XL",
+      "width": 26.0,
+      "length": 32.0,
+      "sleeve_length": 10.0
+    }
+  ]
+}
+✅ Attempting to insert with query:
+
+            INSERT INTO products
+            (product_url, product_name, front_image, size_chart_image, size_chart_data, price, description, created_at, updated_at)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, NOW(), NOW())
+            ON DUPLICATE KEY UPDATE
+                product_name = VALUES(product_name),
+                front_image = VALUES(front_image),
+                size_chart_image = VALUES(size_chart_image),
+                size_chart_data = VALUES(size_chart_data),
+                price = VALUES(price),
+                description = VALUES(description),
+                updated_at = NOW()
+        
+✅ Parameters:
+https://nckatmtc.com/products/block-pro-dri-fit-jersey-grey Block Pro Dri-fit Jersey (Grey) products/cleaned-block-pro-dri-fit-jersey-grey.png Ellipsis
+✅ Saved to database.
