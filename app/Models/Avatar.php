@@ -10,9 +10,9 @@ class Avatar extends Model
     use HasFactory;
 
     protected $fillable = [
-        'user_id', 'name', 'sex', 'bust_size', 'shoulder_width', 'waist_size', 
-        'hip_size', 'height', 'weight', 'arm_length', 'leg_length', 'thigh_circumference'
-    ];
+        'user_id', 'sex', 'height', 'weight', 'chest', 'waist', 'hips', 'inseam', 'avatar_path'
+    ];    
+    
 
     // Define the relationship between Avatar and User
     public function user()
