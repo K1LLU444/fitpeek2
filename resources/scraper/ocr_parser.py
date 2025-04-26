@@ -53,6 +53,5 @@ def extract_flat_ocr_lines(image_url):
         cv2.putText(image_cv, text, (x, y - 5), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (36, 255, 12), 1)
 
     cv2.imwrite(save_path, image_cv)
-    print(f"🖼️ OCR boxes saved to {save_path}")
 
     return flat_lines

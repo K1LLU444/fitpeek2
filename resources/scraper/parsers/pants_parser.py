@@ -41,7 +41,6 @@ def parse_pants_group(group):
 
 
 def parse_pants_lines(flat_lines):
-    print("🧠 Using: Pants Parser")
     parsed = []
 
     # Find the start index where the first valid size appears

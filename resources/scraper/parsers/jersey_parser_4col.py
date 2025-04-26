@@ -18,7 +18,6 @@ def parse_jersey_row(tokens):
         return None
 
 def parse_jersey_lines_4col(flat_lines):
-    print("🧠 Using: Jersey Parser")
     parsed = []
     i = 0
     while i < len(flat_lines) - 3:

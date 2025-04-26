@@ -2,7 +2,6 @@ import re
 from ocr_parser import clean_number, known_sizes, number_like
 
 def parse_generic_lines(flat_lines):
-    print("🧠 Using: Generic Parser")
     parsed = []
     i = 0
 

@@ -70,6 +70,12 @@ Route::get('/product/{product}', [ProductScrapeController::class, 'show'])
     ->middleware(['auth', 'verified'])
     ->name('product.show');
 
+// Product select
+Route::post('/products/select-images', [ProductScrapeController::class, 'selectImages'])->name('products.select-images');
+
+
+
+
 // About Us
 Route::get('/aboutus', function () {
     return view('aboutus');

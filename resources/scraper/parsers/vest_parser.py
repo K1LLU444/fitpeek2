@@ -18,7 +18,6 @@ def parse_vest_row(row_text):
         return None
 
 def parse_vest_lines(flat_lines):
-    print("🧠 Using: Vest Parser")
     parsed = []
     i = 0
     while i + 2 < len(flat_lines):

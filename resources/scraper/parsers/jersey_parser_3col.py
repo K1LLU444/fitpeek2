@@ -2,7 +2,6 @@ import re
 from ocr_parser import known_sizes, clean_number, number_like_3col
 
 def parse_jersey_lines_3col(flat_lines):
-    print("🔍 Grouping by 3 after 'LENGTH'...")
 
     # Find index of "LENGTH"
     start_idx = 0
@@ -18,8 +17,8 @@ def parse_jersey_lines_3col(flat_lines):
         group = flat_lines[i:i+3]
         groups.append(group)
         i += 3
-    for g in groups:
-        print(g)
+
+
 
     # Parse each group
         parsed = []
@@ -46,9 +45,5 @@ def parse_jersey_lines_3col(flat_lines):
         except Exception as e:
             print(f"⚠️ Parse error on group {group} → {e}")
             continue
-
-    print("\n✅ Final Parsed Size Data:")
-    for p in parsed:
-        print(p)
 
     return parsed

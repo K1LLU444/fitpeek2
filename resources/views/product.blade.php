@@ -5,19 +5,37 @@
         <div class="flex flex-col md:flex-row bg-white p-4 sm:p-6 rounded-lg max-w-4xl mx-auto mt-20 gap-4 sm:gap-6 shadow-md">
             <!-- Image -->
             <div class="w-full md:w-1/2 flex justify-center items-center bg-gray-100 rounded-lg p-4 sm:p-6">
-                <div class="w-[180px] sm:w-[220px] md:w-[280px] lg:w-[350px] h-[220px] sm:h-[260px] md:h-[320px] lg:h-[400px] flex items-center justify-center rounded-md">
-                    @if($product && $product->front_image)
-                        @php
-                            $imageSrc = Str::startsWith($product->front_image, ['http://', 'https://'])
-                                ? $product->front_image
-                                : asset($product->front_image);
-                        @endphp
-                        <img src="{{ $imageSrc }}" class="w-full h-full object-contain" alt="{{ $imageSrc }}">
+                <div class="flex flex-col gap-4 w-[180px] sm:w-[220px] md:w-[280px] lg:w-[350px] 
+                            h-auto items-center justify-center rounded-md">
+
+                    @php
+                        $frontSrc = $product && $product->front_image
+                            ? (Str::startsWith($product->front_image, ['http://', 'https://']) 
+                                ? $product->front_image 
+                                : asset($product->front_image))
+                            : null;
+
+                        $backSrc = $product && $product->back_image
+                            ? (Str::startsWith($product->back_image, ['http://', 'https://']) 
+                                ? $product->back_image 
+                                : asset($product->back_image))
+                            : null;
+                    @endphp
+
+                    @if($frontSrc || $backSrc)
+                        @if($frontSrc)
+                            <img src="{{ $frontSrc }}" class="w-full h-[300px] object-contain" alt="Front View">
+                        @endif
+                        @if($backSrc)
+                            <img src="{{ $backSrc }}" class="w-full h-[300px] object-contain" alt="Back View">
+                        @endif
                     @else
                         <span class="text-gray-500 text-sm">No image found</span>
                     @endif
                 </div>
             </div>
+
+
 
 
             <!-- Info -->
@@ -90,15 +108,25 @@
             <div class="bg-gray-100 min-h-screen p-4 sm:p-6 mt-6 sm:mt-8">
                 <div class="max-w-7xl mx-auto">
                     <h2 class="text-lg sm:text-xl font-semibold mb-3 text-left">Previous picks</h2>
-                    <div class="overflow-x-auto whitespace-nowrap p-2 flex justify-left">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 flex justify-left">
                         <div class="flex space-x-4 pb-4">
                             @foreach ($otherProducts as $item)
                                 <a href="{{ route('product.show', $item->id) }}">
-                                    <x-horizontalscrollbar 
-                                        image="{{ asset($item->front_image) }}"
-                                        text="{{ $item->product_name }}"
-                                        price="{{ $item->price }}"
-                                    />
+                                @php
+                                    $imagePath = $item->front_image ?: $item->back_image;
+                                    $imageSrc = $imagePath
+                                        ? (Str::startsWith($imagePath, ['http://', 'https://']) 
+                                            ? $imagePath 
+                                            : asset($imagePath))
+                                        : asset('images/placeholder.png');
+                                @endphp
+
+                                <x-horizontalscrollbar 
+                                    image="{{ $imageSrc }}"
+                                    text="{{ $item->product_name }}"
+                                    price="{{ $item->price }}"
+                                />
+
                                 </a>
                             @endforeach
                         </div>
