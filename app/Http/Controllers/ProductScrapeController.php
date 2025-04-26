@@ -94,7 +94,7 @@ class ProductScrapeController extends Controller
         $product->back_image = $backPath;
         $product->save();
 
-        return redirect()->route('dashboard')->with('message', 'Images saved and cleaned!');
+        return redirect()->route('dashboard');
     }
 
     public function removeBackgroundFromUrl($url, $slug)
