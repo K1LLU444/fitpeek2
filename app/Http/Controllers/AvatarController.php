@@ -3,69 +3,90 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Avatar; // Import the model
+use App\Models\Avatar;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Http; // ✅ Needed for calling Flask server
 
 class AvatarController extends Controller
 {
     public function create()
     {
-        // Retrieve the logged-in user's avatar details
         $avatar = Avatar::where('user_id', Auth::id())->first();
-
-        // Return view with saved avatar data (if available)
         return view('createavatar', compact('avatar'));
     }
 
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'name' => 'required|string|max:255',
             'sex' => 'required|string',
-            'bust_size' => 'required|numeric',
-            'shoulder_width' => 'required|numeric',
-            'waist_size' => 'required|numeric',
-            'hip_size' => 'required|numeric',
             'height' => 'required|numeric',
             'weight' => 'required|numeric',
-            'arm_length' => 'required|numeric',
-            'leg_length' => 'required|numeric',
-            'thigh_circumference' => 'required|numeric',
+            'chest' => 'required|numeric',
+            'waist' => 'required|numeric',
+            'hips' => 'required|numeric',
+            'inseam' => 'required|numeric',
         ]);
-    
-        // Store the avatar and associate it with the logged-in user
-        Avatar::create(array_merge($validated, ['user_id' => auth()->id()]));
-    
-        return redirect()->route('avatar.success')->with('success', 'Avatar created successfully!');
-    }    
 
-    public function update(Request $request, $id)
-    {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'sex' => 'required|string',
-            'bust_size' => 'required|numeric',
-            'shoulder_width' => 'required|numeric',
-            'waist_size' => 'required|numeric',
-            'hip_size' => 'required|numeric',
-            'height' => 'required|numeric',
-            'weight' => 'required|numeric',
-            'arm_length' => 'required|numeric',
-            'leg_length' => 'required|numeric',
-            'thigh_circumference' => 'required|numeric',
+        $python = 'C:\\Users\\jungc\\AppData\\Local\\Programs\\Python\\Python313\\python.exe';
+        $generate_avatar_path = base_path('generate_avatar.py');
+
+        $sex = strtolower($validated['sex']);
+        $measurements = [
+            $validated['height'],
+            $validated['weight'],
+            $validated['chest'],
+            $validated['waist'],
+            $validated['hips'],
+            $validated['inseam'],
+        ];
+
+        // 🔵 Step 1: Predict betas via Flask server
+        $response = Http::post('http://127.0.0.1:5000/predict', [
+            'measurements' => $measurements,
+            'sex' => $sex,
         ]);
-    
-        // Find the avatar belonging to the logged-in user
-        $avatar = Avatar::where('user_id', auth()->id())->first();
-    
-        if ($avatar) {
-            $avatar->update($validated);
-            return redirect()->route('avatar.success')->with('success', 'Avatar created successfully!');
+
+        if (!$response->successful()) {
+            return back()->with('error', '❌ Beta prediction server error.');
         }
-    
-        return redirect()->route('avatar.create')->with('error', 'No avatar found to update.');
+
+        $betasJson = json_encode($response->json()['betas']);
+        \Log::info('🧠 Received Betas: ' . $betasJson);
+
+        // 🔵 Step 2: Encode betas safely (base64)
+        $encodedBetas = base64_encode($betasJson);
+
+        $timestamp = time();
+        $filename = "public/avatars/avatar_" . Auth::id() . "_$timestamp.obj";
+        $fullOutputPath = base_path($filename);
+
+        // 🔵 Step 3: Generate avatar using generate_avatar.py
+        $command = "\"$python\" \"$generate_avatar_path\" \"$encodedBetas\" \"$fullOutputPath\" \"$sex\" 2>&1";
+        \Log::info('🔵 Generate Avatar Command: ' . $command);
+
+        $result = shell_exec($command);
+        \Log::info('🟢 Generate Output: ' . $result);
+
+        // 🔵 Step 4: Check if avatar file was created
+        if (!file_exists($fullOutputPath)) {
+            return back()->with('error', '❌ Avatar generation failed: ' . $result);
+        }
+
+        // 🔵 Step 5: Save avatar and measurements into database
+        Avatar::updateOrCreate(
+            ['user_id' => Auth::id()],
+            [
+                'sex' => $validated['sex'],
+                'height' => $validated['height'],
+                'weight' => $validated['weight'],
+                'chest' => $validated['chest'],
+                'waist' => $validated['waist'],
+                'hips' => $validated['hips'],
+                'inseam' => $validated['inseam'],
+                'avatar_path' => 'storage/avatars/avatar_' . Auth::id() . "_$timestamp.obj",
+            ]
+        );
+
+        return redirect()->route('avatar.create')->with('success', '✅ Avatar created and saved successfully!');
     }
-    
-
-
 }

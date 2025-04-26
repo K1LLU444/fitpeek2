@@ -22,6 +22,7 @@ yarn-error.log
 /.nova
 /.vscode
 /.zed
+
 venv/
 venv/
 __pycache__/
@@ -32,3 +33,5 @@ __pycache__/
 .vscode/    
 venv/Lib/site-packages/paddle/base/libpaddle.pyd
 venv/Lib/site-packages/polars/polars.pyd
+=======
+models/smplx/

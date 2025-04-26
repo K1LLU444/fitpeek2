@@ -61,6 +61,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::put('/createavatar/{id}', [AvatarController::class, 'update'])->name('avatar.update');
 });
 
+
 // Product
 Route::post('/scrape-product', [ProductScrapeController::class, 'scrape'])
     ->middleware(['auth', 'verified'])
@@ -75,6 +76,11 @@ Route::post('/products/select-images', [ProductScrapeController::class, 'selectI
 
 
 
+=======
+// Try-on (controller-based with middleware)
+Route::get('/tryon', [AvatarController::class, 'tryon'])
+    ->middleware(['auth', 'verified'])
+    ->name('tryon');
 
 // About Us
 Route::get('/aboutus', function () {

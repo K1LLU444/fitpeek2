@@ -10,38 +10,45 @@
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     @endif
 </head>
-<body>
-    <header class="flex items-center py-2 font-semibold shadow-xl bg-white px-6 md:px-10 lg:px-16">
-        <div class="flex justify-start">
-            <x-application-logo class="h-16 w-auto" />
-            <a class="flex justify-center items-center ml-5 font-vold text-2xl">FitPeek</a>
+<body class="bg-gray-100">
+
+    <!-- Header -->
+    <header class="flex items-center py-2 font-semibold shadow-xl bg-white px-6 md:px-10 lg:px-16 fixed w-full top-0 z-50">
+        <div class="flex items-center">
+            <x-application-logo class="h-10 md:h-12 w-auto" />
+            <a class="ml-3 text-lg md:text-xl font-bold">FitPeek</a>
         </div>
     </header>
 
-    <div class="w-30 flex flex-col items-start">
-        <div class="mb-10 ml-20 m-40">
-            <p class="rem text-8xl font-bold mb-5 text-primary-color">Virtual Try-on</p>
-            <p class="rem text-5xl ml-3 text-secondary-color">Create your style</p>
-        </div>
+    <!-- Main Content -->
+    <div class="flex items-center justify-center md:justify-start text-center md:text-left px-6 md:px-10 lg:px-20 max-w-7xl mx-auto h-screen ml-[-10px]">
+        <div class="w-full md:w-1/2 flex flex-col items-center md:items-start justify-center">
+            <!-- Text Section -->
+            <h1 class="text-4xl md:text-6xl lg:text-7xl font-bold text-black leading-tight">
+                Virtual Try-on
+            </h1>
+            <p class="text-lg md:text-2xl lg:text-3xl text-gray-600 mt-3">
+                Create your style
+            </p>
 
-        <div class="flex space-x-4 ml-20">
-            <nav class="-mx-3 flex flex-1 justify-end">
-
+            <!-- Buttons -->
+            <div class="flex flex-col sm:flex-row items-center md:items-start mt-6 space-y-4 sm:space-y-0 sm:space-x-4">
                 <form action="{{ route('login') }}" method="GET">
-                    <x-primary-button class="w-3/4 sm:text-lg ml-10 shadow-xl">
+                    <x-primary-button class="w-40 sm:w-44 md:w-48 text-lg md:text-xl px-6 py-3 shadow-xl">
                         Log In
                     </x-primary-button>
                 </form>
 
                 @if (Route::has('register'))
                     <form action="{{ route('register') }}" method="GET">
-                        <x-primary-button class="w-3/4 sm:text-lg ml-10 shadow-xl">
+                        <x-primary-button class="w-40 sm:w-30 md:w-48 text-lg md:text-xl px-6 py-3 shadow-xl">
                             Sign In
                         </x-primary-button>
                     </form>
                 @endif
-            </nav>
+            </div>
         </div>
     </div>
+
 </body>
 </html>

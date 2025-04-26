@@ -21,6 +21,7 @@ export default {
                 "highlight-color": "#F7F1F0",
                 "accent-color": "#a68a75",
                 "accent-hover": "#8c7663",
+                "accent-hover-light": "f0f0f0",
             }
         },
     },
