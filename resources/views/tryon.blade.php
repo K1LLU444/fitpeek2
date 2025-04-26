@@ -90,64 +90,64 @@
             <script src="https://cdn.jsdelivr.net/npm/three@0.140.0/build/three.min.js"></script>
             <script src="https://cdn.jsdelivr.net/npm/three@0.140.0/examples/js/loaders/OBJLoader.js"></script>
             <script src="https://cdn.jsdelivr.net/npm/three@0.140.0/examples/js/controls/OrbitControls.js"></script>
-
+            
             <script>
                 document.addEventListener('DOMContentLoaded', function () {
                     const container = document.getElementById('avatar-canvas-container');
+            
                     const scene = new THREE.Scene();
-                    const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 1000);
+                    const camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 1000);
+                    camera.position.set(0, 1.4, 3.5);
+            
                     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-                    container.appendChild(renderer.domElement);
-
-                    function resizeCanvas() {
-                        const width = container.clientWidth;
-                        const height = container.clientHeight;
-                        renderer.setSize(width, height);
-                        camera.aspect = width / height;
-                        camera.updateProjectionMatrix();
-                    }
-
-                    resizeCanvas();
-                    window.addEventListener('resize', resizeCanvas);
-
+                    renderer.setSize(container.clientWidth, container.clientHeight);
                     renderer.setPixelRatio(window.devicePixelRatio);
-                    renderer.outputEncoding = THREE.sRGBEncoding;
-                    renderer.toneMapping = THREE.ACESFilmicToneMapping;
-                    renderer.toneMappingExposure = 0.8;
-
-                    const light = new THREE.DirectionalLight(0xffffff, 1);
-                    light.position.set(2, 3, 5);
-                    scene.add(light);
-                    scene.add(new THREE.AmbientLight(0xffffff, 0.5));
-
+                    container.appendChild(renderer.domElement);
+            
                     const controls = new THREE.OrbitControls(camera, renderer.domElement);
                     controls.enableDamping = true;
-                    controls.target.set(0, 1.4, 0);
-                    camera.position.set(0, 1.4, 3.5);
-
+                    controls.target.set(0, 1.2, 0);
+                    controls.update();
+            
+                    const ambient = new THREE.AmbientLight(0xffffff, 0.4);
+                    scene.add(ambient);
+                
+                    const directional = new THREE.DirectionalLight(0xffffff, 0.6);
+                    directional.position.set(3, 5, 2);
+                    scene.add(directional);
+                
+                    const backLight = new THREE.DirectionalLight(0xffffff, 0.3);
+                    backLight.position.set(-3, 3, -3);
+                    scene.add(backLight);
+                
                     const loader = new THREE.OBJLoader();
                     loader.load('{{ asset($avatar->avatar_path) }}', function (object) {
+                        object.traverse(function (child) {
+                            if (child.isMesh) {
+                                child.material = new THREE.MeshStandardMaterial({
+                                    color: 0xcccccc,         // 👕 Slightly darker than white
+                                    roughness: 0.5,
+                                    metalness: 0.1,
+                                });
+                                child.material.needsUpdate = true;
+                            }
+                        });
+                
                         object.scale.set(1.3, 1.3, 1.3);
-                        object.position.y = -1.0;
+                        object.position.y = 0;
                         scene.add(object);
                     });
-
+            
                     function animate() {
                         requestAnimationFrame(animate);
                         controls.update();
                         renderer.render(scene, camera);
                     }
+            
                     animate();
-
-                    // Scroll Buttons
-                    document.getElementById('nextBtnPrev')?.addEventListener('click', () => {
-                        document.getElementById('scrollContainerPrev').scrollBy({ left: 300, behavior: 'smooth' });
-                    });
-                    document.getElementById('prevBtnPrev')?.addEventListener('click', () => {
-                        document.getElementById('scrollContainerPrev').scrollBy({ left: -300, behavior: 'smooth' });
-                    });
                 });
             </script>
+            
         @endif
     </body>
 </x-app-layout>
