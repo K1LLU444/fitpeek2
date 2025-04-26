@@ -89,4 +89,14 @@ class AvatarController extends Controller
 
         return redirect()->route('avatar.create')->with('success', '✅ Avatar created and saved successfully!');
     }
+    public function tryon()
+    {
+        $avatar = Avatar::where('user_id', Auth::id())->first();
+
+        if (!$avatar) {
+            return redirect()->route('avatar.create')->with('error', 'No avatar found.');
+        }
+
+        return view('tryon', compact('avatar'));
+    }
 }
