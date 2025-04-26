@@ -14,7 +14,6 @@
             <div class="hidden sm:flex space-x-6 items-center">
                 <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                     {{ __('Home') }}
-                </x-nav-link>
                 <x-nav-link :href="route('avatar.create')" :active="request()->routeIs('avatar.create')">
                     {{ __('Your Avatar') }}
                 </x-nav-link>
@@ -76,39 +75,6 @@
             </div>
         </div>
     </div>
-
-    <!-- Mobile Menu -->
-    <div :class="{ 'block': open, 'hidden': !open }" class="sm:hidden bg-white border-t border-gray-200 px-4 py-3">
-        <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
-            {{ __('Home') }}
-        </x-responsive-nav-link>
-        <x-responsive-nav-link :href="route('avatar.create')" :active="request()->routeIs('avatar.create')">
-            {{ __('Your Avatar') }}
-        </x-responsive-nav-link>
-        <x-responsive-nav-link :href="route('aboutus')" :active="request()->routeIs('aboutus')">
-            {{ __('About Us') }}
-        </x-responsive-nav-link>
-
-        <!-- Mobile Profile -->
-        <div class="mt-2 border-t border-gray-100 pt-2">
-            <button @click="profileOpen = !profileOpen"
-                class="w-full text-left text-sm text-gray-700 px-2 py-1 hover:bg-gray-100 rounded-md truncate"
-                title="{{ Auth::user()->name }}">
-                {{ Str::limit(Auth::user()->name, 25) }}
-            </button>
-
-            <div x-show="profileOpen" class="mt-1 space-y-1">
-                <x-responsive-nav-link :href="route('profile.edit')">
-                    {{ __('Profile') }}
-                </x-responsive-nav-link>
-                <form method="POST" action="{{ route('logout') }}">
-                    @csrf
-                    <x-responsive-nav-link :href="route('logout')"
-                        onclick="event.preventDefault(); this.closest('form').submit();">
-                        {{ __('Log Out') }}
-                    </x-responsive-nav-link>
-                </form>
-            </div>
         </div>
     </div>
 </nav>

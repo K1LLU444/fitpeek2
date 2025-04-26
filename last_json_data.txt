@@ -1,0 +1,9 @@
+{
+    "product_url": "https:\/\/hso.com.ph\/products\/heavyweight-box-tee-ivory",
+    "product_name": "HEAVYWEIGHT BOX TEE - IVORY",
+    "price": "850.00",
+    "description": "DETAILS\n\n\n\n\n100%\u00a0 US Cotton fabric\n\n\nBoxy fit\n\n\n\n\nHeavyweight 300 GSM\n\n\nUltra breathable\n\n\nShort sleeves\n\n\n\n\nHand wash | Hang dry\n\n\n\n\nSIZE & FIT\n\n\n\n\nModel's\u00a0height: 5'7\n\n\n\n\nModel's waist: 32\n\n\nThe model is wearing Large size\n\n\n\n\nSIZE CHART",
+    "size_chart_image": "https:\/\/cdn.shopify.com\/s\/files\/1\/1646\/5611\/files\/HSOBOXFITSIZECHART_480x480.jpg?v=1708582334",
+    "product_images": "[\"https:\/\/hso.com.ph\/cdn\/shop\/files\/ASHOTS198_1024x1024@2x.jpg?v=1743235906\", \"https:\/\/hso.com.ph\/cdn\/shop\/files\/ASHOTS199_785be6ff-a068-403a-9b3b-d28047850375_1024x1024@2x.jpg?v=1743235906\", \"https:\/\/hso.com.ph\/cdn\/shop\/files\/ASHOTS200_1024x1024@2x.jpg?v=1743235906\", \"https:\/\/hso.com.ph\/cdn\/shop\/files\/ASHOTS-09931_1024x1024@2x.jpg?v=1743238992\"]",
+    "size_chart_data": "[{\"size\": \"S\", \"width\": 22.0, \"length\": 25.0, \"sleeve_length\": 7.5}, {\"size\": \"M\", \"width\": 23.0, \"length\": 26.0, \"sleeve_length\": 8.5}, {\"size\": \"XL\", \"width\": 25.0, \"length\": 28.0, \"sleeve_length\": 9.5}, {\"size\": \"XXL\", \"width\": 26.0, \"length\": 29.0, \"sleeve_length\": 10.0}]"
+}
