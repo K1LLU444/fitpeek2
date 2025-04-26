@@ -1,21 +1,23 @@
 import sys
 import json
 import scrape_nckatmtc
-import scrape_hso
+import scrape_dailygrind
 
 # 🚀 Get the URL passed as argument
 url = sys.argv[1]
 
-# 🚀 Decide based on domain
+# 🚀 Decide which scraper to use based on domain
 if "nckatmtc.com" in url:
     result = scrape_nckatmtc.scrape(url)
 
-elif "hso.com.ph" in url:
-    result = scrape_hso.scrape(url)
+elif "dailygrindstore.com" in url:
+    result = scrape_dailygrind.scrape(url)
 
 else:
-    print(json.dumps({"error": "Unsupported site"}))
+    # 🚨 If unsupported site
+    result = {"error": "Unsupported site"}
+    print(json.dumps(result))
     sys.exit(1)
 
-# 🚀 Return JSON to Laravel
+# 🚀 Return JSON back to Laravel
 print(json.dumps(result))

@@ -44,41 +44,110 @@
                 <h2 class="text-lg sm:text-3xl font-bold text-center md:text-left">
                     {{ $product->product_name ?? 'Product Name' }}
                 </h2>
+
             <!-- PRODUCT PRICE -->
                 <div class="flex justify-center md:justify-start items-center mt-2">
                     <span class="text-lg font-semibold">Php</span>
                     <span class="text-2xl font-bold ml-1">{{ $product->price ?? '0.00' }}</span>
                 </div>
+
             <!-- PRODUCT DESCRIPTION -->
-                @if (!empty($product->description))
-                    @php
-                        $lines = explode("\n", $product->description);
-                        $firstLine = array_shift($lines); // Remove first line and store it
-                    @endphp
+            @if (!empty($product->description))
+                @php
+                    $lines = explode("\n", $product->description);
+                    $firstLine = array_shift($lines); // First line title
 
-                    <p class="text-base sm:text-lg text-gray-800 mt-4 md:text-left">
-                        {{ $firstLine }}
-                    </p>
+                    $descriptionLines = [];
+                    $skip = false;
 
-                    <ul class="text-gray-700 text-sm sm:text-base mt-2 leading-relaxed list-disc pl-5 space-y-1 text-left">
-                        @foreach ($lines as $line)
+                    foreach ($lines as $line) {
+                        $line = trim($line);
+                        if (empty($line)) continue;
+
+                        // If the line is part of old Size Chart section, skip it
+                        if (stripos($line, 'Size:') !== false ||
+                            stripos($line, 'WAIST') !== false ||
+                            stripos($line, 'LENGTH') !== false ||
+                            stripos($line, 'BOTTOM') !== false ||
+                            preg_match('/^[0-9.]+$/', $line)) {
+                            $skip = true;
+                            continue;
+                        }
+
+                        // If line is a clear end of size chart parsing
+                        if ($skip && strlen($line) > 5 && !preg_match('/^[0-9.]+$/', $line)) {
+                            $skip = false; // resume normal description
+                        }
+
+                        if (!$skip) {
+                            $descriptionLines[] = $line;
+                        }
+                    }
+                @endphp
+
+                <!-- Product Title -->
+                <p class="text-base sm:text-lg text-gray-800 mt-4 md:text-left">
+                    DESCRIPTION:
+                </p>
+
+                @if (!empty($descriptionLines))
+                    <!-- Normal bullets for real description -->
+                    <ul class="text-gray-700 text-sm sm:text-base mt-4 leading-relaxed list-disc pl-5 space-y-1 text-left">
+                        @foreach ($descriptionLines as $line)
                             @if (trim($line) !== '')
                                 <li>{{ $line }}</li>
                             @endif
                         @endforeach
                     </ul>
-                @else
-                    <p class="text-gray-500 text-sm mt-4">No description available.</p>
                 @endif
+            @else
+                <p class="text-gray-500 text-sm mt-4">No description available.</p>
+            @endif
+
+
                 <!-- SIZE CHART -->
                 @if (!empty($product->size_chart_image))
                     <div class="mt-4">
                         <p class="text-base sm:text-lg text-gray-800 mt-4 md:text-left">Size Chart:</p>
                         <img src="{{ $product->size_chart_image }}" alt="Size Chart" class="max-w-xs rounded-md shadow mx-auto">
                     </div>
+                @elseif (!empty($product->size_chart_data))
+                    @php
+                        $size_chart_data = is_string($product->size_chart_data) ? json_decode($product->size_chart_data, true) : $product->size_chart_data;
+                    @endphp
+                    @if (is_array($size_chart_data))
+                        <div class="mt-4 overflow-x-auto">
+                            <p class="text-base sm:text-lg text-gray-800 mt-4 md:text-left">Size Chart:</p>
+                            <table class="min-w-full border text-sm text-left text-gray-700 mt-2">
+                                <thead class="bg-gray-100">
+                                    <tr>
+                                        <th class="border px-3 py-2">Size</th>
+                                        @foreach ($size_chart_data as $sizeData)
+                                            <th class="border px-3 py-2 text-center">{{ $sizeData['size'] }}</th>
+                                        @endforeach
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @php
+                                        $fields = array_filter(array_keys($size_chart_data[0]), fn($key) => $key !== 'size');
+                                    @endphp
+                                    @foreach ($fields as $field)
+                                        <tr>
+                                            <td class="border px-3 py-2 font-semibold capitalize">{{ str_replace('_', ' ', $field) }}</td>
+                                            @foreach ($size_chart_data as $sizeData)
+                                                <td class="border px-3 py-2 text-center">{{ $sizeData[$field] ?? '-' }}</td>
+                                            @endforeach
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    @endif
                 @else
                     <p class="text-gray-500 text-sm mt-4 md:text-center">No size chart found.</p>
                 @endif
+
+
                 <!-- SIZES DROPDOWN -->
                 @if($product->size_chart_data)
                     @php
