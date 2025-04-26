@@ -74,9 +74,6 @@ Route::get('/product/{product}', [ProductScrapeController::class, 'show'])
 // Product select
 Route::post('/products/select-images', [ProductScrapeController::class, 'selectImages'])->name('products.select-images');
 
-
-
-=======
 // Try-on (controller-based with middleware)
 Route::get('/tryon', [AvatarController::class, 'tryon'])
     ->middleware(['auth', 'verified'])
