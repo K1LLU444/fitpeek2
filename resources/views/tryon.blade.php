@@ -1,56 +1,153 @@
+<style>
+    .scroll-container {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+        overflow-x: scroll;
+    }
+    .scroll-container::-webkit-scrollbar {
+        display: none;
+    }
+    #avatar-canvas-container canvas {
+        width: 100% !important;
+        height: 100% !important;
+        display: block;
+    }
+</style>
+
 <x-app-layout>
     <body class="bg-gray-100 px-4 sm:px-6 lg:px-8">
-        <div class="max-w-4xl mx-auto mt-20 bg-white p-6 rounded-lg shadow-md">
-            <div class="flex flex-col md:flex-row gap-6">
 
-                <!-- Avatar Viewer -->
-                <div class="relative w-[300px] h-[600px] bg-gray-200 rounded-lg overflow-hidden">
-                    <div id="avatar-canvas-container" class="absolute inset-0"></div>
+        <!-- Avatar + Product Details -->
+        <div class="flex flex-col md:flex-row bg-white p-4 sm:p-6 rounded-lg max-w-5xl mx-auto mt-20 gap-6 shadow-md">
+            <!-- Avatar Preview -->
+            <div class="w-full md:w-1/2 flex justify-center items-center bg-gray-200 rounded-lg p-4">
+                <div class="w-full h-[300px] sm:h-[400px] bg-gray-300 rounded-md flex items-center justify-center">
+                    <div id="avatar-canvas-container" class="w-full h-full"></div>
                 </div>
+            </div>
 
-                <!-- Info Panel -->
-                <div class="flex-1">
-                    <h2 class="text-xl font-bold">Try-On Mode</h2>
-                    <p class="text-sm text-gray-500 mt-2">Preview your generated avatar below.</p>
-                    <a href="{{ asset($avatar->avatar_path) }}" download class="text-blue-600 mt-4 inline-block">⬇ Download Avatar (.obj)</a>
+            <!-- Product Info -->
+            <div class="w-full md:w-1/2 bg-white p-4 sm:p-6 rounded-lg shadow-sm">
+                <h2 class="text-lg sm:text-xl font-bold text-center md:text-left">Product Name</h2>
+                <span class="inline-block bg-green-200 text-green-800 text-xs font-semibold px-3 py-1 rounded-md mt-2">Tag</span>
+                <div class="flex justify-center md:justify-start items-center mt-2">
+                    <span class="text-lg font-semibold">Php</span>
+                    <span class="text-3xl font-bold ml-1">50</span>
                 </div>
-
+                <p class="text-gray-700 text-sm sm:text-base mt-4 leading-relaxed text-center md:text-left">
+                    "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore..."
+                </p>
+                <p class="text-sm font-semibold mt-4 text-center md:text-left">Recommended Size: Medium</p>
+                <label for="size" class="block text-sm font-medium mt-4 text-center md:text-left">Sizes</label>
+                <select id="size" class="w-full mt-1 p-2 border border-gray-300 rounded-lg">
+                    <option>--Pick your Size--</option>
+                    <option>Small</option>
+                    <option>Medium</option>
+                    <option>Large</option>
+                </select>
+                <button class="w-full bg-accent-color text-white font-semibold py-2 mt-4 rounded-lg hover:bg-accent-hover transition-all duration-300">
+                    Try-on
+                </button>
             </div>
         </div>
+
+        <!-- Recommended Products Section -->
+        <div class="bg-gray-100 p-4 sm:p-6 mt-10">
+            <div class="max-w-7xl mx-auto">
+                <h2 class="text-lg sm:text-xl font-semibold mb-3 text-left">Recommended</h2>
+                <div class="relative">
+                    <div id="scrollContainerPrev" class="scroll-container whitespace-nowrap p-2 flex scroll-smooth">
+                        <div class="flex space-x-4 pb-4">
+                            @for ($i = 1; $i <= 8; $i++)
+                                <x-horizontalscrollbar 
+                                    class="w-[180px] md:w-[200px] lg:w-[250px]" 
+                                    image="image.jpg" 
+                                    text="Product {{ $i }}" 
+                                    price="{{ $i * 10 }}" />
+                            @endfor
+                        </div>
+                    </div>
+
+                    <!-- Scroll Buttons -->
+                    <button id="prevBtnPrev" class="hidden md:block absolute top-1/2 left-0 transform -translate-y-1/2 bg-white hover:bg-gray-200 p-2 rounded-full shadow z-10">
+                        <svg class="h-5 w-5 text-gray-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+                        </svg>
+                    </button>
+                    <button id="nextBtnPrev" class="hidden md:block absolute top-1/2 right-0 transform -translate-y-1/2 bg-white hover:bg-gray-200 p-2 rounded-full shadow z-10">
+                        <svg class="h-5 w-5 text-gray-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <x-footer />
+
+        @if($avatar && $avatar->avatar_path)
+            <!-- OBJ Loading Scripts -->
+            <script src="https://cdn.jsdelivr.net/npm/three@0.140.0/build/three.min.js"></script>
+            <script src="https://cdn.jsdelivr.net/npm/three@0.140.0/examples/js/loaders/OBJLoader.js"></script>
+            <script src="https://cdn.jsdelivr.net/npm/three@0.140.0/examples/js/controls/OrbitControls.js"></script>
+
+            <script>
+                document.addEventListener('DOMContentLoaded', function () {
+                    const container = document.getElementById('avatar-canvas-container');
+                    const scene = new THREE.Scene();
+                    const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 1000);
+                    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+                    container.appendChild(renderer.domElement);
+
+                    function resizeCanvas() {
+                        const width = container.clientWidth;
+                        const height = container.clientHeight;
+                        renderer.setSize(width, height);
+                        camera.aspect = width / height;
+                        camera.updateProjectionMatrix();
+                    }
+
+                    resizeCanvas();
+                    window.addEventListener('resize', resizeCanvas);
+
+                    renderer.setPixelRatio(window.devicePixelRatio);
+                    renderer.outputEncoding = THREE.sRGBEncoding;
+                    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+                    renderer.toneMappingExposure = 0.8;
+
+                    const light = new THREE.DirectionalLight(0xffffff, 1);
+                    light.position.set(2, 3, 5);
+                    scene.add(light);
+                    scene.add(new THREE.AmbientLight(0xffffff, 0.5));
+
+                    const controls = new THREE.OrbitControls(camera, renderer.domElement);
+                    controls.enableDamping = true;
+                    controls.target.set(0, 1.4, 0);
+                    camera.position.set(0, 1.4, 3.5);
+
+                    const loader = new THREE.OBJLoader();
+                    loader.load('{{ asset($avatar->avatar_path) }}', function (object) {
+                        object.scale.set(1.3, 1.3, 1.3);
+                        object.position.y = -1.0;
+                        scene.add(object);
+                    });
+
+                    function animate() {
+                        requestAnimationFrame(animate);
+                        controls.update();
+                        renderer.render(scene, camera);
+                    }
+                    animate();
+
+                    // Scroll Buttons
+                    document.getElementById('nextBtnPrev')?.addEventListener('click', () => {
+                        document.getElementById('scrollContainerPrev').scrollBy({ left: 300, behavior: 'smooth' });
+                    });
+                    document.getElementById('prevBtnPrev')?.addEventListener('click', () => {
+                        document.getElementById('scrollContainerPrev').scrollBy({ left: -300, behavior: 'smooth' });
+                    });
+                });
+            </script>
+        @endif
     </body>
 </x-app-layout>
-
-@if($avatar && $avatar->avatar_path)
-    <script src="https://cdn.jsdelivr.net/npm/three@0.140.0/build/three.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.140.0/examples/js/loaders/OBJLoader.js"></script>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const scene = new THREE.Scene();
-            const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 1000);
-            const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-            renderer.setSize(300, 600);
-            document.getElementById('avatar-canvas-container').appendChild(renderer.domElement);
-
-            scene.add(new THREE.AmbientLight(0xffffff, 0.7));
-            const light = new THREE.DirectionalLight(0xffffff, 0.8);
-            light.position.set(5, 10, 7.5);
-            scene.add(light);
-
-            const loader = new THREE.OBJLoader();
-            loader.load('{{ asset($avatar->avatar_path) }}', function (object) {
-                object.scale.set(1.3, 1.3, 1.3);
-                object.position.y = -1.2;
-                scene.add(object);
-            });
-
-            camera.position.set(0, 1.4, 3.5);
-
-            function animate() {
-                requestAnimationFrame(animate);
-                renderer.render(scene, camera);
-            }
-            animate();
-        });
-    </script>
-@endif

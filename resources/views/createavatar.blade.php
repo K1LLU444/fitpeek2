@@ -86,14 +86,24 @@
 @if($avatar && $avatar->avatar_path)
     <script src="https://cdn.jsdelivr.net/npm/three@0.140.0/build/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.140.0/examples/js/loaders/OBJLoader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.140.0/examples/js/controls/OrbitControls.js"></script>
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {
+            const container = document.getElementById('avatar-canvas-container');
+
             const scene = new THREE.Scene();
-            const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 1000);
+            const camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 1000);
+            camera.position.set(0, 1.4, 3.5);
+
             const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-            renderer.setSize(300, 400);
-            document.getElementById('avatar-canvas-container').appendChild(renderer.domElement);
+            renderer.setSize(container.clientWidth, container.clientHeight);
+            container.appendChild(renderer.domElement);
+
+            const controls = new THREE.OrbitControls(camera, renderer.domElement);
+            controls.enableDamping = true;
+            controls.target.set(0, 1.2, 0);
+            controls.update();
 
             scene.add(new THREE.AmbientLight(0xffffff, 0.7));
             const light = new THREE.DirectionalLight(0xffffff, 0.8);
@@ -108,18 +118,21 @@
 
             const loader = new THREE.OBJLoader();
             loader.load('{{ asset($avatar->avatar_path) }}', function (object) {
+                console.log("✅ OBJ loaded:", object); // <-- Add this
+                
                 object.scale.set(1.3, 1.3, 1.3);
                 object.position.y = -1.2;
                 scene.add(object);
             });
 
-            camera.position.set(0, 1.4, 3.5);
-
             function animate() {
                 requestAnimationFrame(animate);
+                controls.update();
                 renderer.render(scene, camera);
             }
+
             animate();
         });
     </script>
+
 @endif
