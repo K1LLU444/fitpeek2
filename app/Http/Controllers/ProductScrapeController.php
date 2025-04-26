@@ -7,53 +7,58 @@ use Illuminate\Support\Facades\output;
 use App\Models\Product;
 use Intervention\Image\Facades\Image;
 
+
 class ProductScrapeController extends Controller
 {
     public function scrape(Request $request)
-    {
-        $url = $request->input('product_url');
-        $python = 'C:\\Python310\\python.exe';
-        $script = base_path('resources/scraper/scrape_nckatmtc.py');
-        $escapedUrl = escapeshellarg($url);
+{
+    $url = $request->input('product_url');
+    $python = 'C:\\Python310\\python.exe';
+    $script = base_path('resources/scraper/scrape_router.py');
+    $escapedUrl = escapeshellarg($url);
 
-        putenv("PYTHONHASHSEED=random");
-        putenv("NUMBA_CACHE_DIR=C:\\xampp\\tmp");
+    putenv("PYTHONHASHSEED=random");
+    putenv("NUMBA_CACHE_DIR=C:\\xampp\\tmp");
 
-        $command = "\"$python\" \"$script\" $escapedUrl 2>&1";
-        file_put_contents(base_path('last_command.txt'), $command);
-        $output = shell_exec($command);
-        file_put_contents(base_path('last_output.txt'), $output);
+    $command = "\"$python\" \"$script\" $escapedUrl 2>&1";
+    file_put_contents(base_path('last_command.txt'), $command);
+    $output = shell_exec($command);
+    file_put_contents(base_path('last_output.txt'), $output);
 
-        $outputLines = explode("\n", trim($output));
-        if (str_starts_with($outputLines[0], 'INFO:')) {
-            array_shift($outputLines);
-        }
-        $cleanOutput = implode("\n", $outputLines);
-        $data = json_decode($cleanOutput, true);
-        
-        $product = Product::updateOrCreate(
-            ['product_url' => $data['product_url']],
-            [
-                'product_name' => $data['product_name'] ?? null,
-                'product_images' => $data['product_images'] ?? null,
-                'size_chart_image' => $data['size_chart_image'] ?? null,
-                'size_chart_data' => isset($data['size_chart_data']) ? json_encode($data['size_chart_data']) : null,
-                'price' => $data['price'] ?? null,
-                'description' => $data['description'] ?? null,
-            ]
-        );
-
-        // ProductScrapeController.php
-
-        return redirect()->route('dashboard')->with([
-            'show_modal' => true,
-            'product_images' => $data['product_images'],
-            'product_id' => $product->id,
-        ]);
-
-        
-
+    $outputLines = explode("\n", trim($output));
+    if (str_starts_with($outputLines[0], 'INFO:')) {
+        array_shift($outputLines);
     }
+    $cleanOutput = implode("\n", $outputLines);
+    file_put_contents(base_path('debug_clean_output.txt'), $cleanOutput); // 📄 Dump JSON to file
+
+    $data = json_decode($cleanOutput, true);
+    file_put_contents(base_path('debug_decoded_data.json'), json_encode($data, JSON_PRETTY_PRINT)); // 🧠 Dump decoded
+
+    if (!$data || !isset($data['product_url'])) {
+        return redirect()->route('dashboard')->withErrors(['error' => 'Scraping failed or returned invalid output.']);
+    }
+
+    // Save with full logging
+    $product = Product::firstOrNew(['product_url' => $data['product_url']]);
+
+    $product->product_name = $data['product_name'] ?? null;
+    $product->product_images = isset($data['product_images']) ? json_encode($data['product_images']) : null;
+    $product->size_chart_image = $data['size_chart_image'] ?? null;
+    $product->size_chart_data = isset($data['size_chart_data']) ? json_encode($data['size_chart_data']) : null;
+    $product->price = $data['price'] ?? null;
+    $product->description = $data['description'] ?? null;
+    
+    $product->save();
+    
+    return redirect()->route('dashboard')->with([
+        'show_modal' => true,
+        'product_images' => $data['product_images'],
+        'product_id' => $product->id,
+    ]);
+}
+
+
 
     public function show(Product $product)
     {
