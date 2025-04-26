@@ -119,9 +119,9 @@
             const loader = new THREE.OBJLoader();
             loader.load('{{ asset($avatar->avatar_path) }}', function (object) {
                 console.log("✅ OBJ loaded:", object); // <-- Add this
-                
+
                 object.scale.set(1.3, 1.3, 1.3);
-                object.position.y = -1.2;
+                object.position.y = 0;
                 scene.add(object);
             });
 

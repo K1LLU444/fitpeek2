@@ -57,8 +57,8 @@ class AvatarController extends Controller
         $encodedBetas = base64_encode($betasJson);
 
         $timestamp = time();
-        $filename = "public/avatars/avatar_" . Auth::id() . "_$timestamp.obj";
-        $fullOutputPath = base_path($filename);
+        $filename = "avatars/avatar_" . Auth::id() . "_$timestamp.obj"; // No 'public/' prefix
+        $fullOutputPath = storage_path("app/public/" . $filename);        
 
         // 🔵 Step 3: Generate avatar using generate_avatar.py
         $command = "\"$python\" \"$generate_avatar_path\" \"$encodedBetas\" \"$fullOutputPath\" \"$sex\" 2>&1";
