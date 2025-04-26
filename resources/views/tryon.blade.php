@@ -14,6 +14,7 @@
                     <p class="text-sm text-gray-500 mt-2">Preview your generated avatar below.</p>
                     <a href="{{ asset($avatar->avatar_path) }}" download class="text-blue-600 mt-4 inline-block">⬇ Download Avatar (.obj)</a>
                 </div>
+
             </div>
         </div>
     </body>
@@ -44,6 +45,7 @@
             });
 
             camera.position.set(0, 1.4, 3.5);
+
             function animate() {
                 requestAnimationFrame(animate);
                 renderer.render(scene, camera);

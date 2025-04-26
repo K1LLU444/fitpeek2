@@ -89,13 +89,6 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-
-            const axesHelper = new THREE.AxesHelper(1);
-            scene.add(axesHelper);
-
-            const gridHelper = new THREE.GridHelper(2, 10);
-            scene.add(gridHelper);
-
             const scene = new THREE.Scene();
             const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 1000);
             const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
@@ -107,6 +100,12 @@
             light.position.set(5, 10, 7.5);
             scene.add(light);
 
+            const axesHelper = new THREE.AxesHelper(1);
+            scene.add(axesHelper);
+
+            const gridHelper = new THREE.GridHelper(2, 10);
+            scene.add(gridHelper);
+
             const loader = new THREE.OBJLoader();
             loader.load('{{ asset($avatar->avatar_path) }}', function (object) {
                 object.scale.set(1.3, 1.3, 1.3);
@@ -115,12 +114,12 @@
             });
 
             camera.position.set(0, 1.4, 3.5);
+
             function animate() {
                 requestAnimationFrame(animate);
                 renderer.render(scene, camera);
             }
             animate();
-
         });
     </script>
 @endif

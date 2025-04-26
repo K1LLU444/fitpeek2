@@ -6,14 +6,12 @@ use Illuminate\Http\Request;
 use App\Models\Avatar;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http; // ✅ Needed for calling Flask server
-use Symfony\Component\Process\Process;
 
 class AvatarController extends Controller
 {
     public function create()
     {
         $avatar = Avatar::where('user_id', Auth::id())->first();
-
         return view('createavatar', compact('avatar'));
     }
 
@@ -32,7 +30,7 @@ class AvatarController extends Controller
         $python = 'C:\\Users\\jungc\\AppData\\Local\\Programs\\Python\\Python313\\python.exe';
         $generate_avatar_path = base_path('generate_avatar.py');
 
-        $sex = strtolower($validated['sex']); // 'male' or 'female'
+        $sex = strtolower($validated['sex']);
         $measurements = [
             $validated['height'],
             $validated['weight'],
