@@ -17,7 +17,6 @@
 <x-app-layout>
     <body class="bg-gray-100 px-4 sm:px-6 lg:px-8">
 
-        <!-- Avatar + Product Details -->
         <div class="flex flex-col md:flex-row bg-white p-4 sm:p-6 rounded-lg max-w-5xl mx-auto mt-20 gap-6 shadow-md">
             <!-- Avatar Preview -->
             <div class="w-full md:w-1/2 flex justify-center items-center bg-gray-200 rounded-lg p-4">
@@ -37,7 +36,21 @@
                 <p class="text-gray-700 text-sm sm:text-base mt-4 leading-relaxed text-center md:text-left">
                     "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore..."
                 </p>
-                <p class="text-sm font-semibold mt-4 text-center md:text-left">Recommended Size: Medium</p>
+
+                @if ($productType === 'shirt')
+                    <p class="text-sm font-semibold mt-4 text-center md:text-left">
+                        Recommended Size: {{ $recommendedShirt ?? '—' }}
+                    </p>
+                @elseif ($productType === 'pants')
+                    <p class="text-sm font-semibold mt-4 text-center md:text-left">
+                        Recommended Size: {{ $recommendedPants ?? '—' }}
+                    </p>
+                @else
+                    <p class="text-sm font-semibold mt-4 text-center md:text-left">
+                        Recommended Size: —
+                    </p>
+                @endif
+
                 <label for="size" class="block text-sm font-medium mt-4 text-center md:text-left">Sizes</label>
                 <select id="size" class="w-full mt-1 p-2 border border-gray-300 rounded-lg">
                     <option>--Pick your Size--</option>
@@ -86,68 +99,59 @@
         <x-footer />
 
         @if($avatar && $avatar->avatar_path)
-            <!-- OBJ Loading Scripts -->
-            <script src="https://cdn.jsdelivr.net/npm/three@0.140.0/build/three.min.js"></script>
-            <script src="https://cdn.jsdelivr.net/npm/three@0.140.0/examples/js/loaders/OBJLoader.js"></script>
-            <script src="https://cdn.jsdelivr.net/npm/three@0.140.0/examples/js/controls/OrbitControls.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/three@0.140.0/build/three.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/three@0.140.0/examples/js/loaders/OBJLoader.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/three@0.140.0/examples/js/controls/OrbitControls.js"></script>
 
-            <script>
-                document.addEventListener('DOMContentLoaded', function () {
-                    const container = document.getElementById('avatar-canvas-container');
-                    const scene = new THREE.Scene();
-                    const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 1000);
-                    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-                    container.appendChild(renderer.domElement);
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                const container = document.getElementById('avatar-canvas-container');
+                const scene = new THREE.Scene();
+                const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 1000);
+                const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+                container.appendChild(renderer.domElement);
 
-                    function resizeCanvas() {
-                        const width = container.clientWidth;
-                        const height = container.clientHeight;
-                        renderer.setSize(width, height);
-                        camera.aspect = width / height;
-                        camera.updateProjectionMatrix();
-                    }
+                function resizeCanvas() {
+                    const width = container.clientWidth;
+                    const height = container.clientHeight;
+                    renderer.setSize(width, height);
+                    camera.aspect = width / height;
+                    camera.updateProjectionMatrix();
+                }
 
-                    resizeCanvas();
-                    window.addEventListener('resize', resizeCanvas);
+                resizeCanvas();
+                window.addEventListener('resize', resizeCanvas);
 
-                    renderer.setPixelRatio(window.devicePixelRatio);
-                    renderer.outputEncoding = THREE.sRGBEncoding;
-                    renderer.toneMapping = THREE.ACESFilmicToneMapping;
-                    renderer.toneMappingExposure = 0.8;
+                renderer.setPixelRatio(window.devicePixelRatio);
+                renderer.outputEncoding = THREE.sRGBEncoding;
+                renderer.toneMapping = THREE.ACESFilmicToneMapping;
+                renderer.toneMappingExposure = 0.8;
 
-                    const light = new THREE.DirectionalLight(0xffffff, 1);
-                    light.position.set(2, 3, 5);
-                    scene.add(light);
-                    scene.add(new THREE.AmbientLight(0xffffff, 0.5));
+                const light = new THREE.DirectionalLight(0xffffff, 1);
+                light.position.set(2, 3, 5);
+                scene.add(light);
+                scene.add(new THREE.AmbientLight(0xffffff, 0.5));
 
-                    const controls = new THREE.OrbitControls(camera, renderer.domElement);
-                    controls.enableDamping = true;
-                    controls.target.set(0, 1.4, 0);
-                    camera.position.set(0, 1.4, 3.5);
+                const controls = new THREE.OrbitControls(camera, renderer.domElement);
+                controls.enableDamping = true;
+                controls.target.set(0, 1.4, 0);
+                camera.position.set(0, 1.4, 3.5);
 
-                    const loader = new THREE.OBJLoader();
-                    loader.load('{{ asset($avatar->avatar_path) }}', function (object) {
-                        object.scale.set(1.3, 1.3, 1.3);
-                        object.position.y = -1.0;
-                        scene.add(object);
-                    });
-
-                    function animate() {
-                        requestAnimationFrame(animate);
-                        controls.update();
-                        renderer.render(scene, camera);
-                    }
-                    animate();
-
-                    // Scroll Buttons
-                    document.getElementById('nextBtnPrev')?.addEventListener('click', () => {
-                        document.getElementById('scrollContainerPrev').scrollBy({ left: 300, behavior: 'smooth' });
-                    });
-                    document.getElementById('prevBtnPrev')?.addEventListener('click', () => {
-                        document.getElementById('scrollContainerPrev').scrollBy({ left: -300, behavior: 'smooth' });
-                    });
+                const loader = new THREE.OBJLoader();
+                loader.load('{{ asset($avatar->avatar_path) }}', function (object) {
+                    object.scale.set(1.3, 1.3, 1.3);
+                    object.position.y = -1.0;
+                    scene.add(object);
                 });
-            </script>
+
+                function animate() {
+                    requestAnimationFrame(animate);
+                    controls.update();
+                    renderer.render(scene, camera);
+                }
+                animate();
+            });
+        </script>
         @endif
     </body>
 </x-app-layout>

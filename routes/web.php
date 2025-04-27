@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\AvatarController;
+use App\Http\Controllers\SizeRecommendationController;
 
 // Default home page
 
@@ -57,9 +58,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
 });
 
 // Try-on (controller-based with middleware)
-Route::get('/tryon', [AvatarController::class, 'tryon'])
-    ->middleware(['auth', 'verified'])
-    ->name('tryon');
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/tryon', [SizeRecommendationController::class, 'showTryOn'])->name('tryon'); 
+    Route::post('/recommend-size', [SizeRecommendationController::class, 'recommend'])->name('recommend.size');
+});
+
+
 
 // About Us
 Route::get('/aboutus', function () {
