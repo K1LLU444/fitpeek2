@@ -3,6 +3,7 @@
 /public/build
 /public/hot
 /public/storage
+/public/products
 /storage/*.key
 /storage/pail
 /vendor
@@ -21,3 +22,16 @@ yarn-error.log
 /.nova
 /.vscode
 /.zed
+
+venv/
+venv/
+__pycache__/
+*.pyc
+.DS_Store
+*.pyd          
+*.dll         
+.vscode/    
+venv/Lib/site-packages/paddle/base/libpaddle.pyd
+venv/Lib/site-packages/polars/polars.pyd
+=======
+models/smplx/

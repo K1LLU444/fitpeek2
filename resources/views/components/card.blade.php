@@ -1,7 +1,11 @@
-<div class="bg-white p-4 rounded-lg shadow-md h-[350px] w-[300px]">
-    <div class="bg-gray-300 h-[250px] flex items-center justify-center rounded-md">
-        <img src="{{ $image ?? 'default.jpg' }}" alt="Image" class="w-full h-full object-cover">
-    </div>
-    <p class="mt-2 text-sm">{{ $text ?? 'Default Text' }}</p>
-    <p class="text-lg font-semibold">₱{{ $price ?? '0' }}</p>
+@props(['image', 'text', 'price','link'])
+<a href="{{ $link }}">
+    <div class="bg-white shadow-md rounded-lg p-4 w-full max-w-xs
+                transition-transform duration-300 ease-in-out transform 
+                hover:-translate-y-1 hover:shadow-l hover:border hover:border-gray-200">
+        <img src="{{ $image }}" alt="{{ $text }}" class="w-full h-auto rounded-md mb-2">
+        <h3 class="text-md font-semibold">{{ $text }}</h3>
+        <p class="text-gray-700 text-sm">Php {{ $price }}</p>@props(['image', 'text', 'price', 'link'])
+</a>
+
 </div>

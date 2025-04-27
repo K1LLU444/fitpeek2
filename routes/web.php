@@ -7,6 +7,10 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\AvatarController;
+use App\Http\Controllers\ProductScrapeController;
+use App\Models\Product;
+
+
 
 // Default home page
 
@@ -24,7 +28,8 @@ Route::post('/register', [RegisteredUserController::class, 'store']);
 
 // Dashboard - requires authentication & email verification
 Route::get('/dashboard', function () {
-    return view('dashboard');
+    $products = Product::latest()->take(12)->get();
+    return view('dashboard', compact('products'));
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 // Email Verification Routes
@@ -55,6 +60,19 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/createavatar', [AvatarController::class, 'store'])->name('avatar.store');
     Route::put('/createavatar/{id}', [AvatarController::class, 'update'])->name('avatar.update');
 });
+
+
+// Product
+Route::post('/scrape-product', [ProductScrapeController::class, 'scrape'])
+    ->middleware(['auth', 'verified'])
+    ->name('scrape.product');
+
+Route::get('/product/{product}', [ProductScrapeController::class, 'show'])
+    ->middleware(['auth', 'verified'])
+    ->name('product.show');
+
+// Product select
+Route::post('/products/select-images', [ProductScrapeController::class, 'selectImages'])->name('products.select-images');
 
 // Try-on (controller-based with middleware)
 Route::get('/tryon', [AvatarController::class, 'tryon'])
