@@ -81,7 +81,7 @@
         document.addEventListener('DOMContentLoaded', function () {
             const container = document.getElementById('avatar-canvas-container');
             const scene = new THREE.Scene();
-            scene.background = new THREE.Color(0xffffff);
+            scene.background = null;
         
             const camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 1000);
             camera.position.set(0, 1.4, 3.5);

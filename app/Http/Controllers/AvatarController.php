@@ -104,33 +104,45 @@ class AvatarController extends Controller
     }
 
 
-    public function upload(Request $request): JsonResponse
+    public function upload(Request $request)
     {
-        try {
-            $imageData = $request->input('image');
-            $view = $request->input('view', 'front'); // 'front' or 'back'
+        $user = Auth::user();
+        $avatar = Avatar::where('user_id', $user->id)->first();
     
-            if (!$imageData || !Str::startsWith($imageData, 'data:image/png;base64,')) {
-                return response()->json(['error' => 'Invalid image data.'], 400);
-            }
-    
-            $image = str_replace('data:image/png;base64,', '', $imageData);
-            $image = str_replace(' ', '+', $image);
-            $imageBinary = base64_decode($image);
-    
-            $filename = $view . '_' . uniqid() . '.png';
-    
-            Storage::disk('public')->put('avatars/' . $filename, $imageBinary);
-    
-            return response()->json([
-                'message' => 'Image uploaded successfully.',
-                'filename' => $filename,
-            ], 200);
-    
-        } catch (\Exception $e) {
-            return response()->json([
-                'error' => 'Upload failed: ' . $e->getMessage(),
-            ], 500);
+        if (!$avatar) {
+            return response()->json(['error' => 'Avatar not found'], 404);
         }
+    
+        $data = $request->input('image');
+        $view = $request->input('view');
+    
+        if (!$data || !$view) {
+            return response()->json(['error' => 'Invalid data'], 400);
+        }
+    
+        $data = explode(',', $data);
+        $decoded = base64_decode($data[1]);
+        $filename = $view . '_' . Str::random(10) . '.png';
+    
+        $path = 'avatars/' . $filename;
+        $fullPath = public_path('storage/' . $path);
+        
+        // Ensure the folder exists
+        if (!file_exists(public_path('storage/avatars'))) {
+            mkdir(public_path('storage/avatars'), 0755, true);
+        }
+    
+        file_put_contents($fullPath, $decoded);
+    
+        // 🔥 Update the database
+        if ($view === 'front') {
+            $avatar->avatar_front_path = 'storage/' . $path;
+        } elseif ($view === 'back') {
+            $avatar->avatar_back_path = 'storage/' . $path;
+        }
+    
+        $avatar->save();
+    
+        return response()->json(['success' => true, 'path' => 'storage/' . $path]);
     }
 }
