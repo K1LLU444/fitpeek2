@@ -71,4 +71,6 @@ Route::get('/avatar/success', function () {
     return view('avatar.success');
 })->middleware(['auth', 'verified'])->name('avatar.success');
 
+Route::post('/avatar-upload', [AvatarController::class, 'upload'])->name('avatar.upload');
+
 require __DIR__.'/auth.php';

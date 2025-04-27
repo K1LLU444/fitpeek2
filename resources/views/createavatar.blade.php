@@ -76,12 +76,12 @@
     <script src="https://cdn.jsdelivr.net/npm/three@0.140.0/build/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.140.0/examples/js/loaders/OBJLoader.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.140.0/examples/js/controls/OrbitControls.js"></script>
+
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const container = document.getElementById('avatar-canvas-container');
-        
             const scene = new THREE.Scene();
-            scene.background = new THREE.Color(0xe5e5e5); // 🔧 Slightly darker background (gray)
+            scene.background = new THREE.Color(0xffffff);
         
             const camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 1000);
             camera.position.set(0, 1.4, 3.5);
@@ -95,7 +95,6 @@
             controls.target.set(0, 1.2, 0);
             controls.update();
         
-            // ✅ Improved Lighting
             const ambient = new THREE.AmbientLight(0xffffff, 0.4);
             scene.add(ambient);
         
@@ -107,33 +106,110 @@
             backLight.position.set(-3, 3, -3);
             scene.add(backLight);
         
-            const loader = new THREE.OBJLoader();
-            loader.load('{{ asset($avatar->avatar_path) }}', function (object) {
-                object.traverse(function (child) {
-                    if (child.isMesh) {
-                        child.material = new THREE.MeshStandardMaterial({
-                            color: 0xcccccc,         // 👕 Slightly darker than white
-                            roughness: 0.5,
-                            metalness: 0.1,
-                        });
-                        child.material.needsUpdate = true;
-                    }
-                });
+            let avatarObject = null;
         
-                object.scale.set(1.3, 1.3, 1.3);
-                object.position.y = 0;
-                scene.add(object);
-            });
+            function captureAvatar(view) {
+                if (!avatarObject) {
+                    console.error('Avatar not loaded yet');
+                    return;
+                }
+        
+                controls.enabled = false;
+        
+                if (view === 'front') {
+                    camera.position.set(0, 1.4, 3.5);
+                } else if (view === 'back') {
+                    camera.position.set(0, 1.4, -3.5);
+                }
+        
+                controls.target.set(0, 1.2, 0);
+                controls.update();
+        
+                renderer.render(scene, camera);
+        
+                const dataURL = renderer.domElement.toDataURL('image/png');
+        
+                fetch('{{ route('avatar.upload') }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    body: JSON.stringify({
+                        image: dataURL,
+                        view: view
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    console.log(`✅ ${view} uploaded:`, data);
+                    controls.enabled = true;
+        
+                    // 👉 Reset camera back to front after back capture
+                    if (view === 'back') {
+                        setTimeout(() => {
+                            camera.position.set(0, 1.4, 3.5); // Back to front view
+                            controls.target.set(0, 1.2, 0);
+                            controls.update();
+                            renderer.render(scene, camera);
+                            console.log('🔄 Camera reset to front after back capture.');
+                        }, 500); // short delay so upload finishes cleanly
+                    }
+                })
+                .catch(error => {
+                    console.error(`❌ Upload error:`, error);
+                    controls.enabled = true;
+                });
+            }
         
             function animate() {
                 requestAnimationFrame(animate);
                 controls.update();
                 renderer.render(scene, camera);
             }
-        
             animate();
+        
+            const loader = new THREE.OBJLoader();
+            loader.load('{{ asset($avatar->avatar_path) }}', function (object) {
+                object.traverse(function (child) {
+                    if (child.isMesh) {
+                        child.material = new THREE.MeshStandardMaterial({
+                            color: 0xcccccc,
+                            roughness: 0.5,
+                            metalness: 0.1,
+                        });
+                    }
+                });
+        
+                object.scale.set(1.3, 1.3, 1.3);
+                object.position.y = 0;
+                scene.add(object);
+                avatarObject = object;
+        
+                console.log('✅ Avatar loaded.');
+        
+                setTimeout(() => {
+                    document.getElementById('captureFront').click();
+        
+                    setTimeout(() => {
+                        document.getElementById('captureBack').click();
+                    }, 2000); 
+                }, 1000);
+            });
+        
+            document.getElementById('captureFront').addEventListener('click', function () {
+                captureAvatar('front');
+            });
+        
+            document.getElementById('captureBack').addEventListener('click', function () {
+                captureAvatar('back');
+            });
         });
         </script>
         
-
+        <!-- hidden buttons -->
+        <button id="captureFront" class="hidden">Capture Front</button>
+        <button id="captureBack" class="hidden">Capture Back</button>
+        
 @endif
+

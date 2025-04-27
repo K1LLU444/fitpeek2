@@ -6,6 +6,9 @@ use Illuminate\Http\Request;
 use App\Models\Avatar;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http; // ✅ Needed for calling Flask server
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
+use Illuminate\Http\JsonResponse;
 
 class AvatarController extends Controller
 {
@@ -98,5 +101,36 @@ class AvatarController extends Controller
         }
 
         return view('tryon', compact('avatar'));
+    }
+
+
+    public function upload(Request $request): JsonResponse
+    {
+        try {
+            $imageData = $request->input('image');
+            $view = $request->input('view', 'front'); // 'front' or 'back'
+    
+            if (!$imageData || !Str::startsWith($imageData, 'data:image/png;base64,')) {
+                return response()->json(['error' => 'Invalid image data.'], 400);
+            }
+    
+            $image = str_replace('data:image/png;base64,', '', $imageData);
+            $image = str_replace(' ', '+', $image);
+            $imageBinary = base64_decode($image);
+    
+            $filename = $view . '_' . uniqid() . '.png';
+    
+            Storage::disk('public')->put('avatars/' . $filename, $imageBinary);
+    
+            return response()->json([
+                'message' => 'Image uploaded successfully.',
+                'filename' => $filename,
+            ], 200);
+    
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => 'Upload failed: ' . $e->getMessage(),
+            ], 500);
+        }
     }
 }
