@@ -9,6 +9,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\AvatarController;
 use App\Http\Controllers\ProductScrapeController;
 use App\Models\Product;
+use App\Http\Controllers\ChatSupportController;
 
 
 
@@ -90,5 +91,20 @@ Route::get('/avatar/success', function () {
 })->middleware(['auth', 'verified'])->name('avatar.success');
 
 Route::post('/avatar-upload', [AvatarController::class, 'upload'])->name('avatar.upload');
+
+// For normal free chat (OpenAI)
+Route::post('/chat/support', [ChatSupportController::class, 'chat'])->name('chat.support');
+
+// For free-text based outfit suggestion
+Route::post('/chat/suggest-outfit', [ChatSupportController::class, 'suggestOutfit'])->name('chat.suggestOutfit');
+
+// For form submission outfit suggestion
+Route::post('/chat/suggest-outfit-form', [ChatSupportController::class, 'suggestOutfitForm'])->name('chat.suggestOutfitForm');
+
+Route::get('/chat', function () {
+    return view('chat');
+});
+
+
 
 require __DIR__.'/auth.php';
