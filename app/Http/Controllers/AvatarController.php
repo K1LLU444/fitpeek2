@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Avatar;
+use App\Models\Product;
+use App\Services\SizeRecommendationService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http; // ✅ Needed for calling Flask server
 use Illuminate\Support\Facades\Storage;
@@ -30,7 +32,7 @@ class AvatarController extends Controller
             'inseam' => 'required|numeric',
         ]);
 
-        $python = 'C:\\Users\\jungc\\AppData\\Local\\Programs\\Python\\Python313\\python.exe';
+        $python = 'C:\Users\jcxrlee\AppData\Local\Programs\Python\Python313\python.exe';
         $generate_avatar_path = base_path('generate_avatar.py');
 
         $sex = strtolower($validated['sex']);
@@ -42,7 +44,6 @@ class AvatarController extends Controller
             $validated['hips'],
             $validated['inseam'],
         ];
-
         // 🔵 Step 1: Predict betas via Flask server
         $response = Http::post('http://127.0.0.1:5000/predict', [
             'measurements' => $measurements,
@@ -55,27 +56,23 @@ class AvatarController extends Controller
 
         $betasJson = json_encode($response->json()['betas']);
         \Log::info('🧠 Received Betas: ' . $betasJson);
-
         // 🔵 Step 2: Encode betas safely (base64)
         $encodedBetas = base64_encode($betasJson);
 
         $timestamp = time();
-        $filename = "avatars/avatar_" . Auth::id() . "_$timestamp.obj"; // No 'public/' prefix
-        $fullOutputPath = storage_path("app/public/" . $filename);        
+        $filename = "avatars/avatar_" . Auth::id() . "_$timestamp.obj";
+        $fullOutputPath = storage_path("app/public/" . $filename);
 
-        // 🔵 Step 3: Generate avatar using generate_avatar.py
         $command = "\"$python\" \"$generate_avatar_path\" \"$encodedBetas\" \"$fullOutputPath\" \"$sex\" 2>&1";
         \Log::info('🔵 Generate Avatar Command: ' . $command);
 
         $result = shell_exec($command);
         \Log::info('🟢 Generate Output: ' . $result);
 
-        // 🔵 Step 4: Check if avatar file was created
         if (!file_exists($fullOutputPath)) {
             return back()->with('error', '❌ Avatar generation failed: ' . $result);
         }
 
-        // 🔵 Step 5: Save avatar and measurements into database
         Avatar::updateOrCreate(
             ['user_id' => Auth::id()],
             [
@@ -92,7 +89,8 @@ class AvatarController extends Controller
 
         return redirect()->route('avatar.create')->with('success', '✅ Avatar created and saved successfully!');
     }
-    public function tryon()
+
+    public function tryon(Request $request)
     {
         $avatar = Avatar::where('user_id', Auth::id())->first();
 
@@ -100,9 +98,19 @@ class AvatarController extends Controller
             return redirect()->route('avatar.create')->with('error', 'No avatar found.');
         }
 
-        return view('tryon', compact('avatar'));
-    }
+        $productId = $request->input('product_id');
+        $recommendedSize = null;
 
+        if ($productId) {
+            $product = Product::find($productId);
+            if ($product) {
+                $recommender = new SizeRecommendationService();
+                $recommendedSize = $recommender->recommendSize($product);
+            }
+        }
+
+        return view('tryon', compact('avatar', 'recommendedSize'));
+    }
 
     public function upload(Request $request)
     {
@@ -127,14 +135,12 @@ class AvatarController extends Controller
         $path = 'avatars/' . $filename;
         $fullPath = public_path('storage/' . $path);
         
-        // Ensure the folder exists
         if (!file_exists(public_path('storage/avatars'))) {
             mkdir(public_path('storage/avatars'), 0755, true);
         }
     
         file_put_contents($fullPath, $decoded);
     
-        // 🔥 Update the database
         if ($view === 'front') {
             $avatar->avatar_front_path = 'storage/' . $path;
         } elseif ($view === 'back') {

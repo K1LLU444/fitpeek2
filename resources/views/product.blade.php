@@ -35,77 +35,61 @@
                 </div>
             </div>
 
-
-
-
             <!-- Info -->
-            <!-- PRODUCT NAME -->
             <div class="w-full md:w-1/2 bg-white p-4 sm:p-6 rounded-lg shadow-sm">
                 <h2 class="text-lg sm:text-3xl font-bold text-center md:text-left">
                     {{ $product->product_name ?? 'Product Name' }}
                 </h2>
 
-            <!-- PRODUCT PRICE -->
                 <div class="flex justify-center md:justify-start items-center mt-2">
                     <span class="text-lg font-semibold">Php</span>
                     <span class="text-2xl font-bold ml-1">{{ $product->price ?? '0.00' }}</span>
                 </div>
 
-            <!-- PRODUCT DESCRIPTION -->
-            @if (!empty($product->description))
-                @php
-                    $lines = explode("\n", $product->description);
-                    $firstLine = array_shift($lines); // First line title
+                @if (!empty($product->description))
+                    @php
+                        $lines = explode("\n", $product->description);
+                        $firstLine = array_shift($lines);
+                        $descriptionLines = [];
+                        $skip = false;
 
-                    $descriptionLines = [];
-                    $skip = false;
-
-                    foreach ($lines as $line) {
-                        $line = trim($line);
-                        if (empty($line)) continue;
-
-                        // If the line is part of old Size Chart section, skip it
-                        if (stripos($line, 'Size:') !== false ||
-                            stripos($line, 'WAIST') !== false ||
-                            stripos($line, 'LENGTH') !== false ||
-                            stripos($line, 'BOTTOM') !== false ||
-                            preg_match('/^[0-9.]+$/', $line)) {
-                            $skip = true;
-                            continue;
+                        foreach ($lines as $line) {
+                            $line = trim($line);
+                            if (empty($line)) continue;
+                            if (stripos($line, 'Size:') !== false ||
+                                stripos($line, 'WAIST') !== false ||
+                                stripos($line, 'LENGTH') !== false ||
+                                stripos($line, 'BOTTOM') !== false ||
+                                preg_match('/^[0-9.]+$/', $line)) {
+                                $skip = true;
+                                continue;
+                            }
+                            if ($skip && strlen($line) > 5 && !preg_match('/^[0-9.]+$/', $line)) {
+                                $skip = false;
+                            }
+                            if (!$skip) {
+                                $descriptionLines[] = $line;
+                            }
                         }
+                    @endphp
 
-                        // If line is a clear end of size chart parsing
-                        if ($skip && strlen($line) > 5 && !preg_match('/^[0-9.]+$/', $line)) {
-                            $skip = false; // resume normal description
-                        }
+                    <p class="text-base sm:text-lg text-gray-800 mt-4 md:text-left">
+                        DESCRIPTION:
+                    </p>
 
-                        if (!$skip) {
-                            $descriptionLines[] = $line;
-                        }
-                    }
-                @endphp
-
-                <!-- Product Title -->
-                <p class="text-base sm:text-lg text-gray-800 mt-4 md:text-left">
-                    DESCRIPTION:
-                </p>
-
-                @if (!empty($descriptionLines))
-                    <!-- Normal bullets for real description -->
-                    <ul class="text-gray-700 text-sm sm:text-base mt-4 leading-relaxed list-disc pl-5 space-y-1 text-left">
-                        @foreach ($descriptionLines as $line)
-                            @if (trim($line) !== '')
-                                <li>{{ $line }}</li>
-                            @endif
-                        @endforeach
-                    </ul>
+                    @if (!empty($descriptionLines))
+                        <ul class="text-gray-700 text-sm sm:text-base mt-4 leading-relaxed list-disc pl-5 space-y-1 text-left">
+                            @foreach ($descriptionLines as $line)
+                                @if (trim($line) !== '')
+                                    <li>{{ $line }}</li>
+                                @endif
+                            @endforeach
+                        </ul>
+                    @endif
+                @else
+                    <p class="text-gray-500 text-sm mt-4">No description available.</p>
                 @endif
-            @else
-                <p class="text-gray-500 text-sm mt-4">No description available.</p>
-            @endif
 
-
-                <!-- SIZE CHART -->
                 @if (!empty($product->size_chart_image))
                     <div class="mt-4">
                         <p class="text-base sm:text-lg text-gray-800 mt-4 md:text-left">Size Chart:</p>
@@ -147,8 +131,18 @@
                     <p class="text-gray-500 text-sm mt-4 md:text-center">No size chart found.</p>
                 @endif
 
+                <!-- ✅ INSERT: Recommended Size Display -->
+                @if(isset($recommendedSize))
+                    <div class="mt-4 text-green-600 text-lg font-bold">
+                Recommended Size: {{ $recommendedSize }}
+                    </div>
+                @else
+                    <div class="mt-4 text-red-500 text-lg font-bold">
+                 No size available for your measurements
+                    </div>
+                @endif
 
-                <!-- SIZES DROPDOWN -->
+
                 @if($product->size_chart_data)
                     @php
                         $sizes = collect(json_decode($product->size_chart_data, true))->pluck('size')->unique();
@@ -157,22 +151,24 @@
                     <div class="mt-4">
                         <label for="size" class="text-base sm:text-lg text-gray-800 mt-4 md:text-left">Sizes</label>
                         <select id="size" class="w-full mt-1 p-2 border border-gray-300 rounded-lg">
-                            <option selected disabled>--Pick your Size--</option>
+                            <option disabled>--Pick your Size--</option>
                             @foreach ($sizes as $size)
-                                <option>{{ $size }}</option>
+                                <option {{ isset($recommendedSize) && $recommendedSize == $size ? 'selected' : '' }}>
+                                    {{ $size }}
+                                </option>
                             @endforeach
                         </select>
                     </div>
                 @endif
 
-
+                <a href="{{ route('tryon', ['product_id' => $product->id,'recommended_size' => $recommendedSize]) }}">
                 <button class="w-full bg-accent-color text-white font-semibold py-2 mt-4 rounded-lg hover:bg-accent-hover transition-all duration-300">
                     Try-on
                 </button>
+                </a>
             </div>
         </div>
 
-        <!-- Other Sections -->
         @if ($otherProducts->count())
             <div class="bg-gray-100 min-h-screen p-4 sm:p-6 mt-6 sm:mt-8">
                 <div class="max-w-7xl mx-auto">
@@ -181,21 +177,20 @@
                         <div class="flex space-x-4 pb-4">
                             @foreach ($otherProducts as $item)
                                 <a href="{{ route('product.show', $item->id) }}">
-                                @php
-                                    $imagePath = $item->front_image ?: $item->back_image;
-                                    $imageSrc = $imagePath
-                                        ? (Str::startsWith($imagePath, ['http://', 'https://']) 
-                                            ? $imagePath 
-                                            : asset($imagePath))
-                                        : asset('images/placeholder.png');
-                                @endphp
+                                    @php
+                                        $imagePath = $item->front_image ?: $item->back_image;
+                                        $imageSrc = $imagePath
+                                            ? (Str::startsWith($imagePath, ['http://', 'https://']) 
+                                                ? $imagePath 
+                                                : asset($imagePath))
+                                            : asset('images/placeholder.png');
+                                    @endphp
 
-                                <x-horizontalscrollbar 
-                                    image="{{ $imageSrc }}"
-                                    text="{{ $item->product_name }}"
-                                    price="{{ $item->price }}"
-                                />
-
+                                    <x-horizontalscrollbar 
+                                        image="{{ $imageSrc }}"
+                                        text="{{ $item->product_name }}"
+                                        price="{{ $item->price }}"
+                                    />
                                 </a>
                             @endforeach
                         </div>
