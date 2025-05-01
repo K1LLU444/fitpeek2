@@ -30,7 +30,7 @@ class AvatarController extends Controller
             'inseam' => 'required|numeric',
         ]);
 
-        $python = 'C:\\Users\\jungc\\AppData\\Local\\Programs\\Python\\Python313\\python.exe';
+        $python = 'C:\Users\warre\AppData\Local\Programs\Python\Python313\python.exe';
         $generate_avatar_path = base_path('generate_avatar.py');
 
         $sex = strtolower($validated['sex']);
