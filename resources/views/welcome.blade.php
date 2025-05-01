@@ -42,7 +42,7 @@
                 @if (Route::has('register'))
                     <form action="{{ route('register') }}" method="GET">
                         <x-primary-button class="w-40 sm:w-30 md:w-48 text-lg md:text-xl px-6 py-3 shadow-xl">
-                            Sign In
+                            Sign Up
                         </x-primary-button>
                     </form>
                 @endif
