@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Avatar;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Http; // ✅ Needed for calling Flask server
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Http\JsonResponse;
@@ -31,7 +31,8 @@ class AvatarController extends Controller
         ]);
 
         $python = 'C:\\Users\\jungc\\AppData\\Local\\Programs\\Python\\Python313\\python.exe';
-        $generate_avatar_path = base_path('generate_avatar.py');
+        $generateAvatarScript = base_path('generate_dual_avatars.py');
+        $mirrorScript = base_path('mirror_half_to_full.py');
 
         $sex = strtolower($validated['sex']);
         $measurements = [
@@ -43,7 +44,6 @@ class AvatarController extends Controller
             $validated['inseam'],
         ];
 
-        // 🔵 Step 1: Predict betas via Flask server
         $response = Http::post('http://127.0.0.1:5000/predict', [
             'measurements' => $measurements,
             'sex' => $sex,
@@ -56,27 +56,26 @@ class AvatarController extends Controller
         $betasJson = json_encode($response->json()['betas']);
         \Log::info('🧠 Received Betas: ' . $betasJson);
 
-        // 🔵 Step 2: Encode betas safely (base64)
         $encodedBetas = base64_encode($betasJson);
-
         $timestamp = time();
-        $filename = "avatars/avatar_" . Auth::id() . "_$timestamp.obj"; // No 'public/' prefix
-        $fullOutputPath = storage_path("app/public/" . $filename);        
+        $baseName = "avatar_" . Auth::id() . "_{$timestamp}";
 
-        // 🔵 Step 3: Generate avatar using generate_avatar.py
-        $command = "\"$python\" \"$generate_avatar_path\" \"$encodedBetas\" \"$fullOutputPath\" \"$sex\" 2>&1";
-        \Log::info('🔵 Generate Avatar Command: ' . $command);
+        $tposeFilename = "avatars/{$baseName}_tpose.obj";
+        $aposeFilename = "avatars/{$baseName}_apose.obj";
 
+        $tposePath = storage_path("app/public/" . $tposeFilename);
+        $aposePath = storage_path("app/public/" . $aposeFilename);
+
+        $command = "\"$python\" \"$generateAvatarScript\" \"$encodedBetas\" \"$baseName\" \"$sex\" 2>&1";
+        \Log::info('⚙ Running Avatar Command: ' . $command);
         $result = shell_exec($command);
-        \Log::info('🟢 Generate Output: ' . $result);
+        \Log::info('📤 Python Output: ' . $result);
 
-        // 🔵 Step 4: Check if avatar file was created
-        if (!file_exists($fullOutputPath)) {
-            return back()->with('error', '❌ Avatar generation failed: ' . $result);
+        if (!file_exists($tposePath) || !file_exists($aposePath)) {
+            return back()->with('error', '❌ One or both .obj files failed to generate.');
         }
 
-        // 🔵 Step 5: Save avatar and measurements into database
-        Avatar::updateOrCreate(
+        $avatar = Avatar::updateOrCreate(
             ['user_id' => Auth::id()],
             [
                 'sex' => $validated['sex'],
@@ -86,12 +85,14 @@ class AvatarController extends Controller
                 'waist' => $validated['waist'],
                 'hips' => $validated['hips'],
                 'inseam' => $validated['inseam'],
-                'avatar_path' => 'storage/avatars/avatar_' . Auth::id() . "_$timestamp.obj",
+                'avatar_path' => 'storage/' . $tposeFilename,
+                'avatar_apose_path' => 'storage/' . $aposeFilename,
             ]
         );
 
-        return redirect()->route('avatar.create')->with('success', '✅ Avatar created and saved successfully!');
+        return redirect()->route('avatar.create')->with('success', '✅ Avatar created successfully!');
     }
+
     public function tryon()
     {
         $avatar = Avatar::where('user_id', Auth::id())->first();
@@ -103,46 +104,73 @@ class AvatarController extends Controller
         return view('tryon', compact('avatar'));
     }
 
-
     public function upload(Request $request)
     {
         $user = Auth::user();
         $avatar = Avatar::where('user_id', $user->id)->first();
-    
+
         if (!$avatar) {
             return response()->json(['error' => 'Avatar not found'], 404);
         }
-    
+
         $data = $request->input('image');
         $view = $request->input('view');
-    
+
         if (!$data || !$view) {
             return response()->json(['error' => 'Invalid data'], 400);
         }
-    
+
         $data = explode(',', $data);
         $decoded = base64_decode($data[1]);
         $filename = $view . '_' . Str::random(10) . '.png';
-    
+
         $path = 'avatars/' . $filename;
         $fullPath = public_path('storage/' . $path);
-        
-        // Ensure the folder exists
+
         if (!file_exists(public_path('storage/avatars'))) {
             mkdir(public_path('storage/avatars'), 0755, true);
         }
-    
+
         file_put_contents($fullPath, $decoded);
-    
-        // 🔥 Update the database
+
         if ($view === 'front') {
             $avatar->avatar_front_path = 'storage/' . $path;
+
+            $python = 'C:\\Users\\jungc\\AppData\\Local\\Programs\\Python\\Python313\\python.exe';
+            $mirrorScript = base_path('mirror_half_to_full.py');
+
+            $frontPath = str_replace('/', DIRECTORY_SEPARATOR, public_path($avatar->avatar_front_path));
+            $cleanedFilename = 'front_cleaned_user' . $avatar->user_id . '.png';
+            $outputPath = str_replace('/', DIRECTORY_SEPARATOR, public_path('storage/avatars/' . $cleanedFilename));
+
+            $mirrorCommand = "\"$python\" \"$mirrorScript\" \"$frontPath\" \"$outputPath\"";
+            \Log::info("🪞 Running mirror command: $mirrorCommand");
+            shell_exec($mirrorCommand);
+
+            if (file_exists($outputPath)) {
+                $avatar->avatar_cleaned_front_path = 'storage/avatars/' . $cleanedFilename;
+            }
         } elseif ($view === 'back') {
             $avatar->avatar_back_path = 'storage/' . $path;
+
+            $python = 'C:\\Users\\jungc\\AppData\\Local\\Programs\\Python\\Python313\\python.exe';
+            $mirrorScript = base_path('mirror_back_half.py');
+
+            $backPath = str_replace('/', DIRECTORY_SEPARATOR, public_path($avatar->avatar_back_path));
+            $cleanedFilename = 'back_cleaned_user' . $avatar->user_id . '.png';
+            $outputPath = str_replace('/', DIRECTORY_SEPARATOR, public_path('storage/avatars/' . $cleanedFilename));
+
+            $mirrorCommand = "\"$python\" \"$mirrorScript\" \"$backPath\" \"$outputPath\"";
+            \Log::info("🪞 Running mirror command for BACK: $mirrorCommand");
+            shell_exec($mirrorCommand);
+
+            if (file_exists($outputPath)) {
+                $avatar->avatar_cleaned_back_path = 'storage/avatars/' . $cleanedFilename;
+            }
         }
-    
+
         $avatar->save();
-    
+
         return response()->json(['success' => true, 'path' => 'storage/' . $path]);
     }
 }
