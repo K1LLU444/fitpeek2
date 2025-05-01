@@ -47,7 +47,7 @@
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         @foreach($fields as $field => [$min, $max])
                             <div class="mt-4">
-                                <x-input-label for="{{ $field }}" :value="__(ucwords(str_replace('_', ' ', $field)) . ' (cm)')" />
+                                <x-input-label for="{{ $field }}" :value="_(ucwords(str_replace('', ' ', $field)) . ' (cm)')" />
 
                                 <x-text-input
                                     id="{{ $field }}"
@@ -160,7 +160,7 @@
                 })
                 .then(response => response.json())
                 .then(data => {
-                    console.log(`✅ Screenshot (${view}) uploaded:`, data);
+                    console.log(✅ Screenshot (${view}) uploaded:, data);
                     if (callback) callback(); // proceed to next step
                 })
                 .catch(error => {
@@ -214,4 +214,3 @@
         <button id="captureBack" class="hidden">Capture Back</button>
         
 @endif
-

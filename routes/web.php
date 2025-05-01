@@ -92,7 +92,6 @@ Route::get('/avatar/success', function () {
 
 Route::post('/avatar-upload', [AvatarController::class, 'upload'])->name('avatar.upload');
 
-
 // For normal free chat (OpenAI)
 Route::post('/chat/support', [ChatSupportController::class, 'chat'])->name('chat.support');
 
@@ -107,3 +106,4 @@ Route::get('/chat', function () {
 });
 
 require __DIR__.'/auth.php';
+
