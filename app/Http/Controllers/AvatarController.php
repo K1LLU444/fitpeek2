@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Avatar;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Http; // ✅ Needed for calling Flask server
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Http\JsonResponse;
@@ -171,6 +171,59 @@ class AvatarController extends Controller
 
         $avatar->save();
 
+        return response()->json(['success' => true, 'path' => 'storage/' . $path]);
+    }
+    public function tryon()
+    {
+        $avatar = Avatar::where('user_id', Auth::id())->first();
+
+        if (!$avatar) {
+            return redirect()->route('avatar.create')->with('error', 'No avatar found.');
+        }
+
+        return view('tryon', compact('avatar'));
+    }
+
+
+    public function upload(Request $request)
+    {
+        $user = Auth::user();
+        $avatar = Avatar::where('user_id', $user->id)->first();
+    
+        if (!$avatar) {
+            return response()->json(['error' => 'Avatar not found'], 404);
+        }
+    
+        $data = $request->input('image');
+        $view = $request->input('view');
+    
+        if (!$data || !$view) {
+            return response()->json(['error' => 'Invalid data'], 400);
+        }
+    
+        $data = explode(',', $data);
+        $decoded = base64_decode($data[1]);
+        $filename = $view . '_' . Str::random(10) . '.png';
+    
+        $path = 'avatars/' . $filename;
+        $fullPath = public_path('storage/' . $path);
+        
+        // Ensure the folder exists
+        if (!file_exists(public_path('storage/avatars'))) {
+            mkdir(public_path('storage/avatars'), 0755, true);
+        }
+    
+        file_put_contents($fullPath, $decoded);
+    
+        // 🔥 Update the database
+        if ($view === 'front') {
+            $avatar->avatar_front_path = 'storage/' . $path;
+        } elseif ($view === 'back') {
+            $avatar->avatar_back_path = 'storage/' . $path;
+        }
+    
+        $avatar->save();
+    
         return response()->json(['success' => true, 'path' => 'storage/' . $path]);
     }
 }

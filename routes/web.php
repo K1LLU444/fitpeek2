@@ -7,6 +7,11 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\AvatarController;
+use App\Http\Controllers\ProductScrapeController;
+use App\Models\Product;
+use App\Http\Controllers\ChatSupportController;
+
+
 
 // Default home page
 
@@ -24,7 +29,8 @@ Route::post('/register', [RegisteredUserController::class, 'store']);
 
 // Dashboard - requires authentication & email verification
 Route::get('/dashboard', function () {
-    return view('dashboard');
+    $products = Product::latest()->take(12)->get();
+    return view('dashboard', compact('products'));
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 // Email Verification Routes
@@ -56,6 +62,19 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::put('/createavatar/{id}', [AvatarController::class, 'update'])->name('avatar.update');
 });
 
+
+// Product
+Route::post('/scrape-product', [ProductScrapeController::class, 'scrape'])
+    ->middleware(['auth', 'verified'])
+    ->name('scrape.product');
+
+Route::get('/product/{product}', [ProductScrapeController::class, 'show'])
+    ->middleware(['auth', 'verified'])
+    ->name('product.show');
+
+// Product select
+Route::post('/products/select-images', [ProductScrapeController::class, 'selectImages'])->name('products.select-images');
+
 // Try-on (controller-based with middleware)
 Route::get('/tryon', [AvatarController::class, 'tryon'])
     ->middleware(['auth', 'verified'])
@@ -72,5 +91,19 @@ Route::get('/avatar/success', function () {
 })->middleware(['auth', 'verified'])->name('avatar.success');
 
 Route::post('/avatar-upload', [AvatarController::class, 'upload'])->name('avatar.upload');
+
+
+// For normal free chat (OpenAI)
+Route::post('/chat/support', [ChatSupportController::class, 'chat'])->name('chat.support');
+
+// For free-text based outfit suggestion
+Route::post('/chat/suggest-outfit', [ChatSupportController::class, 'suggestOutfit'])->name('chat.suggestOutfit');
+
+// For form submission outfit suggestion
+Route::post('/chat/suggest-outfit-form', [ChatSupportController::class, 'suggestOutfitForm'])->name('chat.suggestOutfitForm');
+
+Route::get('/chat', function () {
+    return view('chat');
+});
 
 require __DIR__.'/auth.php';
