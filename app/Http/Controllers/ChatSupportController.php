@@ -15,15 +15,24 @@ class ChatSupportController extends Controller
             'weather' => 'required|string',
             'style' => 'required|string',
             'event_other' => 'nullable|string',
+            'weather_other' => 'nullable|string',
+            'style_other' => 'nullable|string',
             'notes' => 'nullable|string',
+
         ]);
     
         $event = strtolower($validated['event']) === 'other'
             ? strtolower($validated['event_other'])
             : strtolower($validated['event']);
+
+        $weather = strtolower($validated['weather']) === 'other'
+            ? strtolower($validated['weather_other'])
+            : strtolower($validated['weather']);
+
+        $style = strtolower($validated['style']) === 'other'
+            ? strtolower($validated['style_other'])
+            : strtolower($validated['style']);
     
-        $weather = strtolower($validated['weather']);
-        $style = strtolower($validated['style']);
         $notes = $validated['notes'] ?? '';
     
         // 🧠 Build message to send to GPT
@@ -40,6 +49,7 @@ class ChatSupportController extends Controller
     - Style
     
     Rules:
+    - Summarize the user's input first before the suggestions
     - Suggest 1–2 full outfits (top, bottom, shoes, and optional accessories) for men and women.
     - Use friendly, short, and practical tone.
     - Do NOT include image links or image references.
@@ -47,8 +57,14 @@ class ChatSupportController extends Controller
     - You may reference real products.
     
     Example:
-    User: I'm attending a cold wedding. I prefer a minimalist style.
-    Assistant: I recommend a wool coat over a turtleneck and slacks for men, and a long-sleeve midi dress with boots for women.";
+    User: 
+    I'm attending a wedding event. The weather is hot, and my preferred style is formal.
+    Assistant: 
+    You are attending a wedding event in a hot weather and you'd like to wear formal attire. Here's what i recommend:
+    For Men:
+    - I recommend a wool coat over a turtleneck and slack
+    For Women:
+    - a long-sleeve midi dress with boots for women.";
     
         // 🔑 GPT API Call
         $apiKey = env('OPENAI_API_KEY');

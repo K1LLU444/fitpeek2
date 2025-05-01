@@ -1,3 +1,4 @@
+@php use Illuminate\Support\Str; @endphp
 <x-app-layout>
     <body class="bg-gray-100 px-4 sm:px-6 lg:px-8">
 
@@ -171,6 +172,130 @@
                 </button>
             </div>
         </div>
+
+
+
+        <div class="max-w-5xl mx-auto mt-10 grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- OUTFIT FORM (LEFT) -->
+            <div class="bg-white p-6 rounded-xl shadow border">
+            <h3 class="text-xl font-semibold mb-6 flex justify-center items-center gap-2 text-center w-full">
+                Get Outfit Recommendation:
+            </h3>
+
+
+                <form method="POST" action="{{ route('chat.suggestOutfitForm') }}" class="space-y-4">
+                    @csrf
+
+                    <!-- Event -->
+                    <div>
+                        <label for="eventSelect" class="block text-sm font-medium mb-1">Event</label>
+                        <select name="event" id="eventSelect" class="w-full p-2 border rounded" required onchange="toggleOtherEventInput()">
+                            <option value="">Select an event...</option>
+                            <option value="wedding">Wedding</option>
+                            <option value="birthday">Birthday</option>
+                            <option value="office">Office</option>
+                            <option value="beach">Beach</option>
+                            <option value="gala">Formal Gala</option>
+                            <option value="other">Other (please specify)</option>
+                        </select>
+                        <input type="text" name="event_other" id="eventOtherInput"
+                            placeholder="Describe the event..."
+                            class="w-full mt-2 p-2 border rounded hidden" 
+                            autocomplete="off"/>
+                    </div>
+
+                    <!-- Weather -->
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Weather</label>
+                        <select name="weather" id="weatherSelect" class="w-full p-2 border rounded" required onchange="toggleOtherWeatherInput()">
+                            <option value="">Select weather...</option>
+                            <option value="sunny">Sunny</option>
+                            <option value="rainy">Rainy</option>
+                            <option value="cold">Cold</option>
+                            <option value="hot">Hot</option>
+                            <option value="windy">Windy</option>
+                            <option value="other">Other (please specify)</option>
+                        </select>
+                        <input type="text" name="weather_other" id="weatherOtherInput"
+                            placeholder="Describe the weather..."
+                            class="w-full mt-2 p-2 border rounded hidden"
+                            autocomplete="off" />
+                    </div>
+
+
+                    <!-- Style -->
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Style</label>
+                        <select name="style" id="styleSelect" class="w-full p-2 border rounded" required onchange="toggleOtherStyleInput()">
+                            <option value="">Select style...</option>
+                            <option value="casual">Casual</option>
+                            <option value="formal">Formal</option>
+                            <option value="streetwear">Streetwear</option>
+                            <option value="minimalist">Minimalist</option>
+                            <option value="other">Other (please specify)</option>
+                        </select>
+                        <input type="text" name="style_other" id="styleOtherInput"
+                            placeholder="Describe the style..."
+                            class="w-full mt-2 p-2 border rounded hidden"
+                            autocomplete="off" />
+                    </div>
+
+
+                    <!-- Extra Notes -->
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Extra Notes (optional)</label>
+                        <textarea name="notes" rows="3" class="w-full p-2 border rounded"
+                                placeholder="e.g., Prefer oversized, love earth tones..."></textarea>
+                    </div>
+
+                    <button type="submit"
+                            class="w-full bg-accent-color text-white font-semibold py-2 mt-4 rounded-lg hover:bg-accent-hover transition-all duration-300">
+                        Suggest Outfit
+                    </button>
+                </form>
+            </div>
+
+            <!-- RIGHT SIDE (RECOMMENDATION RESULT) -->
+            <div class="bg-white p-6 rounded-xl shadow border flex-1 overflow-y-auto max-h-[600px]">
+            @if (session('suggestion'))
+                <div class="w-full prose prose-sm sm:prose-base max-w-none text-gray-800">
+                    {!! Str::markdown(session('suggestion.message')) !!}
+                </div>
+            @else
+                <p class="text-gray-400 text-sm text-center mt-16">
+                    (The recommendation result will show up here)
+                </p>
+            @endif
+            </div>
+
+        </div>
+
+        <script>
+            function toggleOtherEventInput() {
+                const select = document.getElementById('eventSelect');
+                const input = document.getElementById('eventOtherInput');
+                input.classList.toggle('hidden', select.value !== 'other');
+                input.required = (select.value === 'other');
+            }
+
+            function toggleOtherWeatherInput() {
+                const select = document.getElementById('weatherSelect');
+                const input = document.getElementById('weatherOtherInput');
+                input.classList.toggle('hidden', select.value !== 'other');
+                input.required = (select.value === 'other');
+            }
+
+            function toggleOtherStyleInput() {
+                const select = document.getElementById('styleSelect');
+                const input = document.getElementById('styleOtherInput');
+                input.classList.toggle('hidden', select.value !== 'other');
+                input.required = (select.value === 'other');
+            }
+        </script>
+
+
+
+
 
         <!-- Other Sections -->
         @if ($otherProducts->count())
