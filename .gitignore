@@ -35,3 +35,5 @@ venv/Lib/site-packages/paddle/base/libpaddle.pyd
 venv/Lib/site-packages/polars/polars.pyd
 =======
 models/smplx/
+flaskenv/
+flaskenv310/
