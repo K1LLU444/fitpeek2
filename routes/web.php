@@ -9,6 +9,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\AvatarController;
 use App\Http\Controllers\ProductScrapeController;
 use App\Models\Product;
+use App\Http\Controllers\ShirtOverlayController;
 
 
 
@@ -90,5 +91,9 @@ Route::get('/avatar/success', function () {
 })->middleware(['auth', 'verified'])->name('avatar.success');
 
 Route::post('/avatar-upload', [AvatarController::class, 'upload'])->name('avatar.upload');
+
+Route::get('/overlay/default', [ShirtOverlayController::class, 'applyDefault'])->name('overlay.apply-default');
+
+Route::get('/product/{product}/overlay', [ShirtOverlayController::class, 'overlay'])->name('shirt.overlay');
 
 require __DIR__.'/auth.php';

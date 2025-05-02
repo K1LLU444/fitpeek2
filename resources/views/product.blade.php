@@ -23,9 +23,9 @@
                     @endphp
 
                     @if($frontSrc || $backSrc)
-                        @if($frontSrc)
-                            <img src="{{ $frontSrc }}" class="w-full h-[300px] object-contain" alt="Front View">
-                        @endif
+                    @if (file_exists(public_path('tryon_result.png')))
+                        <img src="{{ asset('tryon_result.png') }}?v={{ time() }}" alt="Avatar with shirt" class="mt-4 w-full max-w-md mx-auto">
+                    @endif
                         @if($backSrc)
                             <img src="{{ $backSrc }}" class="w-full h-[300px] object-contain" alt="Back View">
                         @endif
@@ -34,9 +34,6 @@
                     @endif
                 </div>
             </div>
-
-
-
 
             <!-- Info -->
             <!-- PRODUCT NAME -->
@@ -55,7 +52,7 @@
             @if (!empty($product->description))
                 @php
                     $lines = explode("\n", $product->description);
-                    $firstLine = array_shift($lines); // First line title
+                    $firstLine = array_shift($lines);
 
                     $descriptionLines = [];
                     $skip = false;
@@ -64,7 +61,6 @@
                         $line = trim($line);
                         if (empty($line)) continue;
 
-                        // If the line is part of old Size Chart section, skip it
                         if (stripos($line, 'Size:') !== false ||
                             stripos($line, 'WAIST') !== false ||
                             stripos($line, 'LENGTH') !== false ||
@@ -74,9 +70,8 @@
                             continue;
                         }
 
-                        // If line is a clear end of size chart parsing
                         if ($skip && strlen($line) > 5 && !preg_match('/^[0-9.]+$/', $line)) {
-                            $skip = false; // resume normal description
+                            $skip = false;
                         }
 
                         if (!$skip) {
@@ -85,13 +80,11 @@
                     }
                 @endphp
 
-                <!-- Product Title -->
                 <p class="text-base sm:text-lg text-gray-800 mt-4 md:text-left">
                     DESCRIPTION:
                 </p>
 
                 @if (!empty($descriptionLines))
-                    <!-- Normal bullets for real description -->
                     <ul class="text-gray-700 text-sm sm:text-base mt-4 leading-relaxed list-disc pl-5 space-y-1 text-left">
                         @foreach ($descriptionLines as $line)
                             @if (trim($line) !== '')
@@ -103,7 +96,6 @@
             @else
                 <p class="text-gray-500 text-sm mt-4">No description available.</p>
             @endif
-
 
                 <!-- SIZE CHART -->
                 @if (!empty($product->size_chart_image))
@@ -147,28 +139,27 @@
                     <p class="text-gray-500 text-sm mt-4 md:text-center">No size chart found.</p>
                 @endif
 
-
-                <!-- SIZES DROPDOWN -->
+                <!-- TRY-ON FORM -->
                 @if($product->size_chart_data)
                     @php
                         $sizes = collect(json_decode($product->size_chart_data, true))->pluck('size')->unique();
                     @endphp
 
-                    <div class="mt-4">
-                        <label for="size" class="text-base sm:text-lg text-gray-800 mt-4 md:text-left">Sizes</label>
-                        <select id="size" class="w-full mt-1 p-2 border border-gray-300 rounded-lg">
+                    <form action="{{ route('overlay.apply-default') }}" method="POST">
+                        @csrf
+                        <input type="hidden" name="product_id" value="{{ $product->id }}">
+                        <label for="selected_size" class="text-base sm:text-lg text-gray-800 mt-4 md:text-left">Sizes</label>
+                        <select id="selected_size" name="selected_size" class="w-full mt-1 p-2 border border-gray-300 rounded-lg" required>
                             <option selected disabled>--Pick your Size--</option>
                             @foreach ($sizes as $size)
-                                <option>{{ $size }}</option>
+                                <option value="{{ $size }}">{{ $size }}</option>
                             @endforeach
                         </select>
-                    </div>
+                        <button type="submit" class="w-full bg-accent-color text-white font-semibold py-2 mt-4 rounded-lg hover:bg-accent-hover transition-all duration-300">
+                            Try-on
+                        </button>
+                    </form>
                 @endif
-
-
-                <button class="w-full bg-accent-color text-white font-semibold py-2 mt-4 rounded-lg hover:bg-accent-hover transition-all duration-300">
-                    Try-on
-                </button>
             </div>
         </div>
 
@@ -195,7 +186,6 @@
                                     text="{{ $item->product_name }}"
                                     price="{{ $item->price }}"
                                 />
-
                                 </a>
                             @endforeach
                         </div>
