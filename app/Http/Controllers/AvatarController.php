@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Avatar;
+use App\Models\Product;
+use App\Services\SizeRecommendationService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http; // ✅ Needed for calling Flask server
 use Illuminate\Support\Facades\Storage;
@@ -44,6 +46,8 @@ class AvatarController extends Controller
             $validated['inseam'],
         ];
 
+        // 🔵 Step 1: Predict betas via Flask server
+
         $response = Http::post('http://127.0.0.1:5000/predict', [
             'measurements' => $measurements,
             'sex' => $sex,
@@ -56,8 +60,11 @@ class AvatarController extends Controller
         $betasJson = json_encode($response->json()['betas']);
         \Log::info('🧠 Received Betas: ' . $betasJson);
 
+        // 🔵 Step 2: Encode betas safely (base64)
+
         $encodedBetas = base64_encode($betasJson);
         $timestamp = time();
+
         $baseName = "avatar_" . Auth::id() . "_{$timestamp}";
 
         $tposeFilename = "avatars/{$baseName}_tpose.obj";
@@ -76,6 +83,7 @@ class AvatarController extends Controller
         }
 
         $avatar = Avatar::updateOrCreate(
+
             ['user_id' => Auth::id()],
             [
                 'sex' => $validated['sex'],
@@ -172,5 +180,27 @@ class AvatarController extends Controller
         $avatar->save();
 
         return response()->json(['success' => true, 'path' => 'storage/' . $path]);
+    }
+
+    public function size(Request $request)
+    {
+        $avatar = Avatar::where('user_id', Auth::id())->first();
+
+        if (!$avatar) {
+            return redirect()->route('avatar.create')->with('error', 'No avatar found.');
+        }
+
+        $productId = $request->input('product_id');
+        $recommendedSize = null;
+
+        if ($productId) {
+            $product = Product::find($productId);
+            if ($product) {
+                $recommender = new SizeRecommendationService();
+                $recommendedSize = $recommender->recommendSize($product);
+            }
+        }
+
+        return view('size', compact('avatar', 'recommendedSize'));
     }
 }

@@ -37,14 +37,22 @@
                 <p class="text-gray-700 text-sm sm:text-base mt-4 leading-relaxed text-center md:text-left">
                     "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore..."
                 </p>
-                <p class="text-sm font-semibold mt-4 text-center md:text-left">Recommended Size: Medium</p>
+
+                <!-- ✅ Insert Recommended Size below description -->
+                @if(isset($recommendedSize))
+                    <p class="text-sm font-semibold mt-2 text-center md:text-left text-green-600">
+                        Recommended Size: {{ $recommendedSize }}
+                    </p>
+                @endif
+
                 <label for="size" class="block text-sm font-medium mt-4 text-center md:text-left">Sizes</label>
                 <select id="size" class="w-full mt-1 p-2 border border-gray-300 rounded-lg">
-                    <option>--Pick your Size--</option>
-                    <option>Small</option>
-                    <option>Medium</option>
-                    <option>Large</option>
+                    <option disabled {{ isset($recommendedSize) ? '' : 'selected' }}>--Pick your Size--</option>
+                    <option {{ (isset($recommendedSize) && strtolower($recommendedSize) == 'small') ? 'selected' : '' }}>Small</option>
+                    <option {{ (isset($recommendedSize) && strtolower($recommendedSize) == 'medium') ? 'selected' : '' }}>Medium</option>
+                    <option {{ (isset($recommendedSize) && strtolower($recommendedSize) == 'large') ? 'selected' : '' }}>Large</option>
                 </select>
+
                 <button class="w-full bg-accent-color text-white font-semibold py-2 mt-4 rounded-lg hover:bg-accent-hover transition-all duration-300">
                     Try-on
                 </button>
@@ -65,7 +73,7 @@
                                     text="Product {{ $i }}" 
                                     price="{{ $i * 10 }}" />
                             @endfor
-                        </div>
+                        </div> 
                     </div>
 
                     <!-- Scroll Buttons -->
@@ -125,7 +133,7 @@
                         object.traverse(function (child) {
                             if (child.isMesh) {
                                 child.material = new THREE.MeshStandardMaterial({
-                                    color: 0xcccccc,         // 👕 Slightly darker than white
+                                    color: 0xcccccc,
                                     roughness: 0.5,
                                     metalness: 0.1,
                                 });
@@ -147,7 +155,6 @@
                     animate();
                 });
             </script>
-            
         @endif
     </body>
 </x-app-layout>
