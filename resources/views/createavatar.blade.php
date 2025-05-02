@@ -1,3 +1,7 @@
+<script>
+    const aPoseObjPath = "{{ asset($avatar->avatar_apose_path) }}";
+    const tPoseObjPath = "{{ asset($avatar->avatar_path) }}";
+</script>
 <x-app-layout>
     <body class="bg-gray-100 px-6 py-10 min-h-screen">
         <div class="flex flex-col lg:flex-row gap-8 max-w-screen-xl mx-auto">
@@ -108,11 +112,30 @@
         
             let avatarObject = null;
         
-            function captureAvatar(view) {
-                if (!avatarObject) {
-                    console.error('Avatar not loaded yet');
-                    return;
-                }
+            function loadOBJ(path, callback) {
+                const loader = new THREE.OBJLoader();
+                loader.load(path, function (object) {
+                    object.traverse(child => {
+                        if (child.isMesh) {
+                            child.material = new THREE.MeshStandardMaterial({
+                                color: 0xcccccc, roughness: 0.5, metalness: 0.1
+                            });
+                        }
+                    });
+                    object.scale.set(1.3, 1.3, 1.3);
+                    object.position.y = 0;
+                    callback(object);
+                });
+            }
+        
+            function replaceAvatar(object) {
+                if (avatarObject) scene.remove(avatarObject);
+                scene.add(object);
+                avatarObject = object;
+            }
+        
+            function captureAvatar(view, callback) {
+                if (!avatarObject) return console.error('❌ Avatar not loaded');
         
                 controls.enabled = false;
         
@@ -124,40 +147,26 @@
         
                 controls.target.set(0, 1.2, 0);
                 controls.update();
-        
                 renderer.render(scene, camera);
         
                 const dataURL = renderer.domElement.toDataURL('image/png');
-        
                 fetch('{{ route('avatar.upload') }}', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                         'X-CSRF-TOKEN': '{{ csrf_token() }}'
                     },
-                    body: JSON.stringify({
-                        image: dataURL,
-                        view: view
-                    })
+                    body: JSON.stringify({ image: dataURL, view: view })
                 })
                 .then(response => response.json())
                 .then(data => {
-                    console.log(`✅ ${view} uploaded:`, data);
-                    controls.enabled = true;
-        
-                    // 👉 Reset camera back to front after back capture
-                    if (view === 'back') {
-                        setTimeout(() => {
-                            camera.position.set(0, 1.4, 3.5); // Back to front view
-                            controls.target.set(0, 1.2, 0);
-                            controls.update();
-                            renderer.render(scene, camera);
-                            console.log('🔄 Camera reset to front after back capture.');
-                        }, 500); // short delay so upload finishes cleanly
-                    }
+                    console.log(`✅ Screenshot (${view}) uploaded:`, data);
+                    if (callback) callback(); // proceed to next step
                 })
                 .catch(error => {
-                    console.error(`❌ Upload error:`, error);
+                    console.error('❌ Upload error:', error);
+                })
+                .finally(() => {
                     controls.enabled = true;
                 });
             }
@@ -169,43 +178,36 @@
             }
             animate();
         
-            const loader = new THREE.OBJLoader();
-            loader.load('{{ asset($avatar->avatar_path) }}', function (object) {
-                object.traverse(function (child) {
-                    if (child.isMesh) {
-                        child.material = new THREE.MeshStandardMaterial({
-                            color: 0xcccccc,
-                            roughness: 0.5,
-                            metalness: 0.1,
-                        });
-                    }
-                });
-        
-                object.scale.set(1.3, 1.3, 1.3);
-                object.position.y = 0;
-                scene.add(object);
-                avatarObject = object;
-        
-                console.log('✅ Avatar loaded.');
+            // 🔁 Step-by-step: A-pose → front screenshot → back screenshot → switch to T-pose
+            loadOBJ(aPoseObjPath, function (aposeAvatar) {
+                replaceAvatar(aposeAvatar);
+                console.log('🟡 A-pose loaded for screenshot');
         
                 setTimeout(() => {
-                    document.getElementById('captureFront').click();
-        
-                    setTimeout(() => {
-                        document.getElementById('captureBack').click();
-                    }, 2000); 
-                }, 1000);
-            });
-        
-            document.getElementById('captureFront').addEventListener('click', function () {
-                captureAvatar('front');
-            });
-        
-            document.getElementById('captureBack').addEventListener('click', function () {
-                captureAvatar('back');
+                    captureAvatar('front', () => {
+                        // after front screenshot
+                        setTimeout(() => {
+                            captureAvatar('back', () => {
+                                // after back screenshot
+                                setTimeout(() => {
+                                    loadOBJ(tPoseObjPath, function (tposeAvatar) {
+                                        replaceAvatar(tposeAvatar);
+                                        console.log('✅ Switched to T-pose');
+
+                                        camera.position.set(0, 1.4, 3.5);
+                                        controls.target.set(0, 1.2, 0);
+                                        controls.update();
+                                    });
+                                }, 800); // short delay before switching
+                            });
+                        }, 1000);
+                    });
+                }, 1200); // wait for A-pose render
             });
         });
         </script>
+        
+        
         
         <!-- hidden buttons -->
         <button id="captureFront" class="hidden">Capture Front</button>
