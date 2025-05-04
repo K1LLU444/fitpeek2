@@ -154,6 +154,9 @@
                     @csrf
                     <input type="hidden" name="product_id" value="{{ $product->id }}">
                     <input type="hidden" name="avatar_height" value="{{ $avatar->height }}">
+                    <input type="hidden" name="front_image" value="{{ $product->front_image }}">
+                    <input type="hidden" name="back_image" value="{{ $product->back_image }}">
+                    <input type="hidden" name="product_type" value="{{ $product->product_type }}">
 
                     <label for="selected_size" class="text-base sm:text-lg text-gray-800 mt-4 md:text-left">Sizes</label>
                     <select name="selected_size" id="selected_size" required class="w-full border rounded p-2">
@@ -165,9 +168,6 @@
                             <option value="{{ $entry['size'] }}">{{ $entry['size'] }}</option>
                         @endforeach
                     </select>
-
-                    <input type="hidden" name="front_image" value="{{ $product->front_image }}">
-                    <input type="hidden" name="back_image" value="{{ $product->back_image }}">
                     
                     <button type="submit" class="w-full bg-accent-color text-white font-semibold py-2 mt-4 rounded-lg hover:bg-accent-hover transition-all duration-300">
                         Try-on
@@ -236,11 +236,17 @@
                         check();
                     }
 
-                    document.addEventListener("DOMContentLoaded", waitForTryonImages);
+                    document.addEventListener("DOMContentLoaded", () => {
+                    const front = document.getElementById("frontTryonImage");
+                    const back = document.getElementById("backTryonImage");
+                    if (front) front.src = front.src.split("?")[0] + "?v=" + Date.now();
+                    if (back) back.src = back.src.split("?")[0] + "?v=" + Date.now();
+                });
                 </script>
                 @endif
             </div>
         </div>
+
 
 
 
