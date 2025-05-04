@@ -120,6 +120,7 @@ Route::post('/overlay-back/{product}', [ShirtOverlayController::class, 'overlayB
 
 Route::post('/overlay/by-size', [ShirtOverlayController::class, 'overlayBySize'])->name('overlay.bySize');
 
+Route::post('/product/{product}/auto-tryon', [ShirtOverlayController::class, 'autoTryOn'])->name('product.autoTryOn');
 
 Route::get('/chat', function () {
     return view('chat');

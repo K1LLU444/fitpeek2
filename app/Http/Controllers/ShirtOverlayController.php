@@ -142,4 +142,28 @@ class ShirtOverlayController extends Controller
 
         return redirect()->route('product.show', ['product' => $product->id]);
     }
+
+    public function autoTryOn(Request $request, Product $product)
+{
+    $avatar = Avatar::where('user_id', Auth::id())->first();
+    if (!$avatar) return back()->withErrors(['No avatar found.']);
+
+    $sizeChart = json_decode($product->size_chart_data, true);
+    if (!$sizeChart || !is_array($sizeChart)) return back()->withErrors(['Size chart data missing.']);
+
+    // 🧠 Pick the first size as default — OR implement your own logic for recommendation
+    $firstSize = $sizeChart[0]['size'] ?? null;
+    if (!$firstSize) return back()->withErrors(['No valid size found.']);
+
+    $request->merge([
+        'product_id' => $product->id,
+        'selected_size' => $firstSize,
+        'avatar_height' => $avatar->height,
+        'front_image' => $product->front_image,
+        'back_image' => $product->back_image,
+    ]);
+
+    // Reuse the overlayBySize logic
+    return app()->call([$this, 'overlayBySize'], ['request' => $request]);
+}
 }

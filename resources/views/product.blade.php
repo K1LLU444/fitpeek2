@@ -380,7 +380,6 @@
                     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 flex justify-left">
                         <div class="flex space-x-4 pb-4">
                             @foreach ($otherProducts as $item)
-                                <a href="{{ route('product.show', $item->id) }}">
                                 @php
                                     $imagePath = $item->front_image ?: $item->back_image;
                                     $imageSrc = $imagePath
@@ -390,12 +389,16 @@
                                         : asset('images/placeholder.png');
                                 @endphp
 
-                                <x-horizontalscrollbar 
-                                    image="{{ $imageSrc }}"
-                                    text="{{ $item->product_name }}"
-                                    price="{{ $item->price }}"
-                                />
-                                </a>
+                                <form method="POST" action="{{ route('product.autoTryOn', $item->id) }}">
+                                    @csrf
+                                    <button type="submit" class="w-full text-left">
+                                        <x-horizontalscrollbar 
+                                            image="{{ $imageSrc }}"
+                                            text="{{ $item->product_name }}"
+                                            price="{{ $item->price }}"
+                                        />
+                                    </button>
+                                </form>
                             @endforeach
                         </div>
                     </div>

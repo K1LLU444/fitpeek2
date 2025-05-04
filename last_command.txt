@@ -1,1 +1,1 @@
-"C:\Python310\python.exe" "C:\xampp\htdocs\fitpeek2\resources/scraper/scrape_router.py" "https://dailygrindstore.com/collections/daily-grind-bottoms/products/daily-grind-dynamics-find-your-pace-bond-shorts-gray" 2>&1
+"C:\Python310\python.exe" "C:\xampp\htdocs\fitpeek2\resources/scraper/scrape_router.py" "https://nckatmtc.com/products/throw-up-cargo-parachute-pants-black" 2>&1
