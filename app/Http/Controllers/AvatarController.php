@@ -30,7 +30,7 @@ class AvatarController extends Controller
             'inseam' => 'required|numeric',
         ]);
 
-        $python = 'C:\\Users\\jungc\\AppData\\Local\\Programs\\Python\\Python313\\python.exe';
+        $python = 'C:\Users\jungc\AppData\Local\Programs\Python\Python313\python.exe';
         $generateAvatarScript = base_path('generate_dual_avatars.py');
         $mirrorScript = base_path('mirror_half_to_full.py');
 
@@ -136,7 +136,7 @@ class AvatarController extends Controller
         if ($view === 'front') {
             $avatar->avatar_front_path = 'storage/' . $path;
 
-            $python = 'C:\\Users\\jungc\\AppData\\Local\\Programs\\Python\\Python313\\python.exe';
+            $python = 'C:\Users\jungc\AppData\Local\Programs\Python\Python313\python.exe';
             $mirrorScript = base_path('mirror_half_to_full.py');
 
             $frontPath = str_replace('/', DIRECTORY_SEPARATOR, public_path($avatar->avatar_front_path));
@@ -153,7 +153,7 @@ class AvatarController extends Controller
         } elseif ($view === 'back') {
             $avatar->avatar_back_path = 'storage/' . $path;
 
-            $python = 'C:\\Users\\jungc\\AppData\\Local\\Programs\\Python\\Python313\\python.exe';
+            $python = 'C:\Users\jungc\AppData\Local\Programs\Python\Python313\python.exe';
             $mirrorScript = base_path('mirror_back_half.py');
 
             $backPath = str_replace('/', DIRECTORY_SEPARATOR, public_path($avatar->avatar_back_path));
@@ -173,4 +173,5 @@ class AvatarController extends Controller
 
         return response()->json(['success' => true, 'path' => 'storage/' . $path]);
     }
+
 }
