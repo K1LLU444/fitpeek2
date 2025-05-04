@@ -54,56 +54,55 @@
 
             <!-- PRODUCT DESCRIPTION -->
             @if (!empty($product->description))
-                @php
-                    $lines = explode("\n", $product->description);
-                    $firstLine = array_shift($lines); // First line title
+            @php
+                $lines = explode("\n", $product->description);
+                $descriptionLines = [];
+                $skipping = false;
 
-                    $descriptionLines = [];
-                    $skip = false;
+                foreach ($lines as $line) {
+                    $line = trim($line);
+                    if (empty($line)) continue;
 
-                    foreach ($lines as $line) {
-                        $line = trim($line);
-                        if (empty($line)) continue;
-
-                        // If the line is part of old Size Chart section, skip it
-                        if (stripos($line, 'Size:') !== false ||
-                            stripos($line, 'WAIST') !== false ||
-                            stripos($line, 'LENGTH') !== false ||
-                            stripos($line, 'BOTTOM') !== false ||
-                            preg_match('/^[0-9.]+$/', $line)) {
-                            $skip = true;
-                            continue;
-                        }
-
-                        // If line is a clear end of size chart parsing
-                        if ($skip && strlen($line) > 5 && !preg_match('/^[0-9.]+$/', $line)) {
-                            $skip = false; // resume normal description
-                        }
-
-                        if (!$skip) {
-                            $descriptionLines[] = $line;
-                        }
+                    // Start skipping on size chart indicators
+                    if (
+                        strtolower($line) === 'size:' ||
+                        in_array(strtoupper($line), ['S', 'M', 'L', 'XL', 'XXL']) ||
+                        stripos($line, 'waist') !== false ||
+                        stripos($line, 'width') !== false ||
+                        stripos($line, 'length') !== false ||
+                        stripos($line, 'bottom') !== false ||
+                        stripos($line, 'daily grind size chart') !== false ||
+                        preg_match('/^\d+(\.\d+)?("|”|″)?$/', $line) // 30, 16", 11.5", etc.
+                    ) {
+                        $skipping = true;
+                        continue;
                     }
-                @endphp
 
-                <!-- Product Title -->
-                <p class="text-base sm:text-lg text-gray-800 mt-4 md:text-left">
-                    DESCRIPTION:
-                </p>
+                    // Resume when a normal line appears (likely after size block)
+                    if ($skipping && preg_match('/[a-zA-Z]/', $line) && strlen($line) > 5) {
+                        $skipping = false;
+                    }
 
-                @if (!empty($descriptionLines))
-                    <!-- Normal bullets for real description -->
-                    <ul class="text-gray-700 text-sm sm:text-base mt-4 leading-relaxed list-disc pl-5 space-y-1 text-left">
-                        @foreach ($descriptionLines as $line)
-                            @if (trim($line) !== '')
-                                <li>{{ $line }}</li>
-                            @endif
-                        @endforeach
-                    </ul>
-                @endif
+                    if (!$skipping) {
+                        $descriptionLines[] = $line;
+                    }
+                }
+            @endphp
+
+            @if (!empty($descriptionLines))
+                <ul class="text-gray-700 text-sm sm:text-base mt-4 leading-relaxed list-disc pl-5 space-y-1 text-left">
+                    @foreach ($descriptionLines as $line)
+                        <li>{{ $line }}</li>
+                    @endforeach
+                </ul>
             @else
-                <p class="text-gray-500 text-sm mt-4">No description available.</p>
+                <p class="text-gray-500 text-sm mt-4">No clean description available.</p>
             @endif
+        @else
+            <p class="text-gray-500 text-sm mt-4">No description available.</p>
+        @endif
+
+
 
 
                 <!-- SIZE CHART -->
