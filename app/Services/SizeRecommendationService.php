@@ -12,6 +12,11 @@ class SizeRecommendationService
         return round($cm / 2.54, 2);
     }
 
+    private function cleanNumericString($value)
+    {
+        return trim(str_replace(['–', '—', 'to', ' ', '"', "'"], ['-', '-', '-', '', '', ''], strval($value)));
+    }
+
     public function recommendSize($product)
     {
         $user = Auth::user();
@@ -35,8 +40,10 @@ class SizeRecommendationService
             foreach ($sizeChart as $entry) {
                 if (!isset($entry['width'])) continue;
 
-                $shirtBust = floatval($entry['width']) * 2;
-                if ($shirtBust >= $chestInches && ($shirtBust - $chestInches) <= 8.0) { 
+                $width = $this->cleanNumericString($entry['width']);
+                $shirtBust = floatval($width) * 2;
+
+                if ($shirtBust >= $chestInches && ($shirtBust - $chestInches) <= 8.0) {
                     return $entry['size'];
                 }
             }
@@ -57,13 +64,13 @@ class SizeRecommendationService
 
                 // support waistline_min + waistline_max
                 if (isset($entry['waistline_min']) && isset($entry['waistline_max'])) {
-                    $min = floatval($entry['waistline_min']);
-                    $max = floatval($entry['waistline_max']);
+                    $min = floatval($this->cleanNumericString($entry['waistline_min']));
+                    $max = floatval($this->cleanNumericString($entry['waistline_max']));
                     if ($waistInches >= $min && $waistInches <= $max) {
                         $waistMatch = true;
                     }
                 } else {
-                    // Fallback: detect 'waist' or 'waistline'
+                    // Fallback: detect 'waist' or 'waistline' or 'width'
                     $waistField = null;
                     foreach ($entry as $key => $value) {
                         $lowerKey = strtolower($key);
@@ -74,7 +81,7 @@ class SizeRecommendationService
                     }
 
                     if ($waistField !== null) {
-                        $waistStr = trim(str_replace(['–', '—', 'to', ' '], ['-', '-', '-', ''], strval($waistField)));
+                        $waistStr = $this->cleanNumericString($waistField);
 
                         if (preg_match('/^(\d+)-(\d+)$/', $waistStr, $matches)) {
                             $min = floatval($matches[1]);
@@ -93,11 +100,11 @@ class SizeRecommendationService
                 if (!$waistMatch) continue;
 
                 // Optional hips and inseam check
-                $hipsField = $entry['hips'] ?? null;
-                $inseamField = $entry['inseam'] ?? null;
+                $hipsField = isset($entry['hips']) ? floatval($this->cleanNumericString($entry['hips'])) : null;
+                $inseamField = isset($entry['inseam']) ? floatval($this->cleanNumericString($entry['inseam'])) : null;
 
-                if ($hipsField && abs($hipsInches - floatval($hipsField)) > 3.0) continue;
-                if ($inseamField && abs($inseamInches - floatval($inseamField)) > 2.0) continue;
+                if ($hipsField && abs($hipsInches - $hipsField) > 3.0) continue;
+                if ($inseamField && abs($inseamInches - $inseamField) > 2.0) continue;
 
                 return $entry['size'];
             }

@@ -90,7 +90,7 @@ class AvatarController extends Controller
         return redirect()->route('avatar.create')->with('success', '✅ Avatar created and saved successfully!');
     }
 
-    public function tryon(Request $request)
+    public function size(Request $request)
     {
         $avatar = Avatar::where('user_id', Auth::id())->first();
 
@@ -109,46 +109,6 @@ class AvatarController extends Controller
             }
         }
 
-        return view('tryon', compact('avatar', 'recommendedSize'));
-    }
-
-    public function upload(Request $request)
-    {
-        $user = Auth::user();
-        $avatar = Avatar::where('user_id', $user->id)->first();
-    
-        if (!$avatar) {
-            return response()->json(['error' => 'Avatar not found'], 404);
-        }
-    
-        $data = $request->input('image');
-        $view = $request->input('view');
-    
-        if (!$data || !$view) {
-            return response()->json(['error' => 'Invalid data'], 400);
-        }
-    
-        $data = explode(',', $data);
-        $decoded = base64_decode($data[1]);
-        $filename = $view . '_' . Str::random(10) . '.png';
-    
-        $path = 'avatars/' . $filename;
-        $fullPath = public_path('storage/' . $path);
-        
-        if (!file_exists(public_path('storage/avatars'))) {
-            mkdir(public_path('storage/avatars'), 0755, true);
-        }
-    
-        file_put_contents($fullPath, $decoded);
-    
-        if ($view === 'front') {
-            $avatar->avatar_front_path = 'storage/' . $path;
-        } elseif ($view === 'back') {
-            $avatar->avatar_back_path = 'storage/' . $path;
-        }
-    
-        $avatar->save();
-    
-        return response()->json(['success' => true, 'path' => 'storage/' . $path]);
+        return view('size', compact('avatar', 'recommendedSize'));
     }
 }
