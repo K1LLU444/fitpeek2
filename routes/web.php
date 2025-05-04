@@ -106,6 +106,21 @@ Route::post('/chat/suggest-outfit', [ChatSupportController::class, 'suggestOutfi
 // For form submission outfit suggestion
 Route::post('/chat/suggest-outfit-form', [ChatSupportController::class, 'suggestOutfitForm'])->name('chat.suggestOutfitForm');
 
+Route::post('/overlay/dynamic', [ShirtOverlayController::class, 'overlayDynamic'])->name('overlay.dynamic');
+
+// Route::post('/overlay/{product}', [ShirtOverlayController::class, 'overlay'])->name('overlay.dynamic');
+
+Route::post('/overlay-back/{product}', [ShirtOverlayController::class, 'overlayBack'])->name('overlay.back');
+
+// Route::post('/overlay-size/{product}', [ShirtOverlayController::class, 'overlayWithSize'])->name('overlay.dynamic.size');
+
+// Route::post('/overlay-size/{product}', [ShirtOverlayController::class, 'overlayWithSize'])->name('overlay.bySize');
+
+// Route::post('/overlay/by-size', [ShirtOverlayController::class, 'applyBySize'])->name('overlay.bySize');
+
+Route::post('/overlay/by-size', [ShirtOverlayController::class, 'overlayBySize'])->name('overlay.bySize');
+
+
 Route::get('/chat', function () {
     return view('chat');
 });
