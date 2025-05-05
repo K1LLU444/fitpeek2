@@ -47,11 +47,18 @@ avatar_h, avatar_w = avatar.shape[:2]
 
 # --- Scaling logic ---
 pixels_per_cm = avatar_h / current_avatar_height
+# --- Calculate target dimensions ---
 width_cm = width_inches * 2.54
 length_cm = length_inches * 2.00
 
-target_width = int(width_cm * pixels_per_cm)
+if product_type == "bottom":
+    width_ratio = 0.55  # Narrow down shorts visually
+else:
+    width_ratio = 1.0   # Keep full width for tops
+
+target_width = int(width_cm * pixels_per_cm * width_ratio)
 target_height = int(length_cm * pixels_per_cm)
+
 target_width = max(50, min(target_width, avatar_w))
 target_height = max(50, min(target_height, avatar_h))
 
@@ -70,9 +77,9 @@ if product_type == "top":
     # Shirt position
     MIN_HEIGHT_CM = 154.54
     MAX_HEIGHT_CM = 197.6
-    BASE_Y = 200
+    BASE_Y = 225
     MAX_OFFSET = 60
-    Y_SHIFT = -115
+    Y_SHIFT = -120
     ratio = (MAX_HEIGHT_CM - current_avatar_height) / (MAX_HEIGHT_CM - MIN_HEIGHT_CM)
     y_offset = int(BASE_Y + ratio * MAX_OFFSET + Y_SHIFT)
     print(f"Final Y-position (shirt): {y_offset}px")
