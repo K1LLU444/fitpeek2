@@ -18,17 +18,18 @@
 
                     @if ($hasFront || $hasBack)
                         <div id="tryonImages" class="flex flex-col items-center gap-4 mt-4">
-                            @if (file_exists(storage_path('app/public/results/tryon_result_front.png')))
-                                <img id="frontTryonImage" 
-                                    src="{{ asset('storage/results/tryon_result_front.png') }}?v={{ time() }}"
-                                    alt="Try-on Front" />
-                            @endif
+                        @php $frontImage = $product->front_image; $backImage = $product->back_image; @endphp
+                        @if ($frontImage && file_exists(storage_path('app/public/results/tryon_result_front.png')))
+                            <img id="frontTryonImage" 
+                                src="{{ asset('storage/results/tryon_result_front.png') }}?v={{ time() }}"
+                                alt="Try-on Front" />
+                        @endif
 
-                            @if (file_exists(storage_path('app/public/results/tryon_result_back.png')))
-                                <img id="backTryonImage" 
-                                    src="{{ asset('storage/results/tryon_result_back.png') }}?v={{ time() }}"
-                                    alt="Try-on Back" />
-                            @endif
+                        @if ($backImage && file_exists(storage_path('app/public/results/tryon_result_back.png')))
+                            <img id="backTryonImage" 
+                                src="{{ asset('storage/results/tryon_result_back.png') }}?v={{ time() }}"
+                                alt="Try-on Back" />
+                        @endif
 
                             <p id="tryonStatus" class="text-green-600 text-sm text-center">Try-on result ready!</p>
                         </div>

@@ -133,12 +133,12 @@ class ShirtOverlayController extends Controller
             }
         }
 
-        if (!File::exists($frontOutputPath)) {
+        if ($request->front_image && !File::exists($frontOutputPath)) {
             Log::error("Front tryon_result_front.png NOT FOUND");
         }
-        if (!File::exists($backOutputPath)) {
+        if ($request->back_image && !File::exists($backOutputPath)) {
             Log::error("Back tryon_result_back.png NOT FOUND");
-        }
+        }        
 
         return redirect()->route('product.show', ['product' => $product->id]);
     }
@@ -155,13 +155,20 @@ class ShirtOverlayController extends Controller
     $firstSize = $sizeChart[0]['size'] ?? null;
     if (!$firstSize) return back()->withErrors(['No valid size found.']);
 
+    $sizeData = collect($sizeChart)->firstWhere('size', $firstSize);
+    if (!$sizeData || !isset($sizeData['width']) || !isset($sizeData['length'])) {
+        return back()->withErrors(['Missing size chart data for default size.']);
+    }
+    
     $request->merge([
         'product_id' => $product->id,
         'selected_size' => $firstSize,
         'avatar_height' => $avatar->height,
         'front_image' => $product->front_image,
         'back_image' => $product->back_image,
-    ]);
+        'dimension1' => $sizeData['width'],
+        'dimension2' => $sizeData['length'],
+    ]);    
 
     // Reuse the overlayBySize logic
     return app()->call([$this, 'overlayBySize'], ['request' => $request]);
