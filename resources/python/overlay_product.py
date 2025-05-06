@@ -70,7 +70,7 @@ x_offset = (avatar_w - target_width) // 2
 
 # Use top-aligned placement based on proportional shoulder/hip position
 shoulder_ratio = 0.15
-hip_ratio = 0.52
+hip_ratio = 0.45
 
 if product_type == "top":
     y_offset = int(avatar_h * shoulder_ratio)

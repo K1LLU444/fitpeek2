@@ -9,33 +9,34 @@
                 <div class="flex flex-col gap-4 w-[180px] sm:w-[220px] md:w-[280px] lg:w-[350px] 
                             h-auto items-center justify-center rounded-md">
 
-                    @php
-                    $frontTryOn = storage_path('app/public/results/tryon_result_front.png');
-                    $backTryOn = storage_path('app/public/results/tryon_result_back.png');
-                        $hasFront = file_exists($frontTryOn);
-                        $hasBack = file_exists($backTryOn);
-                    @endphp
+                            @php
+                                $userId = Auth::id();
+                                $productId = $product->id;
+                                $frontTryOn = "storage/results/tryon_result_front_user{$userId}_product{$productId}.png";
+                                $backTryOn = "storage/results/tryon_result_back_user{$userId}_product{$productId}.png";
+                                $hasFront = file_exists(public_path($frontTryOn));
+                                $hasBack = file_exists(public_path($backTryOn));
+                            @endphp
 
-                    @if ($hasFront || $hasBack)
-                        <div id="tryonImages" class="flex flex-col items-center gap-4 mt-4">
-                        @php $frontImage = $product->front_image; $backImage = $product->back_image; @endphp
-                        @if ($frontImage && file_exists(storage_path('app/public/results/tryon_result_front.png')))
-                            <img id="frontTryonImage" 
-                                src="{{ asset('storage/results/tryon_result_front.png') }}?v={{ time() }}"
-                                alt="Try-on Front" />
-                        @endif
+                            @if ($hasFront || $hasBack)
+                                <div id="tryonImages" class="flex flex-col items-center gap-4 mt-4">
+                                    @if ($hasFront)
+                                        <img id="frontTryonImage" 
+                                            src="{{ asset($frontTryOn) }}?v={{ time() }}"
+                                            alt="Try-on Front" />
+                                    @endif
 
-                        @if ($backImage && file_exists(storage_path('app/public/results/tryon_result_back.png')))
-                            <img id="backTryonImage" 
-                                src="{{ asset('storage/results/tryon_result_back.png') }}?v={{ time() }}"
-                                alt="Try-on Back" />
-                        @endif
+                                    @if ($hasBack)
+                                        <img id="backTryonImage" 
+                                            src="{{ asset($backTryOn) }}?v={{ time() }}"
+                                            alt="Try-on Back" />
+                                    @endif
 
-                            <p id="tryonStatus" class="text-green-600 text-sm text-center">Try-on result ready!</p>
-                        </div>
-                    @else
-                        <p class="text-red-500 text-sm text-center">Try-on result not found. Please try again.</p>
-                    @endif
+                                    <p id="tryonStatus" class="text-green-600 text-sm text-center">Try-on result ready!</p>
+                                </div>
+                            @else
+                                <p class="text-red-500 text-sm text-center">Try-on result not found. Please try again.</p>
+                            @endif
                 </div>
             </div>
 

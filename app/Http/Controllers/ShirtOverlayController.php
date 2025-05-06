@@ -24,7 +24,7 @@ class ShirtOverlayController extends Controller
         ]);
 
         $product = Product::findOrFail($request->product_id);
-        $productType = $product->product_type ?? 'top';
+        $productType = in_array($product->product_type, ['top', 'bottom']) ? $product->product_type : 'top';
         $sizeChart = json_decode($product->size_chart_data, true);
         $selectedSize = $request->selected_size;
 
@@ -35,14 +35,15 @@ class ShirtOverlayController extends Controller
             if (!isset($sizeData['width']) || !isset($sizeData['length'])) {
                 return back()->withErrors(['Size data for top is incomplete.']);
             }
-            $dimension1 = $sizeData['width'];
-            $dimension2 = $sizeData['length'];
+            $dimension1 = floatval(preg_replace('/[^\d.]/', '', $sizeData['width']));
+            $dimension2 = floatval(preg_replace('/[^\d.]/', '', $sizeData['length']));            
+            
         } else {
             if (!isset($sizeData['width']) || !isset($sizeData['length'])) {
                 return back()->withErrors(['Size data for bottom is incomplete.']);
             }
-            $dimension1 = $sizeData['width']; // Treat as waist
-            $dimension2 = $sizeData['length']; // Treat as outseam length
+            $dimension1 = floatval(preg_replace('/[^\d.]/', '', $sizeData['width']));
+            $dimension2 = floatval(preg_replace('/[^\d.]/', '', $sizeData['length']));            
         }
 
         Log::info('📏 Size dimensions', [
@@ -71,8 +72,11 @@ class ShirtOverlayController extends Controller
         $productFront = public_path($request->front_image);
         $productBack = public_path($request->back_image);
 
-        $frontOutputPath = storage_path('app/public/results/tryon_result_front.png');
-        $backOutputPath = storage_path('app/public/results/tryon_result_back.png');
+        $userId = $avatar->user_id;
+        $productId = $product->id;
+        
+        $frontOutputPath = storage_path("app/public/results/tryon_result_front_user{$userId}_product{$productId}.png");
+        $backOutputPath = storage_path("app/public/results/tryon_result_back_user{$userId}_product{$productId}.png");        
 
         Log::info('🧢 FRONT CMD Arguments', [
             'height' => $avatar->height,
