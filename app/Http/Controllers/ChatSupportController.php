@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use App\Models\Product;
+use Illuminate\Support\Facades\DB;
 
 class ChatSupportController extends Controller
 {
@@ -93,15 +94,77 @@ class ChatSupportController extends Controller
         }
     
         $reply = $json['choices'][0]['message']['content'];
+        $responseHash = md5($reply);
     
-        return back()->with('suggestion', [
+        // Rating data
+        $ratingCounts = DB::table('outfit_recommendation_ratings')
+            ->selectRaw('rating, COUNT(*) as count')
+            ->where('gpt_response_hash', $responseHash)
+            ->groupBy('rating')
+            ->orderByDesc('rating')
+            ->pluck('count', 'rating')
+            ->all();
+    
+        $totalRatings = array_sum($ratingCounts);
+        $averageRating = round(DB::table('outfit_recommendation_ratings')
+            ->where('gpt_response_hash', $responseHash)
+            ->avg('rating'), 1);
+    
+        // Store result in session
+        session()->put('suggestion', [
             'message' => $reply,
-            'image' => null, // Completely unused
-            'product_url' => null,
+            'hash' => $responseHash,
+            'ratings' => [
+                'average' => $averageRating,
+                'total' => $totalRatings,
+                'counts' => $ratingCounts,
+            ],
         ]);
+        session()->forget('has_rated'); // allow rating UI to show again
+        
+    
+        return back();
+    }
+    public function rateSuggestion(Request $request)
+    {
+        $validated = $request->validate([
+            'hash' => 'required|string',
+            'rating' => 'required|integer|min:1|max:5',
+        ]);
+    
+        // ✅ Save this user's rating (still tagged with hash)
+        DB::table('outfit_recommendation_ratings')->insert([
+            'user_id' => auth()->id(),
+            'gpt_response_hash' => $validated['hash'],
+            'rating' => $validated['rating'],
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+    
+        // ✅ Load ALL ratings (no WHERE condition)
+        $all = DB::table('outfit_recommendation_ratings')->pluck('rating');
+        $average = round($all->avg(), 1);
+        $total = $all->count();
+    
+        $counts = [];
+        foreach (range(1, 5) as $star) {
+            $counts[$star] = $all->filter(fn($r) => $r == $star)->count();
+        }
+    
+        // ✅ Keep existing GPT suggestion in session
+        $existing = session('suggestion');
+        session()->put('suggestion', [
+            'message' => $existing['message'] ?? '',
+            'hash' => $validated['hash'],
+            'ratings' => [
+                'average' => $average,
+                'total' => $total,
+                'counts' => $counts,
+            ],
+        ]);
+    
+        session()->put('has_rated', true); // to hide the form
+        return back();
     }
     
-    
-
-
 }
