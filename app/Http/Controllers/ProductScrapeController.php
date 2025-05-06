@@ -51,13 +51,15 @@ class ProductScrapeController extends Controller
         // 🔥 INSERTED THIS:
         if (isset($data['product_name'])) {
             $lowerName = strtolower($data['product_name']);
-            if (str_contains($lowerName, 'pants') || str_contains($lowerName, 'jeans') || str_contains($lowerName, 'bottom') || str_contains($lowerName, 'shorts')) {
+            if (str_contains($lowerName, 'pants') || str_contains($lowerName, 'jeans') || str_contains($lowerName, 'bottom') || str_contains($lowerName, 'shorts')|| str_contains($lowerName, 'skirt')) {
                 $product->product_type = 'bottom';
-            } else {
+            } else if (str_contains($lowerName, 'dress')) {
                 $product->product_type = 'top';
+            } else {
+                $product->product_type = 'top'; // fallback
             }
         } else {
-            $product->product_type = 'top'; // fallback
+            $product->product_type = 'top'; // fallback if name is missing
         }
         // 🔥 END INSERT
 

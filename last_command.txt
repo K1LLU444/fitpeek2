@@ -1,1 +1,1 @@
-"C:\Python310\python.exe" "C:\xampp\htdocs\fitpeek2\resources/scraper/scrape_router.py" "https://nckatmtc.com/products/world-tour-box-fit-tee-acid-black" 2>&1
+"C:\Python310\python.exe" "C:\xampp\htdocs\firPeek\resources/scraper/scrape_router.py" "https://nckatmtc.com/products/worm-buddy-tee-heather-grey" 2>&1
