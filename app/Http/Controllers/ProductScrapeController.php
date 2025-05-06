@@ -48,7 +48,7 @@ class ProductScrapeController extends Controller
         $product->price = $data['price'] ?? null;
         $product->description = $data['description'] ?? null;
 
-        // 🔥 INSERTED THIS:
+        
         if (isset($data['product_name'])) {
             $lowerName = strtolower($data['product_name']);
             if (str_contains($lowerName, 'pants') || str_contains($lowerName, 'jeans') || str_contains($lowerName, 'bottom') || str_contains($lowerName, 'shorts')|| str_contains($lowerName, 'skirt')) {
@@ -61,7 +61,7 @@ class ProductScrapeController extends Controller
         } else {
             $product->product_type = 'top'; // fallback if name is missing
         }
-        // 🔥 END INSERT
+        
 
         $product->save();
         
@@ -141,7 +141,7 @@ class ProductScrapeController extends Controller
 
             return 'products/' . basename($outputPath);
         } catch (\Exception $e) {
-            logger()->error("❌ Background removal error: " . $e->getMessage());
+            logger()->error("Background removal error: " . $e->getMessage());
             return null;
         }
     }
