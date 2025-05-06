@@ -178,9 +178,12 @@
         <div class="max-w-5xl mx-auto mt-10 grid grid-cols-1 md:grid-cols-2 gap-6">
             <!-- OUTFIT FORM (LEFT) -->
             <div class="bg-white p-6 rounded-xl shadow border">
-            <h3 class="text-xl font-semibold mb-6 flex justify-center items-center gap-2 text-center w-full">
+            <h3 class="text-xl font-semibold  flex justify-center items-center gap-2 text-center w-full">
                 Get Outfit Recommendation:
             </h3>
+            <p class="text-m mb-6 flex justify-center items-center gap-2 text-center w-full">
+                Please be specific with your inputs for optimal results.
+            </p>
 
 
                 <form method="POST" action="{{ route('chat.suggestOutfitForm') }}" class="space-y-4">

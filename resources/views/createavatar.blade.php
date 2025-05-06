@@ -4,7 +4,7 @@
 </script>
 <x-app-layout>
     <body class="bg-gray-100 px-6 py-10 min-h-screen">
-        <div class="flex flex-col lg:flex-row gap-8 max-w-screen-xl mx-auto">
+        <div class="flex flex-col lg:flex-row gap-8 max-w-screen-xl mx-auto pt-28">
 
             @if($avatar && $avatar->avatar_path)
             <!-- Avatar Preview Section -->
@@ -32,23 +32,26 @@
                         </select>
                     </div>
 
-                    <!-- Only These Fields Are Used -->
                     @php
-                        $fields = [
-                            'height' => [140, 200],
-                            'weight' => [40, 120],
-                            'chest' => [70, 130],
-                            'waist' => [50, 140],
-                            'hips' => [70, 130],
-                            'inseam' => [60, 100],
+                        $allRanges = [
+                            'height' => ['male' => [158.41, 200.65], 'female' => [144.68, 184.64]],
+                            'weight' => ['male' => [11.52, 147.26],  'female' => [27.78, 141.15]],
+                            'chest'  => ['male' => [75.56, 145.05],  'female' => [69.54, 147.15]],
+                            'waist'  => ['male' => [45.32, 144.91],  'female' => [42.65, 131.50]],
+                            'hips'   => ['male' => [75.24, 134.20],  'female' => [76.29, 141.91]],
+                            'inseam' => ['male' => [62.71, 96.36],   'female' => [61.67, 89.28]],
                         ];
+                        $currentSex = strtolower(old('sex', $avatar->sex ?? 'male'));
                     @endphp
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        @foreach($fields as $field => [$min, $max])
+                        @foreach($allRanges as $field => $range)
+                            @php
+                                $value = old($field, $avatar->$field ?? '');
+                                [$min, $max] = $range[$currentSex];
+                            @endphp
                             <div class="mt-4">
                                 <x-input-label for="{{ $field }}" :value="__(ucwords(str_replace('_', ' ', $field)) . ' (cm)')" />
-
                                 <x-text-input
                                     id="{{ $field }}"
                                     name="{{ $field }}"
@@ -57,14 +60,17 @@
                                     max="{{ $max }}"
                                     step="any"
                                     class="block mt-1 w-full placeholder-gray-600"
-                                    value="{{ old($field, $avatar->$field ?? '') }}"
+                                    value="{{ $value }}"
                                     required
+                                    data-male-min="{{ $range['male'][0] }}"
+                                    data-male-max="{{ $range['male'][1] }}"
+                                    data-female-min="{{ $range['female'][0] }}"
+                                    data-female-max="{{ $range['female'][1] }}"
                                 />
                             </div>
                         @endforeach
                     </div>
 
-                    <!-- Submit Button -->
                     <div class="flex justify-center mt-12">
                         <x-primary-button type="submit" class="w-full">
                             {{ $avatar ? 'Update Avatar' : 'Save Avatar' }}
@@ -73,6 +79,91 @@
                 </form>
             </div>
         </div>
+                <!-- Measurement Tutorial Section -->
+                <div id="tutorial" class="mt-20 bg-white p-8 rounded-lg shadow-lg">
+                    <h2 class="text-2xl font-bold mb-6 text-center">How to Measure Your Body</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-gray-700">
+                        <!-- Column 1 -->
+                        <div class="space-y-4">
+                            {{-- Bust Size --}}
+                            <div class="flex flex-col md:flex-row items-center gap-6">
+                                <img src="{{ asset('images/tutorial/bust.png') }}" alt="Bust Size" class="w-40 h-40 object-contain" />
+                                <div>
+                                    <h3 class="text-lg font-semibold">Bust Size</h3>
+                                    <p class="text-gray-700">Wrap the tape measure around the fullest part of your chest. Keep it snug but not tight.</p>
+                                </div>
+                            </div>
+                
+                            {{-- Waist Size --}}
+                            <div class="flex flex-col md:flex-row items-center gap-6">
+                                <img src="{{ asset('images/tutorial/waist.png') }}" alt="Waist Size" class="w-40 h-40 object-contain" />
+                                <div>
+                                    <h3 class="text-lg font-semibold">Waist Size</h3>
+                                    <p class="text-gray-700">Find the narrowest part of your waist (usually above the belly button) and measure around it.</p>
+                                </div>
+                            </div>
+                
+                            {{-- Inseam --}}
+                            <div class="flex flex-col md:flex-row items-center gap-6">
+                                <img src="{{ asset('images/tutorial/inseam.png') }}" alt="Inseam" class="w-40 h-40 object-contain" />
+                                <div>
+                                    <h3 class="text-lg font-semibold">Inseam</h3>
+                                    <p class="text-gray-700">Stand straight with your legs slightly apart. Place the end of a measuring tape at the top of your inner thigh (crotch area) and extend it straight down to the floor.</p>
+                                </div>
+                            </div>
+                        </div>
+                
+                        <!-- Column 2 -->
+                        <div class="space-y-4">
+                            {{-- Hip Size --}}
+                            <div class="flex flex-col md:flex-row items-center gap-6">
+                                <img src="{{ asset('images/tutorial/hip.png') }}" alt="Hip Size" class="w-40 h-40 object-contain" />
+                                <div>
+                                    <h3 class="text-lg font-semibold">Hip Size</h3>
+                                    <p class="text-gray-700">Measure around the widest part of your hips and buttocks while standing naturally.</p>
+                                </div>
+                            </div>
+                
+                            {{-- Height --}}
+                            <div class="flex flex-col md:flex-row items-center gap-6">
+                                <img src="{{ asset('images/tutorial/height.png') }}" alt="Height" class="w-40 h-40 object-contain" />
+                                <div>
+                                    <h3 class="text-lg font-semibold">Height</h3>
+                                    <p class="text-gray-700">Stand straight and measure from the floor to the top of your head without shoes.</p>
+                                </div>
+                            </div>
+                
+                            {{-- Weight --}}
+                            <div class="flex flex-col md:flex-row items-center gap-6">
+                                <img src="{{ asset('images/tutorial/weight.png') }}" alt="Weight" class="w-40 h-40 object-contain" />
+                                <div>
+                                    <h3 class="text-lg font-semibold">Weight</h3>
+                                    <p class="text-gray-700">Weigh yourself using a digital or analog scale, preferably in the morning before eating.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+            <!-- JavaScript: Dynamic min/max based on selected sex -->
+            <script>
+                document.addEventListener('DOMContentLoaded', function () {
+                    const sexSelect = document.getElementById('sex');
+                    const inputs = document.querySelectorAll('input[type="number"]');
+
+                    sexSelect.addEventListener('change', () => {
+                        const selectedSex = sexSelect.value.toLowerCase();
+                        inputs.forEach(input => {
+                            const min = input.getAttribute(`data-${selectedSex}-min`);
+                            const max = input.getAttribute(`data-${selectedSex}-max`);
+                            if (min && max) {
+                                input.min = min;
+                                input.max = max;
+                            }
+                        });
+                    });
+                });
+            </script>
     </body>
 </x-app-layout>
 

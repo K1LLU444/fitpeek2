@@ -30,7 +30,7 @@ class AvatarController extends Controller
             'inseam' => 'required|numeric',
         ]);
 
-        $python = 'C:\\Users\\jungc\\AppData\\Local\\Programs\\Python\\Python313\\python.exe';
+        $python = '/var/www/fitpeek2/flaskenv/bin/python';
         $generateAvatarScript = base_path('generate_dual_avatars.py');
         $mirrorScript = base_path('mirror_half_to_full.py');
 
@@ -108,69 +108,78 @@ class AvatarController extends Controller
     {
         $user = Auth::user();
         $avatar = Avatar::where('user_id', $user->id)->first();
-
+    
         if (!$avatar) {
             return response()->json(['error' => 'Avatar not found'], 404);
         }
-
+    
         $data = $request->input('image');
         $view = $request->input('view');
-
+    
         if (!$data || !$view) {
             return response()->json(['error' => 'Invalid data'], 400);
         }
-
+    
         $data = explode(',', $data);
         $decoded = base64_decode($data[1]);
         $filename = $view . '_' . Str::random(10) . '.png';
-
+    
         $path = 'avatars/' . $filename;
         $fullPath = public_path('storage/' . $path);
-
+    
         if (!file_exists(public_path('storage/avatars'))) {
             mkdir(public_path('storage/avatars'), 0755, true);
         }
-
+    
         file_put_contents($fullPath, $decoded);
-
+    
+        $python = '/var/www/fitpeek2/flaskenv/bin/python';
+    
         if ($view === 'front') {
             $avatar->avatar_front_path = 'storage/' . $path;
-
-            $python = 'C:\\Users\\jungc\\AppData\\Local\\Programs\\Python\\Python313\\python.exe';
+    
             $mirrorScript = base_path('mirror_half_to_full.py');
-
             $frontPath = str_replace('/', DIRECTORY_SEPARATOR, public_path($avatar->avatar_front_path));
             $cleanedFilename = 'front_cleaned_user' . $avatar->user_id . '.png';
             $outputPath = str_replace('/', DIRECTORY_SEPARATOR, public_path('storage/avatars/' . $cleanedFilename));
-
+    
+            // Delete old cleaned image if it exists
+            if (file_exists($outputPath)) {
+                unlink($outputPath);
+            }
+    
             $mirrorCommand = "\"$python\" \"$mirrorScript\" \"$frontPath\" \"$outputPath\"";
             \Log::info("🪞 Running mirror command: $mirrorCommand");
             shell_exec($mirrorCommand);
-
+    
             if (file_exists($outputPath)) {
                 $avatar->avatar_cleaned_front_path = 'storage/avatars/' . $cleanedFilename;
             }
         } elseif ($view === 'back') {
             $avatar->avatar_back_path = 'storage/' . $path;
-
-            $python = 'C:\\Users\\jungc\\AppData\\Local\\Programs\\Python\\Python313\\python.exe';
+    
             $mirrorScript = base_path('mirror_back_half.py');
-
             $backPath = str_replace('/', DIRECTORY_SEPARATOR, public_path($avatar->avatar_back_path));
             $cleanedFilename = 'back_cleaned_user' . $avatar->user_id . '.png';
             $outputPath = str_replace('/', DIRECTORY_SEPARATOR, public_path('storage/avatars/' . $cleanedFilename));
-
+    
+            // Delete old cleaned image if it exists
+            if (file_exists($outputPath)) {
+                unlink($outputPath);
+            }
+    
             $mirrorCommand = "\"$python\" \"$mirrorScript\" \"$backPath\" \"$outputPath\"";
             \Log::info("🪞 Running mirror command for BACK: $mirrorCommand");
             shell_exec($mirrorCommand);
-
+    
             if (file_exists($outputPath)) {
                 $avatar->avatar_cleaned_back_path = 'storage/avatars/' . $cleanedFilename;
             }
         }
-
+    
         $avatar->save();
-
+    
         return response()->json(['success' => true, 'path' => 'storage/' . $path]);
     }
+    
 }
