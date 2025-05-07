@@ -9,6 +9,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\AvatarController;
 use App\Http\Controllers\ProductScrapeController;
 use App\Models\Product;
+use App\Http\Controllers\ChatSupportController;
 
 
 
@@ -74,9 +75,6 @@ Route::get('/product/{product}', [ProductScrapeController::class, 'show'])
 // Product select
 Route::post('/products/select-images', [ProductScrapeController::class, 'selectImages'])->name('products.select-images');
 
-
-
-=======
 // Try-on (controller-based with middleware)
 Route::get('/tryon', [AvatarController::class, 'tryon'])
     ->middleware(['auth', 'verified'])
@@ -91,5 +89,24 @@ Route::get('/aboutus', function () {
 Route::get('/avatar/success', function () {
     return view('avatar.success');
 })->middleware(['auth', 'verified'])->name('avatar.success');
+
+Route::post('/avatar-upload', [AvatarController::class, 'upload'])->name('avatar.upload');
+
+
+// For normal free chat (OpenAI)
+Route::post('/chat/support', [ChatSupportController::class, 'chat'])->name('chat.support');
+
+// For free-text based outfit suggestion
+Route::post('/chat/suggest-outfit', [ChatSupportController::class, 'suggestOutfit'])->name('chat.suggestOutfit');
+
+// For form submission outfit suggestion
+Route::post('/chat/suggest-outfit-form', [ChatSupportController::class, 'suggestOutfitForm'])->name('chat.suggestOutfitForm');
+
+Route::get('/chat', function () {
+    return view('chat');
+});
+
+Route::post('/rate-suggestion', [ChatSupportController::class, 'rateSuggestion'])->name('chat.rateSuggestion');
+
 
 require __DIR__.'/auth.php';
