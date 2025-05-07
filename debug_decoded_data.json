@@ -1,48 +1,58 @@
 {
-    "product_url": "https:\/\/nckatmtc.com\/products\/throw-up-cargo-parachute-pants-black",
+    "product_url": "https:\/\/nckatmtc.com\/products\/world-tour-box-fit-tee-acid-pink",
     "product_images": [
-        "https:\/\/nckatmtc.com\/cdn\/shop\/files\/Artboard_16_e63a63a1-2cb7-462d-bb15-67018f61cfb3.png?v=1734269300&width=1946",
-        "https:\/\/nckatmtc.com\/cdn\/shop\/files\/Artboard_21.png?v=1734269300&width=1946",
-        "https:\/\/nckatmtc.com\/cdn\/shop\/files\/Artboard_20.png?v=1734269300&width=1946",
-        "https:\/\/nckatmtc.com\/cdn\/shop\/files\/Artboard_17_f14bc8f8-ef54-413f-a999-4fce2048324d.png?v=1734269300&width=1946",
-        "https:\/\/nckatmtc.com\/cdn\/shop\/files\/Artboard_22.png?v=1734269300&width=1946",
-        "https:\/\/nckatmtc.com\/cdn\/shop\/files\/Artboard_25.png?v=1734269300&width=1946",
-        "https:\/\/nckatmtc.com\/cdn\/shop\/files\/Artboard_26.png?v=1734269300&width=1946"
+        "https:\/\/nckatmtc.com\/cdn\/shop\/files\/Artboard12_904783cd-69ee-448e-ab85-f19841e7a1ad.jpg?v=1734269378&width=1946",
+        "https:\/\/nckatmtc.com\/cdn\/shop\/files\/Artboard11_4f975160-28df-4e45-b5fb-126f332149eb.jpg?v=1734269378&width=1946",
+        "https:\/\/nckatmtc.com\/cdn\/shop\/files\/Artboard13_f678e298-7308-4a8f-b702-a2c900e1082c.jpg?v=1728702565&width=1946",
+        "https:\/\/nckatmtc.com\/cdn\/shop\/files\/Artboard14_a6f23dfc-3b1e-42ee-be4c-f7496e3f2d52.jpg?v=1728702565&width=1946",
+        "https:\/\/nckatmtc.com\/cdn\/shop\/files\/Artboard15_4b499c85-584a-45ae-a8bb-ca74eab7097a.jpg?v=1728702565&width=1946"
     ],
-    "product_name": "Throw up Cargo Parachute Pants (Black)",
-    "price": "1995.00",
-    "description": "",
-    "size_chart_image": "https:\/\/cdn.shopify.com\/s\/files\/1\/0715\/4630\/6796\/files\/Pants_-_Size_Chart.jpg?v=1734267582",
+    "product_name": "World Tour Box Fit Tee (Acid Pink)",
+    "price": "790.00",
+    "description": "Product Details:\n\n\n\n\nPink Acid Wash T-Shirt from Nick Automatic\n\n\nScreen-printed front design\n\n\nRibbed crew neck collar.\n\n\nCotton blend\n\n\nWoven tag attached on left sleeve of the shirt.\n\n\nOversized Box Fit",
+    "size_chart_image": "https:\/\/cdn.shopify.com\/s\/files\/1\/0715\/4630\/6796\/files\/NEW-SIZE-CHART-acid.png?v=1728959126",
     "size_chart_data": [
         {
+            "size": "XS",
+            "width": 21,
+            "length": 26,
+            "sleeve_length": 8
+        },
+        {
             "size": "S",
-            "waistline_min": 27,
-            "waistline_max": 29,
-            "length": 36
+            "width": 22,
+            "length": 27,
+            "sleeve_length": 8
         },
         {
             "size": "M",
-            "waistline_min": 29,
-            "waistline_max": 31,
-            "length": 36.5
+            "width": 22,
+            "length": 28,
+            "sleeve_length": 8.5
         },
         {
             "size": "L",
-            "waistline_min": 31,
-            "waistline_max": 32,
-            "length": 37
+            "width": 23,
+            "length": 29,
+            "sleeve_length": 9.5
         },
         {
             "size": "XL",
-            "waistline_min": 32,
-            "waistline_max": 34,
-            "length": 39
+            "width": 23,
+            "length": 31,
+            "sleeve_length": 9.5
         },
         {
             "size": "2XL",
-            "waistline_min": 34,
-            "waistline_max": 36,
-            "length": 40
+            "width": 26,
+            "length": 32,
+            "sleeve_length": 10
+        },
+        {
+            "size": "3XL",
+            "width": 26,
+            "length": 33,
+            "sleeve_length": 11
         }
     ]
 }

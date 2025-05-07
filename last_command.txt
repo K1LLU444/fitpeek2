@@ -1,1 +1,1 @@
-"/var/www/fitpeek2/flaskenv310/bin/python" "/var/www/fitpeek2/resources/scraper/scrape_router.py" 'https://nckatmtc.com/products/throw-up-cargo-parachute-pants-black' 2>&1
+"/var/www/fitpeek2/flaskenv310/bin/python" "/var/www/fitpeek2/resources/scraper/scrape_router.py" 'https://nckatmtc.com/products/world-tour-box-fit-tee-acid-pink' 2>&1
