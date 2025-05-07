@@ -6,51 +6,67 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\output;
 use App\Models\Product;
 use Intervention\Image\Facades\Image;
+use App\Services\SizeRecommendationService; 
 
 
 class ProductScrapeController extends Controller
 {
-    public function scrape(Request $request)
+public function scrape(Request $request)
 {
     $url = $request->input('product_url');
-    $python = 'C:\\Python310\\python.exe';
+    $python = '/var/www/fitpeek2/flaskenv310/bin/python';
     $script = base_path('resources/scraper/scrape_router.py');
     $escapedUrl = escapeshellarg($url);
 
     putenv("PYTHONHASHSEED=random");
-    putenv("NUMBA_CACHE_DIR=C:\\xampp\\tmp");
+    putenv("NUMBA_CACHE_DIR=/tmp");
 
     $command = "\"$python\" \"$script\" $escapedUrl 2>&1";
     file_put_contents(base_path('last_command.txt'), $command);
     $output = shell_exec($command);
+
+    if ($output === null) {
+        $output = '⚠️ shell_exec returned NULL. Possible permission or execution error.';
+    }
+
     file_put_contents(base_path('last_output.txt'), $output);
 
+    // ✅ Now only get the LAST LINE
     $outputLines = explode("\n", trim($output));
-    if (str_starts_with($outputLines[0], 'INFO:')) {
-        array_shift($outputLines);
-    }
-    $cleanOutput = implode("\n", $outputLines);
-    file_put_contents(base_path('debug_clean_output.txt'), $cleanOutput); // 📄 Dump JSON to file
+    $lastLine = end($outputLines); // 👈 Get the last non-empty line
+    file_put_contents(base_path('debug_clean_output.txt'), $lastLine);
 
-    $data = json_decode($cleanOutput, true);
-    file_put_contents(base_path('debug_decoded_data.json'), json_encode($data, JSON_PRETTY_PRINT)); // 🧠 Dump decoded
+    // ✅ Decode only the last line (JSON)
+    $data = json_decode($lastLine, true);
+    file_put_contents(base_path('debug_decoded_data.json'), json_encode($data, JSON_PRETTY_PRINT));
 
     if (!$data || !isset($data['product_url'])) {
         return redirect()->route('dashboard')->withErrors(['error' => 'Scraping failed or returned invalid output.']);
     }
 
-    // Save with full logging
+    // Save product
     $product = Product::firstOrNew(['product_url' => $data['product_url']]);
-
     $product->product_name = $data['product_name'] ?? null;
     $product->product_images = isset($data['product_images']) ? json_encode($data['product_images']) : null;
     $product->size_chart_image = $data['size_chart_image'] ?? null;
     $product->size_chart_data = isset($data['size_chart_data']) ? json_encode($data['size_chart_data']) : null;
     $product->price = $data['price'] ?? null;
     $product->description = $data['description'] ?? null;
-    
+
+    if (isset($data['product_name'])) {
+        $lowerName = strtolower($data['product_name']);
+        if (str_contains($lowerName, 'pants') || str_contains($lowerName, 'jeans') || str_contains($lowerName, 'bottom') || str_contains($lowerName, 'shorts')|| str_contains($lowerName, 'skirt')) {
+            $product->product_type = 'bottom';
+        } else if (str_contains($lowerName, 'dress')) {
+            $product->product_type = 'top';
+        } else {
+            $product->product_type = 'top'; // fallback
+        }
+    } else {
+        $product->product_type = 'top'; // fallback if name is missing
+    }
     $product->save();
-    
+
     return redirect()->route('dashboard')->with([
         'show_modal' => true,
         'product_images' => $data['product_images'],
@@ -67,7 +83,10 @@ class ProductScrapeController extends Controller
             ->take(10)
             ->get();
 
-        return view('product', compact('product', 'otherProducts'));
+        $recommender = new SizeRecommendationService();
+        $recommendedSize = $recommender->recommendSize($product);
+
+        return view('product', compact('product', 'otherProducts', 'recommendedSize'));
     }
 
     public function selectImages(Request $request)
@@ -97,59 +116,55 @@ class ProductScrapeController extends Controller
         return redirect()->route('dashboard');
     }
 
-    public function removeBackgroundFromUrl($url, $slug)
-    {
-        try {
-            // Download the image
-            $imageData = file_get_contents($url);
-            $tempPath = storage_path("app/temp-{$slug}.png");
-            file_put_contents($tempPath, $imageData);
+public function removeBackgroundFromUrl($url, $slug)
+{
+    try {
+        // ✅ Step 1: Download the image
+        $imageData = file_get_contents($url);
+        $tempPath = storage_path("app/product_images/temp-{$slug}.png");
+        file_put_contents($tempPath, $imageData);
 
-            // Output location (inside public/products)
-            $outputPath = public_path("products/{$slug}.png");
+        // ✅ Step 2: Output destination (public/products/)
+        $outputPath = public_path("products/{$slug}.png");
 
-            // Ensure folder exists
-            if (!file_exists(public_path('products'))) {
-                mkdir(public_path('products'), 0755, true);
-            }
-
-            // Python + script
-            $python = 'C:\\Python310\\python.exe';
-            $script = base_path('resources/scraper/remove_bg.py');
-
-            // ✅ ENV setup like the scraper logic
-            putenv("PYTHONHASHSEED=random");
-            putenv("NUMBA_CACHE_DIR=C:\\xampp\\tmp");
-
-            // Build command
-            $escapedInput = escapeshellarg($tempPath);
-            $escapedOutput = escapeshellarg($outputPath);
-            $command = "\"$python\" \"$script\" $escapedInput $escapedOutput 2>&1";
-
-            // Run command
-            $output = shell_exec($command);
-
-            // Optional: check if output file exists
-            if (!file_exists($outputPath)) {
-                throw new \Exception("rembg failed or did not create: {$outputPath}");
-            }
-
-            return 'products/' . basename($outputPath);
-        } catch (\Exception $e) {
-            logger()->error("❌ Background removal error: " . $e->getMessage());
-            return null;
+        // ✅ Step 3: Ensure folders exist
+        if (!file_exists(storage_path('app/product_images'))) {
+            mkdir(storage_path('app/product_images'), 0755, true);
         }
+        if (!file_exists(public_path('products'))) {
+            mkdir(public_path('products'), 0755, true);
+        }
+
+        // ✅ Step 4: Setup environment variables
+        putenv("PYTHONHASHSEED=random");
+        putenv("NUMBA_CACHE_DIR=/tmp");
+        putenv("U2NET_HOME=" . storage_path('app/u2net')); // 🛡️ Correct model cache
+
+        // ✅ Step 5: Prepare the command
+        $python = '/var/www/fitpeek2/flaskenv310/bin/python3';
+        $script = base_path('resources/scraper/remove_bg.py');
+        $escapedInput = escapeshellarg($tempPath);
+        $escapedOutput = escapeshellarg($outputPath);
+        $command = "\"$python\" \"$script\" $escapedInput $escapedOutput 2>&1";
+
+        // ✅ Step 6: Execute the command
+        $output = shell_exec($command);
+
+        // ✅ Step 7: Check if result was created
+        if (!file_exists($outputPath)) {
+            throw new \Exception("rembg failed or did not create: {$outputPath}");
+        }
+
+        return 'products/' . basename($outputPath);
+    } catch (\Exception $e) {
+        logger()->error("❌ Background removal error: " . $e->getMessage());
+        return null;
     }
-
-
-
-    
-
-
-
-
-
+}
 
 
 
 }
+
+
+

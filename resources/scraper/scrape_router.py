@@ -1,7 +1,10 @@
+import os
+os.environ['PADDLEOCR_HOME'] = '/tmp/.paddleocr'
 import sys
 import json
 import scrape_nckatmtc
 import scrape_dailygrind
+import scrape_mango  
 
 # 🚀 Get the URL passed as argument
 url = sys.argv[1]
@@ -12,6 +15,9 @@ if "nckatmtc.com" in url:
 
 elif "dailygrindstore.com" in url:
     result = scrape_dailygrind.scrape(url)
+
+elif "shop.mango.com" in url:  
+    result = scrape_mango.scrape(url)
 
 else:
     # 🚨 If unsupported site

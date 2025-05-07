@@ -1,7 +1,8 @@
 <script>
-    const aPoseObjPath = "{{ asset($avatar->avatar_apose_path) }}";
-    const tPoseObjPath = "{{ asset($avatar->avatar_path) }}";
+    const aPoseObjPath = "{{ $avatar && $avatar->avatar_apose_path ? asset($avatar->avatar_apose_path) : '' }}";
+    const tPoseObjPath = "{{ $avatar && $avatar->avatar_path ? asset($avatar->avatar_path) : '' }}";
 </script>
+
 <x-app-layout>
     <body class="bg-gray-100 px-6 py-10 min-h-screen">
         <div class="flex flex-col lg:flex-row gap-8 max-w-screen-xl mx-auto pt-28">

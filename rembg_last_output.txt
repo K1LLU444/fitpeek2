@@ -1,0 +1,25 @@
+Traceback (most recent call last):
+  File "/var/www/fitpeek2/flaskenv310/lib/python3.10/site-packages/pooch/utils.py", line 262, in make_local_storage
+    os.makedirs(path, exist_ok=True)
+  File "/usr/lib/python3.10/os.py", line 225, in makedirs
+    mkdir(name, mode)
+PermissionError: [Errno 13] Permission denied: '/var/www/.u2net'
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/var/www/fitpeek2/resources/scraper/remove_bg.py", line 10, in <module>
+    output_image = remove(input_image)
+  File "/var/www/fitpeek2/flaskenv310/lib/python3.10/site-packages/rembg/bg.py", line 274, in remove
+    session = new_session("u2net", *args, **kwargs)
+  File "/var/www/fitpeek2/flaskenv310/lib/python3.10/site-packages/rembg/session_factory.py", line 41, in new_session
+    return session_class(model_name, sess_opts, *args, **kwargs)
+  File "/var/www/fitpeek2/flaskenv310/lib/python3.10/site-packages/rembg/sessions/base.py", line 27, in __init__
+    str(self.__class__.download_models(*args, **kwargs)),
+  File "/var/www/fitpeek2/flaskenv310/lib/python3.10/site-packages/rembg/sessions/u2net.py", line 62, in download_models
+    pooch.retrieve(
+  File "/var/www/fitpeek2/flaskenv310/lib/python3.10/site-packages/pooch/core.py", line 227, in retrieve
+    make_local_storage(path)
+  File "/var/www/fitpeek2/flaskenv310/lib/python3.10/site-packages/pooch/utils.py", line 276, in make_local_storage
+    raise PermissionError(" ".join(message)) from error
+PermissionError: [Errno 13] Permission denied: '/var/www/.u2net' | Pooch could not create data cache folder '/var/www/.u2net'. Will not be able to download data files.

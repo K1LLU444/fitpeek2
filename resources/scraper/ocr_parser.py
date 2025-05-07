@@ -1,13 +1,28 @@
-from paddleocr import PaddleOCR
+import os
+import re
+import cv2
+import numpy as np
 from PIL import Image
 from io import BytesIO
 import requests
-import numpy as np
-import re
-import os
-import cv2
 
-ocr_model = None
+# Set model path before importing PaddleOCR
+os.environ['PADDLEOCR_HOME'] = '/tmp/.paddleocr'
+os.makedirs(os.environ['PADDLEOCR_HOME'], exist_ok=True)
+
+from paddleocr import PaddleOCR
+
+# Globals
+ocr_model = PaddleOCR(
+    use_angle_cls=True,
+    lang='en',
+    show_log=False,
+    use_space_char=True,
+    det_model_dir='/var/www/fitpeek2/storage/ocr_models/det',
+    rec_model_dir='/var/www/fitpeek2/storage/ocr_models/rec',
+    cls_model_dir='/var/www/fitpeek2/storage/ocr_models/cls'
+)
+
 
 known_sizes = {"XXS", "XS", "S", "M", "L", "XL", "XXL", "2XL", "3XL", "4XL"}
 number_like = re.compile(r'[0-9]+(?:\.[0-9]+)?(?:\s*[-–—]\s*[0-9]+(?:\.[0-9]+)?)?')
@@ -19,10 +34,13 @@ def init_paddleocr():
     if ocr_model is None:
         ocr_model = PaddleOCR(use_angle_cls=True, lang='en', show_log=False, use_space_char=True)
 
+
 def download_image(image_url):
     response = requests.get(image_url)
+    response.raise_for_status()
     image = Image.open(BytesIO(response.content)).convert("RGB")
     return np.array(image)
+
 
 def clean_number(val):
     val = val.replace('O', '0').replace('Q', '9').replace('Z', '2')
@@ -31,19 +49,21 @@ def clean_number(val):
     val = re.sub(r'[^\d\.-]', '', val)
     return val
 
+
 def extract_flat_ocr_lines(image_url):
     """
-    Returns flat OCR lines from the image using PaddleOCR
+    Extracts flat OCR lines from the image using PaddleOCR and saves debug image.
     """
     init_paddleocr()
     image = download_image(image_url)
+
     save_path = "public/debug/ocr_debug.png"
     os.makedirs(os.path.dirname(save_path), exist_ok=True)
 
     result = ocr_model.ocr(image, cls=True)
     flat_lines = [line[1][0].strip() for line in result[0] if line[1][0].strip()]
 
-    # Save annotated debug image
+    # Annotated debug image
     image_cv = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
     for line in result[0]:
         box = np.array(line[0]).astype(int)

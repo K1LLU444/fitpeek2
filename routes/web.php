@@ -106,4 +106,7 @@ Route::get('/chat', function () {
     return view('chat');
 });
 
+Route::post('/rate-suggestion', [ChatSupportController::class, 'rateSuggestion'])->name('chat.rateSuggestion');
+
+
 require __DIR__.'/auth.php';
