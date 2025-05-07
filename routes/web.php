@@ -9,6 +9,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\AvatarController;
 use App\Http\Controllers\ProductScrapeController;
 use App\Models\Product;
+use App\Http\Controllers\ShirtOverlayController;
 use App\Http\Controllers\ChatSupportController;
 
 
@@ -92,6 +93,9 @@ Route::get('/avatar/success', function () {
 
 Route::post('/avatar-upload', [AvatarController::class, 'upload'])->name('avatar.upload');
 
+Route::get('/overlay/default', [ShirtOverlayController::class, 'applyDefault'])->name('overlay.apply-default');
+
+Route::get('/product/{product}/overlay', [ShirtOverlayController::class, 'overlay'])->name('shirt.overlay');
 
 // For normal free chat (OpenAI)
 Route::post('/chat/support', [ChatSupportController::class, 'chat'])->name('chat.support');
@@ -101,6 +105,22 @@ Route::post('/chat/suggest-outfit', [ChatSupportController::class, 'suggestOutfi
 
 // For form submission outfit suggestion
 Route::post('/chat/suggest-outfit-form', [ChatSupportController::class, 'suggestOutfitForm'])->name('chat.suggestOutfitForm');
+
+Route::post('/overlay/dynamic', [ShirtOverlayController::class, 'overlayDynamic'])->name('overlay.dynamic');
+
+// Route::post('/overlay/{product}', [ShirtOverlayController::class, 'overlay'])->name('overlay.dynamic');
+
+Route::post('/overlay-back/{product}', [ShirtOverlayController::class, 'overlayBack'])->name('overlay.back');
+
+// Route::post('/overlay-size/{product}', [ShirtOverlayController::class, 'overlayWithSize'])->name('overlay.dynamic.size');
+
+// Route::post('/overlay-size/{product}', [ShirtOverlayController::class, 'overlayWithSize'])->name('overlay.bySize');
+
+// Route::post('/overlay/by-size', [ShirtOverlayController::class, 'applyBySize'])->name('overlay.bySize');
+
+Route::post('/overlay/by-size', [ShirtOverlayController::class, 'overlayBySize'])->name('overlay.bySize');
+
+Route::post('/product/{product}/auto-tryon', [ShirtOverlayController::class, 'autoTryOn'])->name('product.autoTryOn');
 
 Route::get('/chat', function () {
     return view('chat');
