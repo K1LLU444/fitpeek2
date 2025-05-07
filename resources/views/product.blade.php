@@ -256,21 +256,77 @@
                     </button>
                 </form>
             </div>
+<!-- RIGHT SIDE (RECOMMENDATION RESULT) -->
+<div class="bg-white p-6 rounded-xl shadow border flex-1 overflow-y-auto max-h-[600px]">
+    @if (session('suggestion'))
+        <!-- 🧠 GPT Response -->
+        <div class="w-full prose prose-sm sm:prose-base max-w-none text-gray-800">
+            {!! Str::markdown(session('suggestion.message')) !!}
+        </div>
 
-            <!-- RIGHT SIDE (RECOMMENDATION RESULT) -->
-            <div class="bg-white p-6 rounded-xl shadow border flex-1 overflow-y-auto max-h-[600px]">
-            @if (session('suggestion'))
-                <div class="w-full prose prose-sm sm:prose-base max-w-none text-gray-800">
-                    {!! Str::markdown(session('suggestion.message')) !!}
-                </div>
-            @else
-                <p class="text-gray-400 text-sm text-center mt-16">
-                    (The recommendation result will show up here)
-                </p>
-            @endif
+        @php
+            $ratings = session('suggestion.ratings') ?? [
+                'average' => session('suggestion.average') ?? null,
+                'total' => session('suggestion.total') ?? 0,
+                'counts' => session('suggestion.counts') ?? [5 => 0, 4 => 0, 3 => 0, 2 => 0, 1 => 0],
+            ];
+        @endphp
+
+        <!-- ⭐ Rating Form (only if not yet rated) -->
+        @if (!session('has_rated'))
+            <div class="mt-6">
+                <p class="text-sm text-gray-700 mb-1">How would you rate this suggestion?</p>
+
+                <form method="POST" action="{{ route('chat.rateSuggestion') }}">
+                    @csrf
+                    <input type="hidden" name="hash" value="{{ session('suggestion.hash') }}">
+                    <div class="flex items-center space-x-1 mt-2">
+                        @for ($i = 1; $i <= 5; $i++)
+                            <button type="submit" name="rating" value="{{ $i }}"
+                                class="text-yellow-400 text-2xl hover:scale-110 transition">
+                                ★
+                            </button>
+                        @endfor
+                    </div>
+                </form>
             </div>
+        @endif
+
+        <!-- 📊 Rating Stats -->
+        @if ($ratings['average'])
+            <div class="mt-6">
+                <div class="flex items-center space-x-4">
+                    <div class="text-4xl font-bold text-gray-800">{{ number_format($ratings['average'], 1) }}</div>
+                    <div class="text-sm text-gray-500">{{ $ratings['total'] }} rating{{ $ratings['total'] == 1 ? '' : 's' }}</div>
+                </div>
+
+                @foreach ([5, 4, 3, 2, 1] as $star)
+                    @php
+                        $count = $ratings['counts'][$star] ?? 0;
+                        $percentage = $ratings['total'] > 0 ? ($count / $ratings['total']) * 100 : 0;
+                    @endphp
+                    <div class="flex items-center space-x-2 mt-2">
+                        <span class="w-4 text-sm text-gray-700">{{ $star }}★</span>
+                        <div class="flex-1 bg-gray-200 rounded h-3">
+                            <div class="bg-yellow-400 h-3 rounded" style="width: {{ $percentage }}%"></div>
+                        </div>
+                        <span class="text-xs text-gray-500 w-6 text-right">{{ $count }}</span>
+                    </div>
+                @endforeach
+            </div>
+        @endif
+    @else
+        <!-- Placeholder if no suggestion yet -->
+        <p class="text-gray-400 text-sm text-center mt-16">
+            (The recommendation result will show up here)
+        </p>
+    @endif
+</div>
+
+
 
         </div>
+
 
         <script>
             function toggleOtherEventInput() {
@@ -304,7 +360,7 @@
             <div class="bg-gray-100 min-h-screen p-4 sm:p-6 mt-6 sm:mt-8">
                 <div class="max-w-7xl mx-auto">
                     <h2 class="text-lg sm:text-xl font-semibold mb-3 text-left">Previous picks</h2>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 flex justify-left">
+                    <div class="overflow-x-auto">
                         <div class="flex space-x-4 pb-4">
                             @foreach ($otherProducts as $item)
                                 <a href="{{ route('product.show', $item->id) }}">
@@ -321,11 +377,12 @@
                                     image="{{ $imageSrc }}"
                                     text="{{ $item->product_name }}"
                                     price="{{ $item->price }}"
+                                    link="{{ route('product.show', $item->id) }}"
                                 />
-
                                 </a>
                             @endforeach
                         </div>
+
                     </div>
                 </div>
             </div>
