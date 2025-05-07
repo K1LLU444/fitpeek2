@@ -13,7 +13,7 @@ class ProductScrapeController extends Controller
     public function scrape(Request $request)
 {
     $url = $request->input('product_url');
-    $python = 'C:\\Python310\\python.exe';
+    $python = '/var/www/fitpeek2/flaskenv310/bin/python';
     $script = base_path('resources/scraper/scrape_router.py');
     $escapedUrl = escapeshellarg($url);
 
@@ -102,44 +102,60 @@ class ProductScrapeController extends Controller
         try {
             // Download the image
             $imageData = file_get_contents($url);
-            $tempPath = storage_path("app/temp-{$slug}.png");
+            $tempPath = storage_path("app/product_images/temp-{$slug}.png");
             file_put_contents($tempPath, $imageData);
-
-            // Output location (inside public/products)
+    
+            // Output location
             $outputPath = public_path("products/{$slug}.png");
-
-            // Ensure folder exists
+    
+            // Ensure folders exist
+            if (!file_exists(storage_path('app/product_images'))) {
+                mkdir(storage_path('app/product_images'), 0755, true);
+            }
             if (!file_exists(public_path('products'))) {
                 mkdir(public_path('products'), 0755, true);
             }
-
-            // Python + script
-            $python = 'C:\\Python310\\python.exe';
+    
+            // Python setup
+            $python = '/var/www/fitpeek2/flaskenv310/bin/python';
             $script = base_path('resources/scraper/remove_bg.py');
-
-            // ✅ ENV setup like the scraper logic
+    
             putenv("PYTHONHASHSEED=random");
-            putenv("NUMBA_CACHE_DIR=C:\\xampp\\tmp");
+            putenv("NUMBA_CACHE_DIR=/tmp");
+            putenv("U2NET_HOME=" . storage_path("app/u2net"));
+            $u2netPath = storage_path("app/u2net");
+                if (!file_exists($u2netPath)) {
+                    mkdir($u2netPath, 0755, true);
+                }
 
-            // Build command
+
+    
+            // Command
             $escapedInput = escapeshellarg($tempPath);
             $escapedOutput = escapeshellarg($outputPath);
             $command = "\"$python\" \"$script\" $escapedInput $escapedOutput 2>&1";
-
-            // Run command
+    
+            // Run
             $output = shell_exec($command);
-
-            // Optional: check if output file exists
+    
+            // 🔍 Debug
+            file_put_contents(storage_path("app/rembg_debug_command.txt"), $command);
+            file_put_contents(storage_path("app/rembg_last_output.txt"), $output);
+            logger()->info("🧪 Rembg command:", ['cmd' => $command]);
+            logger()->info("🧪 Rembg output:", ['out' => $output]);
+    
             if (!file_exists($outputPath)) {
                 throw new \Exception("rembg failed or did not create: {$outputPath}");
             }
-
+    
             return 'products/' . basename($outputPath);
         } catch (\Exception $e) {
             logger()->error("❌ Background removal error: " . $e->getMessage());
             return null;
         }
     }
+    
+    
 
 
 

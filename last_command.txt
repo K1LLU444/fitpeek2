@@ -1,1 +1,1 @@
-"C:\Python310\python.exe" "C:\xampp\htdocs\fitpeek2\resources/scraper/scrape_router.py" "https://dailygrindstore.com/collections/daily-grind-bottoms/products/daily-grind-dynamics-find-your-pace-bond-shorts-gray" 2>&1
+"/var/www/fitpeek2/flaskenv310/bin/python" "/var/www/fitpeek2/resources/scraper/scrape_router.py" 'https://dailygrindstore.com/collections/daily-grind-tops/products/daily-grind-linear-code-jersey-shortsleeve-blue' 2>&1

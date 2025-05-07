@@ -1,6 +1,10 @@
 import sys
+import os
 from rembg import remove
 from PIL import Image
+
+# ✅ Set writable cache path for model
+os.environ['XDG_CACHE_HOME'] = '/tmp/.u2net'
 
 input_path = sys.argv[1]
 output_path = sys.argv[2]
