@@ -30,38 +30,54 @@ class ShirtOverlayController extends Controller
 
         $sizeData = collect($sizeChart)->firstWhere('size', $selectedSize);
 
-        // Use dynamic fields based on product_type
-        if ($productType === 'top') {
-            if (!isset($sizeData['width']) || !isset($sizeData['length'])) {
-                return back()->withErrors(['Size data for top is incomplete.']);
-            }
-            $dimension1 = floatval(preg_replace('/[^\d.]/', '', $sizeData['width']));
-            $dimension2 = floatval(preg_replace('/[^\d.]/', '', $sizeData['length']));            
-            
-        } else {
-            if (!isset($sizeData['width']) || !isset($sizeData['length'])) {
-                return back()->withErrors(['Size data for bottom is incomplete.']);
-            }
-            $dimension1 = floatval(preg_replace('/[^\d.]/', '', $sizeData['width']));
-            $dimension2 = floatval(preg_replace('/[^\d.]/', '', $sizeData['length']));            
-        }
-
-        Log::info('📏 Size dimensions', [
-            'selected_size' => $selectedSize,
-            'dimension1' => $dimension1,
-            'dimension2' => $dimension2,
-            'product_type' => $productType
-        ]);
-
         $avatar = Avatar::where('user_id', Auth::id())->first();
         if (!$avatar) {
             return back()->withErrors(['No avatar found.']);
         }
+        
+        if ($productType === 'top') {
+            $width = $sizeData['width'] ?? $sizeData['waist'] ?? null;
+            $length = $sizeData['length'] ?? null;
+        
+            if (!$width) {
+                return back()->withErrors(['Width-related data for top is incomplete.']);
+            }
+        
+            $dimension1 = floatval(preg_replace('/[^\d.]/', '', $width));
+            $cleanedLength = preg_replace('/[^\d.]/', '', $length);
+            $dimension2 = is_numeric($cleanedLength) && $cleanedLength > 0 ? floatval($cleanedLength) : 'none';
+
+        
+        } elseif ($productType === 'bottom') {
+            $width = $sizeData['width']
+                ?? $sizeData['waistline_max']
+                ?? $sizeData['waist']
+                ?? $sizeData['hip']
+                ?? null;
+            $length = $sizeData['length'] ?? null;
+        
+            if (!$width) {
+                return back()->withErrors(['Width-related data for bottom is incomplete.']);
+            }
+        
+            $dimension1 = floatval(preg_replace('/[^\d.]/', '', $width));
+            $cleanedLength = preg_replace('/[^\d.]/', '', $length);
+            $dimension2 = is_numeric($cleanedLength) && $cleanedLength > 0 ? floatval($cleanedLength) : 'none';
+
+        
+        } else {
+            return back()->withErrors(['Unsupported product type: ' . $productType]);
+        }
+            
+        Log::info('📏 Size dimensions', [
+            'selected_size' => $selectedSize,
+            'dimension1' => $dimension1,
+            'dimension2' => $dimension2,
+            'product_type' => $productType 
+        ]);
 
         $python = 'C:\\Python310\\python.exe';
         $scriptPath = base_path('resources/python/overlay_product.py'); // ✅ use one path
-        // $scriptFront = base_path('resources/python/overlay_product.py');
-        // $scriptBack = base_path('resources/python/overlay_product.py');
 
         $avatarFront = storage_path("app/public/avatars/front_cleaned_user{$avatar->user_id}.png");
         $avatarBack = storage_path("app/public/avatars/back_cleaned_user{$avatar->user_id}.png");

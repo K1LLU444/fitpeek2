@@ -32,10 +32,9 @@
                                             alt="Try-on Back" />
                                     @endif
 
-                                    <p id="tryonStatus" class="text-green-600 text-sm text-center">Try-on result ready!</p>
                                 </div>
                             @else
-                                <p class="text-red-500 text-sm text-center">Try-on result not found. Please try again.</p>
+                                <p class="text-gray-500 text-sm text-center">Please select a size and click Try-on.</p>
                             @endif
                 </div>
             </div>
