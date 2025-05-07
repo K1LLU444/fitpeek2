@@ -1,3 +1,5 @@
+import os
+os.environ['PADDLEOCR_HOME'] = '/tmp/.paddleocr'
 import sys
 import json
 import scrape_nckatmtc

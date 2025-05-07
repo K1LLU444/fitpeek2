@@ -20,35 +20,43 @@
         </div>
     </header>
 
-    <!-- Main Content -->
-    <div class="flex items-center justify-center md:justify-start text-center md:text-left px-6 md:px-10 lg:px-20 max-w-7xl mx-auto h-screen ml-[-10px]">
-        <div class="w-full md:w-1/2 flex flex-col items-center md:items-start justify-center">
-            <!-- Text Section -->
-            <h1 class="text-4xl md:text-6xl lg:text-7xl font-bold text-black leading-tight">
-                Virtual Try-on
-            </h1>
-            <p class="text-lg md:text-2xl lg:text-3xl text-gray-600 mt-3">
-                Create your style
-            </p>
+<!-- Main Content -->
+<div class="flex flex-col md:flex-row items-center justify-between px-6 md:px-16 lg:px-24 max-w-7xl mx-auto min-h-screen">
+    <!-- LEFT: Text Section -->
+    <div class="w-full md:w-[40%] flex flex-col justify-center items-start">
+        <h1 class="text-4xl md:text-6xl lg:text-7xl font-bold text-black leading-tight">
+            Virtual Try-on
+        </h1>
+        <p class="text-lg md:text-2xl lg:text-3xl text-gray-600 mt-4">
+            Create your style
+        </p>
 
-            <!-- Buttons -->
-            <div class="flex flex-col sm:flex-row items-center md:items-start mt-6 space-y-4 sm:space-y-0 sm:space-x-4">
-                <form action="{{ route('login') }}" method="GET">
-                    <x-primary-button class="w-40 sm:w-44 md:w-48 text-lg md:text-xl px-6 py-3 shadow-xl">
-                        Log In
+        <!-- Buttons -->
+        <div class="flex flex-col sm:flex-row mt-6 space-y-4 sm:space-y-0 sm:space-x-4">
+            <form action="{{ route('login') }}" method="GET">
+                <x-primary-button class="w-40 sm:w-44 md:w-48 text-lg md:text-xl px-6 py-3 shadow-xl">
+                    Log In
+                </x-primary-button>
+            </form>
+
+            @if (Route::has('register'))
+                <form action="{{ route('register') }}" method="GET">
+                    <x-primary-button class="w-40 sm:w-30 md:w-48 text-lg md:text-xl px-6 py-3 shadow-xl">
+                        Sign Up
                     </x-primary-button>
                 </form>
-
-                @if (Route::has('register'))
-                    <form action="{{ route('register') }}" method="GET">
-                        <x-primary-button class="w-40 sm:w-30 md:w-48 text-lg md:text-xl px-6 py-3 shadow-xl">
-                            Sign Up
-                        </x-primary-button>
-                    </form>
-                @endif
-            </div>
+            @endif
         </div>
     </div>
+
+    <!-- RIGHT: Image Section (Hidden on mobile, enlarged on desktop) -->
+    <div class="hidden md:flex w-full md:w-[60%] justify-center">
+        <img src="{{ asset('images/landing-page.png') }}" alt="Landing Page" class="w-full h-auto rounded-xl shadow-xl">
+    </div>
+</div>
+
+
+
 
 </body>
 </html>

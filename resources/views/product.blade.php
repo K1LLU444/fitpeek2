@@ -147,6 +147,17 @@
                     <p class="text-gray-500 text-sm mt-4 md:text-center">No size chart found.</p>
                 @endif
 
+                <!--Recommended Size Display -->
+                @if(isset($recommendedSize))
+                    <div class="mt-4 text-green-600 text-lg font-bold">
+                Recommended Size: {{ $recommendedSize }}
+                    </div>
+                @else
+                    <div class="mt-4 text-red-500 text-lg font-bold">
+                 No size available for your measurements
+                    </div>
+                @endif
+
 
                 <!-- SIZES DROPDOWN -->
                 @if($product->size_chart_data)
@@ -165,10 +176,11 @@
                     </div>
                 @endif
 
-
+                <a href="{{ route('tryon', ['product_id' => $product->id,'recommended_size' => $recommendedSize]) }}">
                 <button class="w-full bg-accent-color text-white font-semibold py-2 mt-4 rounded-lg hover:bg-accent-hover transition-all duration-300">
                     Try-on
                 </button>
+                </a>
             </div>
         </div>
 

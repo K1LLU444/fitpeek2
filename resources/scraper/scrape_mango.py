@@ -3,6 +3,7 @@ from bs4 import BeautifulSoup
 import pytesseract
 import warnings
 import os
+os.environ['PADDLEOCR_HOME'] = '/tmp/.paddleocr'
 import sys
 import json
 

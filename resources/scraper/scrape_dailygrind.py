@@ -1,23 +1,13 @@
+import sys
+import os
+import warnings
 import requests
 from bs4 import BeautifulSoup
-import pytesseract
-import warnings
-import os
-import sys
 
-# 🚫 Silence noisy modules during import
-original_stdout = sys.stdout
-original_stderr = sys.stderr
-sys.stdout = open(os.devnull, 'w')
-sys.stderr = open(os.devnull, 'w')
-
-sys.stdout = original_stdout
-sys.stderr = original_stderr
-
-# ✅ Setup
+# ✅ Optional: Silence warnings
 warnings.filterwarnings("ignore")
-pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
 
+# ✅ MAIN Scraper Function
 def scrape(url):
     try:
         response = requests.get(url, timeout=10)
@@ -51,7 +41,8 @@ def scrape(url):
                             src = 'https://dailygrindstore.com' + url_part
                         else:
                             src = url_part
-                        images.append(src)
+                        if src.strip():  # 🧹 Skip blank src
+                            images.append(src)
                         found = True
                         break
             # Fallback if 1800w not found, get last highest
@@ -63,21 +54,19 @@ def scrape(url):
                     src = 'https://dailygrindstore.com' + last_url
                 else:
                     src = last_url
-                images.append(src)
+                if src.strip():  # 🧹 Skip blank src
+                    images.append(src)
         else:
             src = img_tag.get('src') or ''
-            if src:
+            if src.strip():  # 🧹 Skip blank src
                 if src.startswith('//'):
                     src = 'https:' + src
                 elif src.startswith('/'):
                     src = 'https://dailygrindstore.com' + src
                 images.append(src)
 
-    # ✅ Remove duplicates
+    # ✅ Final deduplicate and cleaning
     images = list(dict.fromkeys(images))
-
-
-
 
 
     # 🛍️ Product Name
@@ -90,15 +79,14 @@ def scrape(url):
 
     # 📄 Product Description and Size Chart
     desc_div = soup.select_one('div.product-page--description')
-
     description = None
     size_chart_data = None
 
     if desc_div:
-        # 📄 Get all text content first
+        # 📝 Full description text
         description = desc_div.get_text(separator="\n").strip()
 
-        # 📊 Then, find the size chart table
+        # 📊 Parse size chart table if available
         table = desc_div.find('table')
         if table:
             headers = []
@@ -106,14 +94,13 @@ def scrape(url):
             for tr in table.find_all('tr'):
                 cols = [td.get_text(strip=True) for td in tr.find_all('p')]
                 if not headers:
-                    headers = cols  # First row = headers
+                    headers = cols
                 else:
                     rows.append(cols)
-            
-            # 🏗️ Parse size chart into JSON
+
             size_chart_data = []
             if headers:
-                sizes = headers[1:]
+                sizes = headers[1:]  # Skip first column (e.g., 'Size', 'Waist')
                 for i, size in enumerate(sizes):
                     size_entry = {"size": size}
                     for row in rows:
@@ -126,7 +113,7 @@ def scrape(url):
                                 size_entry[key] = value
                     size_chart_data.append(size_entry)
 
-    # 🚀 ✅ IMPORTANT: Add the final return here!
+    # 🎯 Final return
     return {
         "product_url": url,
         "product_images": images,
@@ -136,9 +123,13 @@ def scrape(url):
         "size_chart_data": size_chart_data
     }
 
-# ✅ If called directly
+# ✅ Direct test (for manual debugging)
 if __name__ == "__main__":
     import json
+    if len(sys.argv) < 2:
+        print(json.dumps({"error": "No URL provided"}))
+        sys.exit(1)
+
     url = sys.argv[1]
     result = scrape(url)
     print(json.dumps(result))
