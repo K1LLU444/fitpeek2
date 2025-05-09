@@ -13,10 +13,7 @@ use App\Http\Controllers\ShirtOverlayController;
 use App\Http\Controllers\ChatSupportController;
 use App\Http\Controllers\WeatherController;
 use App\Http\Controllers\TryOnController;
-use App\Http\Controllers\ImageCleanController;
 
-Route::get('/clean-image', [ImageCleanController::class, 'index'])->name('clean.index');
-Route::post('/clean-image', [ImageCleanController::class, 'process'])->name('clean.process');
 
 
 // Default home page
@@ -140,5 +137,8 @@ Route::get('/weather', [TryOnController::class, 'show'])->name('weather');
 
 Route::get('/clean-image', [ImageCleanController::class, 'index'])->name('clean.index');
 Route::post('/clean-image', [ImageCleanController::class, 'process'])->name('clean.process');
+
+Route::post('/fetch-recommendations', [\App\Http\Controllers\ProductRecommendationController::class, 'fetch']);
+
 
 require __DIR__.'/auth.php';
