@@ -24,43 +24,60 @@ class ShirtOverlayController extends Controller
         ]);
 
         $product = Product::findOrFail($request->product_id);
-        $productType = $product->product_type ?? 'top';
+        $productType = in_array($product->product_type, ['top', 'bottom']) ? $product->product_type : 'top';
         $sizeChart = json_decode($product->size_chart_data, true);
         $selectedSize = $request->selected_size;
 
         $sizeData = collect($sizeChart)->firstWhere('size', $selectedSize);
 
-        // Use dynamic fields based on product_type
-        if ($productType === 'top') {
-            if (!isset($sizeData['width']) || !isset($sizeData['length'])) {
-                return back()->withErrors(['Size data for top is incomplete.']);
-            }
-            $dimension1 = $sizeData['width'];
-            $dimension2 = $sizeData['length'];
-        } else {
-            if (!isset($sizeData['width']) || !isset($sizeData['length'])) {
-                return back()->withErrors(['Size data for bottom is incomplete.']);
-            }
-            $dimension1 = $sizeData['width']; // Treat as waist
-            $dimension2 = $sizeData['length']; // Treat as outseam length
-        }
-
-        Log::info('📏 Size dimensions', [
-            'selected_size' => $selectedSize,
-            'dimension1' => $dimension1,
-            'dimension2' => $dimension2,
-            'product_type' => $productType
-        ]);
-
         $avatar = Avatar::where('user_id', Auth::id())->first();
         if (!$avatar) {
             return back()->withErrors(['No avatar found.']);
         }
+        
+        if ($productType === 'top') {
+            $width = $sizeData['width'] ?? $sizeData['waist'] ?? null;
+            $length = $sizeData['length'] ?? null;
+        
+            if (!$width) {
+                return back()->withErrors(['Width-related data for top is incomplete.']);
+            }
+        
+            $dimension1 = floatval(preg_replace('/[^\d.]/', '', $width));
+            $cleanedLength = preg_replace('/[^\d.]/', '', $length);
+            $dimension2 = is_numeric($cleanedLength) && $cleanedLength > 0 ? floatval($cleanedLength) : 'none';
 
-        $python = 'C:\\Python310\\python.exe';
+        
+        } elseif ($productType === 'bottom') {
+            $width = $sizeData['width']
+                ?? $sizeData['waistline_max']
+                ?? $sizeData['waist']
+                ?? $sizeData['hip']
+                ?? null;
+            $length = $sizeData['length'] ?? null;
+        
+            if (!$width) {
+                return back()->withErrors(['Width-related data for bottom is incomplete.']);
+            }
+        
+            $dimension1 = floatval(preg_replace('/[^\d.]/', '', $width));
+            $cleanedLength = preg_replace('/[^\d.]/', '', $length);
+            $dimension2 = is_numeric($cleanedLength) && $cleanedLength > 0 ? floatval($cleanedLength) : 'none';
+
+        
+        } else {
+            return back()->withErrors(['Unsupported product type: ' . $productType]);
+        }
+            
+        Log::info('📏 Size dimensions', [
+            'selected_size' => $selectedSize,
+            'dimension1' => $dimension1,
+            'dimension2' => $dimension2,
+            'product_type' => $productType 
+        ]);
+
+        $python = '/var/www/fitpeek2/flaskenv310/bin/python';
         $scriptPath = base_path('resources/python/overlay_product.py'); // ✅ use one path
-        // $scriptFront = base_path('resources/python/overlay_product.py');
-        // $scriptBack = base_path('resources/python/overlay_product.py');
 
         $avatarFront = storage_path("app/public/avatars/front_cleaned_user{$avatar->user_id}.png");
         $avatarBack = storage_path("app/public/avatars/back_cleaned_user{$avatar->user_id}.png");
@@ -71,8 +88,11 @@ class ShirtOverlayController extends Controller
         $productFront = public_path($request->front_image);
         $productBack = public_path($request->back_image);
 
-        $frontOutputPath = storage_path('app/public/results/tryon_result_front.png');
-        $backOutputPath = storage_path('app/public/results/tryon_result_back.png');
+        $userId = $avatar->user_id;
+        $productId = $product->id;
+        
+        $frontOutputPath = storage_path("app/public/results/tryon_result_front_user{$userId}_product{$productId}.png");
+        $backOutputPath = storage_path("app/public/results/tryon_result_back_user{$userId}_product{$productId}.png");        
 
         Log::info('🧢 FRONT CMD Arguments', [
             'height' => $avatar->height,
@@ -133,12 +153,12 @@ class ShirtOverlayController extends Controller
             }
         }
 
-        if (!File::exists($frontOutputPath)) {
+        if ($request->front_image && !File::exists($frontOutputPath)) {
             Log::error("Front tryon_result_front.png NOT FOUND");
         }
-        if (!File::exists($backOutputPath)) {
+        if ($request->back_image && !File::exists($backOutputPath)) {
             Log::error("Back tryon_result_back.png NOT FOUND");
-        }
+        }        
 
         return redirect()->route('product.show', ['product' => $product->id]);
     }
@@ -155,13 +175,20 @@ class ShirtOverlayController extends Controller
     $firstSize = $sizeChart[0]['size'] ?? null;
     if (!$firstSize) return back()->withErrors(['No valid size found.']);
 
+    $sizeData = collect($sizeChart)->firstWhere('size', $firstSize);
+    if (!$sizeData || !isset($sizeData['width']) || !isset($sizeData['length'])) {
+        return back()->withErrors(['Missing size chart data for default size.']);
+    }
+    
     $request->merge([
         'product_id' => $product->id,
         'selected_size' => $firstSize,
         'avatar_height' => $avatar->height,
         'front_image' => $product->front_image,
         'back_image' => $product->back_image,
-    ]);
+        'dimension1' => $sizeData['width'],
+        'dimension2' => $sizeData['length'],
+    ]);    
 
     // Reuse the overlayBySize logic
     return app()->call([$this, 'overlayBySize'], ['request' => $request]);

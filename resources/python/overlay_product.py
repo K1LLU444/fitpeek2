@@ -1,9 +1,9 @@
+
 import cv2
 import numpy as np
 import os
 import sys
 
-# os.environ["PYTHONHASHSEED"] = "0"
 print("Working directory:", os.getcwd())
 
 if len(sys.argv) < 8:
@@ -16,7 +16,7 @@ current_avatar_height = float(sys.argv[1])
 avatar_path = sys.argv[2].replace('\\', '/')
 clothing_path = sys.argv[3].replace('\\', '/')
 width_inches = float(sys.argv[4])
-length_inches = float(sys.argv[5])
+length_inches = sys.argv[5]
 output_path = sys.argv[6].replace('\\', '/')
 product_type = sys.argv[7].strip().lower()
 
@@ -40,61 +40,68 @@ if clothing is None:
 if clothing.shape[2] == 3:
     clothing = cv2.cvtColor(clothing, cv2.COLOR_BGR2BGRA)
 
-# --- Resize avatar for better visibility ---
-scale_avatar = 1.5
+# --- Resize avatar ---
+scale_avatar = 1.9
 avatar = cv2.resize(avatar, (0, 0), fx=scale_avatar, fy=scale_avatar)
 avatar_h, avatar_w = avatar.shape[:2]
 
-# --- Scaling logic ---
+# --- px/cm ratio ---
 pixels_per_cm = avatar_h / current_avatar_height
-width_cm = width_inches * 2.54
-length_cm = length_inches * 2.00
+
+# --- Boost factors ---
+if product_type == "top":
+    width_boost = 1.45
+    length_boost = 1.17
+elif product_type == "bottom":
+    width_boost = 0.9
+    length_boost = 1.15
+else:
+    width_boost = 1.0
+    length_boost = 1.0
+
+# --- Convert to cm with fallback if length is missing ---
+width_cm = width_inches * 2.54 * width_boost
+
+if length_inches == "none" or float(length_inches) == 0.0:
+    # Fallback: make length ~75% of width (reasonable default for shorts/skirts)
+    length_cm = width_inches * 0.75 * 2.54 * length_boost
+    print(f"⚠️ No length provided — using fallback: {length_cm:.2f} cm (75% of width)")
+else:
+    length_cm = float(length_inches) * 2.54 * length_boost
 
 target_width = int(width_cm * pixels_per_cm)
 target_height = int(length_cm * pixels_per_cm)
+
+# --- Clamp ---
 target_width = max(50, min(target_width, avatar_w))
 target_height = max(50, min(target_height, avatar_h))
+
+# --- Resize clothing ---
+resized_clothing = cv2.resize(clothing, (target_width, target_height))
 
 print(f"Clothing size (px): {target_width} x {target_height}")
 print(f"Avatar height (px): {avatar_h}, real height: {current_avatar_height} cm")
 print(f"px/cm ratio: {pixels_per_cm:.2f}")
 
-# --- Resize clothing image ---
-resized_clothing = cv2.resize(clothing, (target_width, target_height))
-
-# --- Placement logic ---
+# --- Placement ---
 x_offset = (avatar_w - target_width) // 2
+shoulder_ratio = 0.15
+hip_ratio = 0.45
 
-# Top or Bottom placement
 if product_type == "top":
-    # Shirt position
-    MIN_HEIGHT_CM = 154.54
-    MAX_HEIGHT_CM = 197.6
-    BASE_Y = 200
-    MAX_OFFSET = 60
-    Y_SHIFT = -115
-    ratio = (MAX_HEIGHT_CM - current_avatar_height) / (MAX_HEIGHT_CM - MIN_HEIGHT_CM)
-    y_offset = int(BASE_Y + ratio * MAX_OFFSET + Y_SHIFT)
-    print(f"Final Y-position (shirt): {y_offset}px")
-
+    y_offset = int(avatar_h * shoulder_ratio)
+    print(f"Aligning shirt at shoulder Y = {y_offset}px")
 elif product_type == "bottom":
-    # Pants position
-    BASE_WAIST_Y = 430
-    WAIST_SHIFT = -200
-    MIN_HEIGHT_CM = 154.54
-    MAX_HEIGHT_CM = 197.6
-    ratio = (MAX_HEIGHT_CM - current_avatar_height) / (MAX_HEIGHT_CM - MIN_HEIGHT_CM)
-    y_offset = int(BASE_WAIST_Y + ratio * 40 + WAIST_SHIFT)
-    print(f"Final Y-position (pants): {y_offset}px")
-
+    y_offset = int(avatar_h * hip_ratio)
+    print(f"Aligning pants/skirt at hips Y = {y_offset}px")
 else:
     raise ValueError(f"Unknown product type: {product_type}. Must be 'top' or 'bottom'.")
 
-# --- Composite ---
+# --- Composite overlay ---
 output = avatar.copy()
 for y in range(resized_clothing.shape[0]):
     for x in range(resized_clothing.shape[1]):
-        if y + y_offset < avatar_h and x + x_offset < avatar_w:
+        if 0 <= y + y_offset < avatar_h and 0 <= x + x_offset < avatar_w:
             alpha = resized_clothing[y, x, 3] / 255.0
             if alpha > 0:
                 for c in range(3):

@@ -36,3 +36,5 @@ venv/Lib/site-packages/polars/polars.pyd
 models/smplx/
 /flaskenv
 /flaskenv310
+/models
+/public/C:\xampp\tmp/

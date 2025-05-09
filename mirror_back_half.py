@@ -44,7 +44,7 @@ if __name__ == "__main__":
     output_path = sys.argv[2]
 
     # Based on earlier HTML map coords
-    start_x = 233
-    end_x = 448
+    start_x = 227
+    end_x = 447
 
     mirror_right_half(input_path, output_path, start_x, end_x)

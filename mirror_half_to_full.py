@@ -3,7 +3,7 @@ import numpy as np
 import sys
 import os
 
-def mirror_half_to_full(img_path, output_path, x_start=1, x_end=217):
+def mirror_half_to_full(img_path, output_path, x_start=1, x_end=221):
     print(f"[DEBUG] Input path: {img_path}")
     print(f"[DEBUG] Output path: {output_path}")
 

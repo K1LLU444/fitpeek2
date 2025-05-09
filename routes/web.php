@@ -11,8 +11,7 @@ use App\Http\Controllers\ProductScrapeController;
 use App\Models\Product;
 use App\Http\Controllers\ShirtOverlayController;
 use App\Http\Controllers\ChatSupportController;
-
-
+use App\Http\Controllers\WeatherController;
 
 // Default home page
 
@@ -128,5 +127,7 @@ Route::get('/chat', function () {
 
 Route::post('/rate-suggestion', [ChatSupportController::class, 'rateSuggestion'])->name('chat.rateSuggestion');
 
+Route::get('/weather', [WeatherController::class, 'index']);
+Route::post('/get-weather', [WeatherController::class, 'getWeather']);
 
 require __DIR__.'/auth.php';

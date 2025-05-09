@@ -141,7 +141,7 @@ public function removeBackgroundFromUrl($url, $slug)
         putenv("U2NET_HOME=" . storage_path('app/u2net')); // 🛡️ Correct model cache
 
         // ✅ Step 5: Prepare the command
-        $python = '/var/www/fitpeek2/flaskenv310/bin/python3';
+        $python = '/var/www/fitpeek2/flaskenv310/bin/python';
         $script = base_path('resources/scraper/remove_bg.py');
         $escapedInput = escapeshellarg($tempPath);
         $escapedOutput = escapeshellarg($outputPath);

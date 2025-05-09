@@ -1,58 +1,45 @@
 {
-    "product_url": "https:\/\/nckatmtc.com\/products\/world-tour-box-fit-tee-acid-pink",
+    "product_url": "https:\/\/dailygrindstore.com\/collections\/daily-grind-tops\/products\/daily-grind-linear-code-jersey-shortsleeve-blue",
     "product_images": [
-        "https:\/\/nckatmtc.com\/cdn\/shop\/files\/Artboard12_904783cd-69ee-448e-ab85-f19841e7a1ad.jpg?v=1734269378&width=1946",
-        "https:\/\/nckatmtc.com\/cdn\/shop\/files\/Artboard11_4f975160-28df-4e45-b5fb-126f332149eb.jpg?v=1734269378&width=1946",
-        "https:\/\/nckatmtc.com\/cdn\/shop\/files\/Artboard13_f678e298-7308-4a8f-b702-a2c900e1082c.jpg?v=1728702565&width=1946",
-        "https:\/\/nckatmtc.com\/cdn\/shop\/files\/Artboard14_a6f23dfc-3b1e-42ee-be4c-f7496e3f2d52.jpg?v=1728702565&width=1946",
-        "https:\/\/nckatmtc.com\/cdn\/shop\/files\/Artboard15_4b499c85-584a-45ae-a8bb-ca74eab7097a.jpg?v=1728702565&width=1946"
+        "https:\/\/dailygrindstore.com\/cdn\/shop\/files\/LINEARCODESHIRT002_1024x1024.jpg?v=1746511101",
+        "https:\/\/dailygrindstore.com\/cdn\/shop\/files\/LINEARCODESHIRT003_1024x1024.jpg?v=1746511101",
+        "https:\/\/dailygrindstore.com\/cdn\/shop\/files\/LINEARCODESHIRT001_1024x1024.jpg?v=1746511101",
+        "https:\/\/dailygrindstore.com\/cdn\/shop\/files\/DSC2199_5e2b76e8-5b59-4194-a2bb-f882a4a1a533_1024x1024.jpg?v=1746512286",
+        "https:\/\/dailygrindstore.com\/cdn\/shop\/files\/DSC2266_1024x1024.jpg?v=1746512286"
     ],
-    "product_name": "World Tour Box Fit Tee (Acid Pink)",
-    "price": "790.00",
-    "description": "Product Details:\n\n\n\n\nPink Acid Wash T-Shirt from Nick Automatic\n\n\nScreen-printed front design\n\n\nRibbed crew neck collar.\n\n\nCotton blend\n\n\nWoven tag attached on left sleeve of the shirt.\n\n\nOversized Box Fit",
-    "size_chart_image": "https:\/\/cdn.shopify.com\/s\/files\/1\/0715\/4630\/6796\/files\/NEW-SIZE-CHART-acid.png?v=1728959126",
+    "product_name": "DAILY GRIND LINEAR CODE JERSEY SHORTSLEEVE BLUE",
+    "price": "995.00",
+    "description": "DAILY GRIND SIZE CHART\n\n\n\n\n\n\n\n\n\n\nSize:\n\n\n\n\n\n\nS\n\n\n\n\n\n\nM\n\n\n\n\n\n\nL\n\n\n\n\n\n\nXL\n\n\n\n\n\n\nXXL\n\n\n\n\n\n\n\n\n\n\nWIDTH\n\n\n\n\n\n\n22\n\n\n\n\n\n\n23\n\n\n\n\n\n\n24\n\n\n\n\n\n\n25\n\n\n\n\n\n\n26\n\n\n\n\n\n\n\n\n\n\nLENGTH\n\n\n\n\n\n\n27\n\n\n\n\n\n\n28\n\n\n\n\n\n\n29\n\n\n\n\n\n\n30\n\n\n\n\n\n\n31\n\n\n\n\n\n\n\n\n\n\nSLEEVES LENGTH\n\n\n\n\n\n\n28\n\n\n\n\n\n\n28\n\n\n\n\n\n\n29\n\n\n\n\n\n\n30\n\n\n\n\n\n\n30\n\n\n\n\n\n\n\n\n\n\n\u00a0\n\n\nSizing Guide:\n\u00a0\nThe size information provided above is for your guidance in choosing your right fit. We try to keep all our sizes consistent but this may vary slightly depending on material type and design. Variation in sizes is minor, only between 0.5 inches to 1.5 inches.\n\n\nThanks for choosing Daily Grind!",
     "size_chart_data": [
-        {
-            "size": "XS",
-            "width": 21,
-            "length": 26,
-            "sleeve_length": 8
-        },
         {
             "size": "S",
             "width": 22,
             "length": 27,
-            "sleeve_length": 8
+            "sleeves length": 28
         },
         {
             "size": "M",
-            "width": 22,
+            "width": 23,
             "length": 28,
-            "sleeve_length": 8.5
+            "sleeves length": 28
         },
         {
             "size": "L",
-            "width": 23,
+            "width": 24,
             "length": 29,
-            "sleeve_length": 9.5
+            "sleeves length": 29
         },
         {
             "size": "XL",
-            "width": 23,
+            "width": 25,
+            "length": 30,
+            "sleeves length": 30
+        },
+        {
+            "size": "XXL",
+            "width": 26,
             "length": 31,
-            "sleeve_length": 9.5
-        },
-        {
-            "size": "2XL",
-            "width": 26,
-            "length": 32,
-            "sleeve_length": 10
-        },
-        {
-            "size": "3XL",
-            "width": 26,
-            "length": 33,
-            "sleeve_length": 11
+            "sleeves length": 30
         }
     ]
 }

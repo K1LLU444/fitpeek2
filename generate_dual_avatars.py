@@ -32,7 +32,7 @@ def main():
     # === A-pose: Rotate shoulders ===
     body_pose = torch.zeros([1, 63], dtype=torch.float32)
 
-    left_shoulder  = [-0.58, 0.12, 1.15]   # ⬅️ boosted Z to rotate arm downward AND outward
+    left_shoulder  = [-0.58, 0.12, 0.62]   # ⬅️ boosted Z to rotate arm downward AND outward
     right_shoulder = [-0.65, 0.15, 0.35]   # ✅ stable and clean
 
     # Left Shoulder
