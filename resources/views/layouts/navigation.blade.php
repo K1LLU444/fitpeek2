@@ -21,6 +21,9 @@
                 <x-nav-link :href="route('aboutus')" :active="request()->routeIs('aboutus')">
                     {{ __('About Us') }}
                 </x-nav-link>
+                <x-nav-link :href="route('weather')" :active="request()->routeIs('weather')">
+                    {{ __('Recommendation') }}
+                </x-nav-link>
 
                 <!-- Profile Dropdown -->
                 <div class="relative">

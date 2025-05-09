@@ -127,7 +127,7 @@ Route::get('/chat', function () {
 
 Route::post('/rate-suggestion', [ChatSupportController::class, 'rateSuggestion'])->name('chat.rateSuggestion');
 
-Route::get('/weather', [WeatherController::class, 'index']);
+Route::get('/weather', [WeatherController::class, 'index'])->name('weather');
 Route::post('/get-weather', [WeatherController::class, 'getWeather']);
 
 require __DIR__.'/auth.php';
