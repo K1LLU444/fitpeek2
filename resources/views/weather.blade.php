@@ -35,40 +35,150 @@
 
     <!-- ROW 2: OUTFIT RECOMMENDATION -->
     <div class="w-full sm:max-w-[1100px] mx-auto p-6">
-        <div class="bg-white rounded-2xl shadow-md p-6 w-full">
-            <p class="text-base font-semibold mb-2">Outfit Recommendation</p>
+        <div class="flex flex-col lg:flex-row gap-6">
 
-            <!-- Event Filter -->
-            <div class="mb-4">
-                <label for="event-select" class="block text-sm font-medium text-gray-700">Event</label>
-                <select id="event-select" name="event"
-                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-                    <option>--select--</option>
-                    <option value="concert">Concert</option>
-                    <option value="school">School</option>
-                    <option value="casual">Casual</option>
-                </select>
+            <!-- LEFT: Filter + Product Cards -->
+        <div class="bg-white rounded-2xl shadow-md p-6 w-full lg:w-1/2">
+            <!-- Form wrapper -->
+            <form id="filter-form" action="" method="GET" class="mb-6">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <!-- Events -->
+                    <div>
+                        <label for="event-select" class="block text-sm font-medium text-gray-700 mb-1">Events:</label>
+                        <select id="event-select" name="event"
+                            class="w-full rounded-md border border-gray-300 shadow-sm text-sm focus:ring-indigo-500 focus:border-indigo-500 px-3 py-2">
+                            <option>--select--</option>
+                            <option value="casualouting">Casual Outing</option>
+                            <option value="work">Work</option>
+                            <option value="school">School</option>
+                            <option value="fitness">Fitness</option>
+                            <option value="special">Special Occasion</option>
+                        </select>
+                    </div>
+
+                    <!-- Styles -->
+                    <div>
+                        <label for="style-select" class="block text-sm font-medium text-gray-700 mb-1">Styles:</label>
+                        <select id="style-select" name="style"
+                            class="w-full rounded-md border border-gray-300 shadow-sm text-sm focus:ring-indigo-500 focus:border-indigo-500 px-3 py-2">
+                            <option>--select--</option>
+                            <option value="casual">Casual</option>
+                            <option value="smartcasual">Smart Casual</option>
+                            <option value="athleisure">Athleisure</option>
+                            <option value="streetwear">Streetwear</option>
+                            <option value="breezy">Breezy</option>
+                        </select>
+                    </div>
+                </div>
+            </form>
+
+
+        <!-- JavaScript: Auto-submit on change -->
+        <script>
+            document.getElementById('event-select').addEventListener('change', () => {
+                document.getElementById('filter-form').submit();
+            });
+            document.getElementById('style-select').addEventListener('change', () => {
+                document.getElementById('filter-form').submit();
+            });
+        </script>
+
+        <!-- Top Product -->
+        <div class="border-t pt-4 mb-6">
+            <p class="text-sm font-semibold text-gray-800">Top:</p>
+            <div class="flex justify-between items-start">
+                <div>
+                    <p class="font-bold text-md">Block Pro Dri-fit Jersey (Grey)</p>
+                    <p class="text-sm text-gray-600">₱1,495.00</p>
+                    <p class="text-sm text-gray-500 mb-2">*Description</p>
+                    <p class="text-sm text-indigo-500"><a href="#" target="_blank">Visit site ↗</a></p>
+                </div>
+                <table class="text-sm border border-gray-500 text-center">
+                    <thead class="bg-gray-100 text-xs">
+                        <tr>
+                            <th class="border px-2 py-1"></th>
+                            <th class="border px-2 py-1">width</th>
+                            <th class="border px-2 py-1">length</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td class="border px-2 py-1">S</td><td class="border px-2 py-1"></td><td class="border px-2 py-1"></td></tr>
+                        <tr><td class="border px-2 py-1">M</td><td class="border px-2 py-1"></td><td class="border px-2 py-1"></td></tr>
+                        <tr><td class="border px-2 py-1">L</td><td class="border px-2 py-1"></td><td class="border px-2 py-1"></td></tr>
+                    </tbody>
+                </table>
             </div>
+        </div>
 
-            <!-- Style Filter -->
-            <div class="mb-4">
-                <label for="style-select" class="block text-sm font-medium text-gray-700">Style</label>
-                <select id="style-select" name="style"
-                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-                    <option>--select--</option>
-                    <option value="sporty">Sporty</option>
-                    <option value="streetwear">Streetwear</option>
-                    <option value="preppy">Preppy</option>
-                </select>
-            </div>
-
-            <!-- Suggested Outfit -->
-            <div class="mt-4">
-                <p class="text-sm text-gray-500">Suggested Outfit:</p>
-                <p id="suggested-outfit" class="text-base font-medium text-gray-800 mt-1">-- based on filters --</p>
+        <!-- Bottom Product -->
+        <div class="border-t pt-4">
+            <p class="text-sm font-semibold text-gray-800">Bottom:</p>
+            <div class="flex justify-between items-start">
+                <div>
+                    <p class="font-bold text-md">Throw up Cargo Parachute Pants (Black)</p>
+                    <p class="text-sm text-gray-600">₱1,495.00</p>
+                    <p class="text-sm text-gray-500 mb-2">*Description</p>
+                    <p class="text-sm text-indigo-500"><a href="#" target="_blank">Visit site ↗</a></p>
+                </div>
+                <table class="text-sm border border-gray-500 text-center">
+                    <thead class="bg-gray-100 text-xs">
+                        <tr>
+                            <th class="border px-2 py-1"></th>
+                            <th class="border px-2 py-1">width</th>
+                            <th class="border px-2 py-1">length</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td class="border px-2 py-1">S</td><td class="border px-2 py-1"></td><td class="border px-2 py-1"></td></tr>
+                        <tr><td class="border px-2 py-1">M</td><td class="border px-2 py-1"></td><td class="border px-2 py-1"></td></tr>
+                        <tr><td class="border px-2 py-1">L</td><td class="border px-2 py-1"></td><td class="border px-2 py-1"></td></tr>
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
+
+
+            <!-- RIGHT: Avatar/Overlay Box -->
+            <div class="bg-gray-100 rounded-2xl shadow-inner w-full lg:w-1/2 p-6 flex items-center justify-center">
+                <div class="relative w-full h-[480px] bg-white rounded-xl flex items-center justify-center shadow">
+                    @if($avatar && $avatar->avatar_cleaned_front_path)
+                        <img id="avatar-image" src="{{ asset($avatar->avatar_cleaned_front_path) }}" 
+                            alt="Avatar Overlay" class="max-h-full transition-all duration-300">
+                    @else
+                        <div class="text-gray-400">No avatar found.</div>
+                    @endif
+
+                    <!-- Navigation Arrows -->
+                    <button id="prev-avatar" class="absolute left-3 top-1/2 -translate-y-1/2 text-2xl font-bold text-gray-700">❮</button>
+                    <button id="next-avatar" class="absolute right-3 top-1/2 -translate-y-1/2 text-2xl font-bold text-gray-700">❯</button>
+                </div>
+            </div>
+            <script>
+                const frontPath = "{{ asset($avatar->avatar_cleaned_front_path ?? '') }}";
+                const backPath = "{{ asset($avatar->avatar_cleaned_back_path ?? '') }}";
+                let showingFront = true;
+
+                document.getElementById('prev-avatar').addEventListener('click', () => {
+                    if (!showingFront && frontPath) {
+                        document.getElementById('avatar-image').src = frontPath;
+                        showingFront = true;
+                    }
+                });
+
+                document.getElementById('next-avatar').addEventListener('click', () => {
+                    if (showingFront && backPath) {
+                        document.getElementById('avatar-image').src = backPath;
+                        showingFront = false;
+                    }
+                });
+            </script>
+
+
+
+        </div>
+    </div>
+
 
     <script>
         document.addEventListener("DOMContentLoaded", () => {

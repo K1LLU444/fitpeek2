@@ -33,6 +33,19 @@
                         </select>
                     </div>
 
+                    <!-- Unit Selection -->
+                    <div class="mt-4">
+                        <x-input-label for="unit" :value="__('Measurement Unit')" />
+                        @php
+                            $selectedUnit = old('unit') ?? ($avatar->unit ?? session('last_unit', 'cm'));
+                        @endphp
+                        <select id="unit" name="unit" class="block mt-1 w-full p-2 border rounded-md shadow-inner" required>
+                            <option value="cm" {{ $selectedUnit === 'cm' ? 'selected' : '' }}>Centimeters (cm)</option>
+                            <option value="in" {{ $selectedUnit === 'in' ? 'selected' : '' }}>Inches (in)</option>
+                        </select>
+                    </div>
+
+
                     @php
                         $allRanges = [
                             'height' => ['male' => [158.41, 200.65], 'female' => [144.68, 184.64]],
@@ -43,16 +56,30 @@
                             'inseam' => ['male' => [62.71, 96.36],   'female' => [61.67, 89.28]],
                         ];
                         $currentSex = strtolower(old('sex', $avatar->sex ?? 'male'));
+                        $unit = old('unit', session('last_unit', 'cm'));
                     @endphp
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         @foreach($allRanges as $field => $range)
-                            @php
-                                $value = old($field, $avatar->$field ?? '');
-                                [$min, $max] = $range[$currentSex];
-                            @endphp
+                        @php
+                            $value = old($field, $avatar->$field ?? '');
+                            [$rawMin, $rawMax] = $range[$currentSex];
+                            $unit = old('unit', session('last_unit', 'cm'));
+
+                            if ($field === 'weight') {
+                                $min = $rawMin;
+                                $max = $rawMax;
+                            } else {
+                                $min = $unit === 'in' ? round($rawMin / 2.54, 2) : $rawMin;
+                                $max = $unit === 'in' ? round($rawMax / 2.54, 2) : $rawMax;
+                            }
+                        @endphp
+
                             <div class="mt-4">
-                                <x-input-label for="{{ $field }}" :value="__(ucwords(str_replace('_', ' ', $field)) . ' (cm)')" />
+                            <x-input-label 
+    for="{{ $field }}" 
+    :value="__(ucwords(str_replace('_', ' ', $field)) . ($field === 'weight' ? ' (kg)' : ' (' . ($unit == 'in' ? 'in' : 'cm') . ')'))" 
+/>
                                 <x-text-input
                                     id="{{ $field }}"
                                     name="{{ $field }}"
@@ -146,25 +173,45 @@
                     </div>
                 </div>
                 
-            <!-- JavaScript: Dynamic min/max based on selected sex -->
+            <!-- JavaScript: Dynamic min/max based on selected sex and unit -->
             <script>
                 document.addEventListener('DOMContentLoaded', function () {
                     const sexSelect = document.getElementById('sex');
+                    const unitSelect = document.getElementById('unit');
                     const inputs = document.querySelectorAll('input[type="number"]');
 
-                    sexSelect.addEventListener('change', () => {
+                    function updateMinMax() {
                         const selectedSex = sexSelect.value.toLowerCase();
+                        const selectedUnit = unitSelect.value;
+
                         inputs.forEach(input => {
-                            const min = input.getAttribute(`data-${selectedSex}-min`);
-                            const max = input.getAttribute(`data-${selectedSex}-max`);
-                            if (min && max) {
-                                input.min = min;
-                                input.max = max;
+                            const rawMin = parseFloat(input.getAttribute(`data-${selectedSex}-min`));
+                            const rawMax = parseFloat(input.getAttribute(`data-${selectedSex}-max`));
+
+                            if (!isNaN(rawMin) && !isNaN(rawMax)) {
+                                if (input.id === 'weight') {
+                                    input.min = rawMin;
+                                    input.max = rawMax;
+                                } else {
+                                    const min = selectedUnit === 'in' ? (rawMin / 2.54).toFixed(2) : rawMin;
+                                    const max = selectedUnit === 'in' ? (rawMax / 2.54).toFixed(2) : rawMax;
+                                    input.min = min;
+                                    input.max = max;
+                                }
                             }
                         });
-                    });
+
+                    }
+
+                    // Update when unit or sex changes
+                    sexSelect.addEventListener('change', updateMinMax);
+                    unitSelect.addEventListener('change', updateMinMax);
+
+                    // Run on initial page load
+                    updateMinMax();
                 });
             </script>
+
     </body>
 </x-app-layout>
 

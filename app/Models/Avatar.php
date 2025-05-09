@@ -18,6 +18,7 @@ class Avatar extends Model
         'waist',
         'hips',
         'inseam',
+        'unit',
         'avatar_path',          // ✅ t-pose .obj
         'avatar_apose_path',    // ✅ a-pose .obj
         'avatar_front_path',    // ✅ screenshot (front)
