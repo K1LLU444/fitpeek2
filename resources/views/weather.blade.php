@@ -189,6 +189,20 @@
                 </div>
             </div>
 
+            <!-- Conversion & Weather Toggle Buttons -->
+            <div class="flex flex-wrap gap-4 mt-4">
+                <button id="toggle-unit-btn"
+                    class="bg-indigo-100 hover:bg-indigo-200 text-indigo-700 text-xs px-3 py-1 rounded">
+                    Switch to Inches
+                </button>
+
+                <button id="toggle-weather-btn"
+                    class="bg-yellow-100 hover:bg-yellow-200 text-yellow-800 text-xs px-3 py-1 rounded">
+                    Ignore Weather
+                </button>
+            </div>
+
+
         <!-- Top Product -->
         <div id="top-product" class="border-t pt-4 mb-6">
             <p class="text-sm font-semibold text-gray-800">Top:</p>
@@ -648,8 +662,16 @@ function renderSizeChart(jsonStr) {
         }
 
         const sizes = Object.keys(data);
-        const widthRow = sizes.map(size => `<td class="border px-2 py-1">${data[size]?.width ?? '--'}</td>`).join('');
-        const lengthRow = sizes.map(size => `<td class="border px-2 py-1">${data[size]?.length ?? '--'}</td>`).join('');
+
+        const widthRow = sizes.map(size => {
+            const val = data[size]?.width ?? '--';
+            return `<td class="border px-2 py-1">${formatUnit(val)}</td>`;
+        }).join('');
+
+        const lengthRow = sizes.map(size => {
+            const val = data[size]?.length ?? '--';
+            return `<td class="border px-2 py-1">${formatUnit(val)}</td>`;
+        }).join('');
 
         return `<table class="text-sm border border-gray-500 text-center mt-2">
                     <thead>
@@ -673,6 +695,12 @@ function renderSizeChart(jsonStr) {
         console.warn('❌ Failed to parse size_chart:', jsonStr, e);
         return '<p class="text-sm text-red-500">⚠️ Invalid size chart format</p>';
     }
+}
+
+function formatUnit(value) {
+    if (value === '--' || value == null || isNaN(value)) return '--';
+    const num = parseFloat(value);
+    return currentUnit === 'in' ? (num / 2.54).toFixed(2) : num.toFixed(2);
 }
 
 // Helpers
@@ -729,6 +757,29 @@ function getWeatherCategory(label, temp) {
     return "Cool";
 }
 </script>
+
+<script>
+let currentUnit = "cm"; // Default
+let ignoreWeather = false;
+
+document.getElementById("toggle-unit-btn").addEventListener("click", () => {
+    currentUnit = currentUnit === "cm" ? "in" : "cm";
+    document.getElementById("toggle-unit-btn").textContent = currentUnit === "cm" ? "Switch to Inches" : "Switch to CM";
+    updateUI(); // 🔄 Re-render with updated unit
+});
+
+document.getElementById("toggle-weather-btn").addEventListener("click", () => {
+    ignoreWeather = !ignoreWeather;
+    weatherCondition = ignoreWeather ? "" : getWeatherCategory(
+        document.getElementById("condition-label").textContent.toLowerCase(),
+        parseFloat(document.getElementById("temp-label").textContent)
+    );
+
+    document.getElementById("toggle-weather-btn").textContent = ignoreWeather ? "Use Weather" : "Ignore Weather";
+    fetchRecommendations();
+});
+</script>
+
             </main>
         </div>
 </x-app-layout>
