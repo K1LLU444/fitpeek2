@@ -1,6 +1,123 @@
 <x-app-layout>
+        <div class="min-h-screen bg-gray-100">
+            <nav x-data="{ open: false, profileOpen: false }" class="bg-white border-b border-gray-100 fixed top-0 z-50 w-full">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between h-16 items-center">
+            
+            <!-- Logo & Brand -->
+            <div class="flex items-center space-x-3">
+                <a href="/" class="flex items-center">
+                    <img src="https://fitpeek.online/images/logo_fitpeek.svg" alt="FitPeek Logo" class="h-10 w-auto">
+                    <span class="text-2xl font-semibold ml-2">FitPeek</span>
+                </a>
+            </div>
 
-    <!-- ROW 1: LOCATION + WEATHER -->
+            <!-- Desktop Navigation Links -->
+            <div class="hidden sm:flex space-x-6 items-center">
+                <a class="inline-flex items-center px-1 pt-1 border-b-2 border-transparent text-sm font-medium leading-5 text-gray-500 hover:text-brown-100 hover:border-gray-300 focus:outline-none focus:text-gray-700 focus:border-gray-300 transition duration-150 ease-in-out" href="https://fitpeek.online/dashboard">
+    Home
+</a>
+                <a class="inline-flex items-center px-1 pt-1 border-b-2 border-transparent text-sm font-medium leading-5 text-gray-500 hover:text-brown-100 hover:border-gray-300 focus:outline-none focus:text-gray-700 focus:border-gray-300 transition duration-150 ease-in-out" href="https://fitpeek.online/createavatar">
+    Your Avatar
+</a>
+                <a class="inline-flex items-center px-1 pt-1 border-b-2 border-transparent text-sm font-medium leading-5 text-gray-500 hover:text-brown-100 hover:border-gray-300 focus:outline-none focus:text-gray-700 focus:border-gray-300 transition duration-150 ease-in-out" href="https://fitpeek.online/aboutus">
+    About Us
+</a>
+                <a class="inline-flex items-center px-1 pt-1 border-b-2 border-brown-700 text-sm font-medium leading-5 text-gray-900 focus:outline-none focus:border-brown-700 transition duration-150 ease-in-out" href="https://fitpeek.online/weather">
+    Recommendation
+</a>
+
+                <!-- Profile Dropdown -->
+                <div class="relative">
+                    <button @click="profileOpen = !profileOpen" class="flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-gray-100 hover:bg-gray-200 focus:outline-none">
+                    <span class="truncate max-w-[120px] overflow-hidden text-ellipsis whitespace-nowrap block">
+                        kyladeasas
+                    </span>
+                    <svg 
+                        class="ml-1 h-4 w-4 transition-transform text-gray-600" 
+                        :class="{ 'rotate-180': profileOpen }" 
+                        xmlns="http://www.w3.org/2000/svg" 
+                        fill="none" 
+                        viewBox="0 0 24 24" 
+                        stroke="currentColor" 
+                        stroke-width="2">
+                        <path 
+                            stroke-linecap="round" 
+                            stroke-linejoin="round" 
+                            d="M19 9l-7 7-7-7" />
+                    </svg>
+                    </button>
+
+                    <div x-show="profileOpen" @click.away="profileOpen = false" class="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-md shadow-md z-50">
+                    <div class="px-4 py-3 text-gray-700 w-[200px] max-w-[250px]">
+                        <p class="text-sm font-semibold break-words">kyladeasas</p>
+                        <p class="text-xs break-all text-gray-500 truncate" title="kyladeasas12@gmail.com">
+                            kyladeasas12@gmail.com</p>
+                    </div>
+                        <div class="border-t border-gray-100">
+                            <a class="block w-full ps-3 pe-4 py-2 border-l-4 border-transparent text-start text-base font-medium text-gray-600 hover:text-gray-800 hover:bg-gray-50 hover:border-gray-300 focus:outline-none focus:text-gray-800 focus:bg-gray-50 focus:border-gray-300 transition duration-150 ease-in-out" href="https://fitpeek.online/profile">
+    Profile
+</a>
+                            <form method="POST" action="https://fitpeek.online/logout">
+                                <input type="hidden" name="_token" value="zDBWtykDxsKKeCoRxMZJgf49EgredgCsI0Ntowag" autocomplete="off">                                <a class="block w-full ps-3 pe-4 py-2 border-l-4 border-transparent text-start text-base font-medium text-gray-600 hover:text-gray-800 hover:bg-gray-50 hover:border-gray-300 focus:outline-none focus:text-gray-800 focus:bg-gray-50 focus:border-gray-300 transition duration-150 ease-in-out" href="https://fitpeek.online/logout" onclick="event.preventDefault(); this.closest('form').submit();">
+    Log Out
+</a>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mobile Hamburger -->
+            <div class="sm:hidden">
+                <button @click="open = !open" class="inline-flex items-center justify-center p-2 rounded-md text-gray-500 hover:bg-gray-100 focus:outline-none">
+                    <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
+                        <path :class="{ 'hidden': open, 'inline-flex': !open }" class="inline-flex" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+                        <path :class="{ 'hidden': !open, 'inline-flex': open }" class="hidden" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile Menu -->
+    <div :class="{ 'block': open, 'hidden': !open }" class="sm:hidden bg-white border-t border-gray-200 px-4 py-3">
+        <a class="block w-full ps-3 pe-4 py-2 border-l-4 border-transparent text-start text-base font-medium text-gray-600 hover:text-gray-800 hover:bg-gray-50 hover:border-gray-300 focus:outline-none focus:text-gray-800 focus:bg-gray-50 focus:border-gray-300 transition duration-150 ease-in-out" href="https://fitpeek.online/dashboard">
+    Home
+</a>
+        <a class="block w-full ps-3 pe-4 py-2 border-l-4 border-transparent text-start text-base font-medium text-gray-600 hover:text-gray-800 hover:bg-gray-50 hover:border-gray-300 focus:outline-none focus:text-gray-800 focus:bg-gray-50 focus:border-gray-300 transition duration-150 ease-in-out" href="https://fitpeek.online/createavatar">
+    Your Avatar
+</a>
+        <a class="block w-full ps-3 pe-4 py-2 border-l-4 border-transparent text-start text-base font-medium text-gray-600 hover:text-gray-800 hover:bg-gray-50 hover:border-gray-300 focus:outline-none focus:text-gray-800 focus:bg-gray-50 focus:border-gray-300 transition duration-150 ease-in-out" href="https://fitpeek.online/aboutus">
+    About Us
+</a>
+
+        <!-- Mobile Profile -->
+        <div class="mt-2 border-t border-gray-100 pt-2">
+            <button @click="profileOpen = !profileOpen"
+                class="w-full text-left text-sm text-gray-700 px-2 py-1 hover:bg-gray-100 rounded-md truncate"
+                title="kyladeasas">
+                kyladeasas
+            </button>
+
+            <div x-show="profileOpen" class="mt-1 space-y-1">
+                <a class="block w-full ps-3 pe-4 py-2 border-l-4 border-transparent text-start text-base font-medium text-gray-600 hover:text-gray-800 hover:bg-gray-50 hover:border-gray-300 focus:outline-none focus:text-gray-800 focus:bg-gray-50 focus:border-gray-300 transition duration-150 ease-in-out" href="https://fitpeek.online/profile">
+    Profile
+</a>
+                <form method="POST" action="https://fitpeek.online/logout">
+                    <input type="hidden" name="_token" value="zDBWtykDxsKKeCoRxMZJgf49EgredgCsI0Ntowag" autocomplete="off">                    <a class="block w-full ps-3 pe-4 py-2 border-l-4 border-transparent text-start text-base font-medium text-gray-600 hover:text-gray-800 hover:bg-gray-50 hover:border-gray-300 focus:outline-none focus:text-gray-800 focus:bg-gray-50 focus:border-gray-300 transition duration-150 ease-in-out" href="https://fitpeek.online/logout" onclick="event.preventDefault(); this.closest('form').submit();">
+    Log Out
+</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</nav>
+            <!-- Page Heading -->
+            
+            <!-- Page Content -->
+            <main>
+                <!-- ROW 1: LOCATION + WEATHER -->
     <div class="w-full sm:max-w-[1100px] mx-auto flex flex-wrap justify-center gap-6 p-6 mt-16">
         <!-- LOCATION CARD -->
         <div class="bg-white rounded-2xl shadow-md p-6 w-full sm:w-[320px]" id="weather-card">
@@ -82,20 +199,6 @@
                     <p class="text-sm text-gray-500 mb-2"></p>
                     <p class="text-sm text-indigo-500"><a href="#" target="_blank"></a></p>
                 </div>
-                <table class="text-sm border border-gray-500 text-center">
-                    <thead class="bg-gray-100 text-xs">
-                        <tr>
-                            <th class="border px-2 py-1"></th>
-                            <th class="border px-2 py-1"></th>
-                            <th class="border px-2 py-1"></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr><td class="border px-2 py-1"></td><td class="border px-2 py-1"></td><td class="border px-2 py-1"></td></tr>
-                        <tr><td class="border px-2 py-1"></td><td class="border px-2 py-1"></td><td class="border px-2 py-1"></td></tr>
-                        <tr><td class="border px-2 py-1"></td><td class="border px-2 py-1"></td><td class="border px-2 py-1"></td></tr>
-                    </tbody>
-                </table>
             </div>
         </div>
 
@@ -109,85 +212,94 @@
                     <p class="text-sm text-gray-500 mb-2"></p>
                     <p class="text-sm text-indigo-500"><a href="#" target="_blank"></a></p>
                 </div>
-                <table class="text-sm border border-gray-500 text-center">
-                    <thead class="bg-gray-100 text-xs">
-                        <tr>
-                            <th class="border px-2 py-1"></th>
-                            <th class="border px-2 py-1"></th>
-                            <th class="border px-2 py-1"></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr><td class="border px-2 py-1"></td><td class="border px-2 py-1"></td><td class="border px-2 py-1"></td></tr>
-                        <tr><td class="border px-2 py-1"></td><td class="border px-2 py-1"></td><td class="border px-2 py-1"></td></tr>
-                        <tr><td class="border px-2 py-1"></td><td class="border px-2 py-1"></td><td class="border px-2 py-1"></td></tr>
-                    </tbody>
-                </table>
             </div>
         </div>
     </div>
 
 
-            <!-- RIGHT: Avatar/Overlay Box -->
-            <div class="bg-gray-100 rounded-2xl shadow-inner w-full lg:w-1/2 p-6 flex items-center justify-center">
-    <div class="relative w-full h-[480px] bg-white rounded-xl flex items-center justify-center shadow overflow-visible">
+<!-- RIGHT: Avatar/Overlay Box -->
+<div class="bg-gray-100 rounded-2xl shadow-inner w-full lg:w-1/2 p-6 flex flex-col items-center justify-center gap-4">
 
-        <!-- 🔄 Switch Toggle: Front / Back -->
-        <button id="toggle-avatar-view"
-            class="absolute top-4 left-4 bg-gray-200 hover:bg-gray-300 text-xs font-semibold px-3 py-1 rounded">
-            Show Back
-        </button>
+    <!-- 🔘 Top Controls: View Toggle + Size Selects -->
+<div class="w-full flex flex-wrap items-center justify-center gap-4">
+    <!-- Toggle Front/Back -->
+    <button id="toggle-avatar-view"
+        class="bg-white hover:bg-gray-200 border border-gray-300 text-xs font-semibold px-3 py-1 rounded">
+        Front
+    </button>
+    <!-- Overlay Switch Button -->
+    <!-- Overlay Switch Icon -->
+    <button id="switch-overlay-order"
+        class="bg-white hover:bg-gray-200 border border-gray-300 text-xs font-semibold px-3 py-1 rounded flex items-center justify-center"
+        title="Switch Overlay Order">
+        <img id="overlay-icon" src="/images/weather/top-overlays.png" alt="Overlay Icon" class="w-4 h-4">
+    </button>
 
-        @if($avatar && $avatar->avatar_cleaned_front_path)
-            <img id="avatar-image"
-                src="{{ asset($avatar->avatar_cleaned_front_path) }}"
-                data-front="{{ asset($avatar->avatar_cleaned_front_path) }}"
-                data-back="{{ asset($avatar->avatar_cleaned_back_path) }}"
-                alt="Avatar Overlay"
-                class="max-h-full transition-all duration-300 object-contain">
 
-            <img id="top-overlay"
-                src=""
-                alt="Shirt Overlay"
-                class="absolute top-0 left-0 max-h-full object-contain pointer-events-none">
 
-            <img id="bottom-overlay"
-                src=""
-                alt="Pants Overlay"
-                class="absolute top-0 left-0 max-h-full object-contain pointer-events-none">
+    <!-- Top Size Inline -->
+    <div class="flex items-center gap-1">
+        <label for="top-size-select" class="text-xs font-medium text-gray-600">Top Size:</label>
+        <select id="top-size-select"
+            class="rounded-md border border-gray-300 text-xs px-4 py-1 shadow-sm">
+            <option value="">--</option>
+        </select>
+    </div>
 
-        @else
-            <div class="text-gray-400">No avatar found.</div>
-        @endif
+    <!-- Bottom Size Inline -->
+    <div class="flex items-center gap-1">
+        <label for="bottom-size-select" class="text-xs font-medium text-gray-600">Bottom Size:</label>
+        <select id="bottom-size-select"
+            class="rounded-md border border-gray-300 text-xs px-4 py-1 shadow-sm">
+            <option value="">--</option>
+        </select>
+    </div>
+    
+</div>
 
-        <!-- UPPER-LEFT ARROW -->
+
+    <!-- Avatar Display + Overlays -->
+    <div id="avatar-container"
+        data-avatar-height="{{ $avatar->height }}"
+        data-height-unit="{{ $avatar->unit }}"
+        class="relative w-full h-[480px] bg-white rounded-xl flex items-center justify-center shadow overflow-visible">
+
+        <img id="avatar-image"
+            src=""
+            data-front=""
+            data-back=""
+            alt="Avatar Overlay"
+            class="max-h-full transition-all duration-300 object-contain">
+
+        <img id="top-overlay"
+            src=""
+            alt="Shirt Overlay"
+            class="absolute left-0 right-0 mx-auto object-contain pointer-events-none"
+            style="top: 0; display: none;">
+
+        <img id="bottom-overlay"
+            src=""
+            alt="Pants Overlay"
+            class="absolute left-0 right-0 mx-auto object-contain pointer-events-none"
+            style="top: 0; display: none;">
+
+        <!-- ARROWS -->
         <button id="upper-left-avatar"
-            class="absolute left-3 top-20 text-3xl font-bold text-gray-700 hover:text-black">
-            ❮
-        </button>
-
-        <!-- LOWER-LEFT ARROW -->
-        <button id="lower-left-avatar"
-            class="absolute left-3 bottom-20 text-3xl font-bold text-gray-700 hover:text-black">
-            ❮
-        </button>
-
-        <!-- UPPER-RIGHT ARROW -->
+            class="absolute left-3 top-20 text-3xl font-bold text-gray-700 hover:text-black">❮</button>
         <button id="upper-right-avatar"
-            class="absolute right-3 top-20 text-3xl font-bold text-gray-700 hover:text-black">
-            ❯
-        </button>
-
-        <!-- LOWER-RIGHT ARROW -->
+            class="absolute right-3 top-20 text-3xl font-bold text-gray-700 hover:text-black">❯</button>
+        <button id="lower-left-avatar"
+            class="absolute left-3 bottom-20 text-3xl font-bold text-gray-700 hover:text-black">❮</button>
         <button id="lower-right-avatar"
-            class="absolute right-3 bottom-20 text-3xl font-bold text-gray-700 hover:text-black">
-            ❯
-        </button>
+            class="absolute right-3 bottom-20 text-3xl font-bold text-gray-700 hover:text-black">❯</button>
     </div>
 </div>
 
+
 <!-- 🔁 Toggle Front/Back Script -->
 <script>
+    let showingFront = true;
+
     document.addEventListener("DOMContentLoaded", function () {
         const toggleButton = document.getElementById('toggle-avatar-view');
         const avatarImage = document.getElementById('avatar-image');
@@ -197,7 +309,7 @@
             showingFront = !showingFront;
             const avatarImage = document.getElementById('avatar-image');
             avatarImage.src = showingFront ? avatarImage.dataset.front : avatarImage.dataset.back;
-            toggleButton.textContent = showingFront ? 'Show Back' : 'Show Front';
+            toggleButton.textContent = showingFront ? 'Front' : 'Back';
             updateUI(); // 🔄 Update overlays
         });
     });
@@ -241,7 +353,10 @@ let topIndex = 0;
 let bottomIndex = 0;
 let topProducts = [];
 let bottomProducts = [];
-let showingFront = true;
+let selectedTopSize = "";
+let selectedBottomSize = "";
+let overlayOnTop = "top"; // "top" or "bottom"
+
 
 document.addEventListener("DOMContentLoaded", () => {
     if (navigator.geolocation) {
@@ -306,7 +421,61 @@ document.addEventListener("DOMContentLoaded", () => {
         if (bottomIndex < bottomProducts.length - 1) bottomIndex++;
         updateUI();
     });
+    document.getElementById("top-size-select").addEventListener("change", (e) => {
+    selectedTopSize = e.target.value;
+    updateUI();
+    });
+    document.getElementById("bottom-size-select").addEventListener("change", (e) => {
+        selectedBottomSize = e.target.value;
+        updateUI();
+    });
+    document.getElementById("switch-overlay-order").addEventListener("click", () => {
+        overlayOnTop = overlayOnTop === "top" ? "bottom" : "top";
+
+        // Toggle z-index
+        const topOverlay = document.getElementById("top-overlay");
+        const bottomOverlay = document.getElementById("bottom-overlay");
+
+        if (overlayOnTop === "top") {
+            topOverlay.style.zIndex = "20";
+            bottomOverlay.style.zIndex = "10";
+            document.getElementById("overlay-icon").src = "/images/weather/top-overlays.png";
+        } else {
+            topOverlay.style.zIndex = "10";
+            bottomOverlay.style.zIndex = "20";
+            document.getElementById("overlay-icon").src = "/images/weather/top-overlays.png";
+        }
+    });
+
 });
+function updateAvatarImageBasedOnPose(pose) {
+    return fetch('/get-avatar-path', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+        },
+        body: JSON.stringify({ pose: pose })
+    })
+    .then(res => res.json())
+    .then(data => {
+        const avatarImage = document.getElementById("avatar-image");
+        avatarImage.dataset.front = data.front;
+        avatarImage.dataset.back = data.back;
+
+        // ✅ Force refresh
+        const newSrc = (showingFront ? data.front : data.back) + '?v=' + Date.now();
+        avatarImage.src = newSrc;
+
+        console.log("✅ Avatar src set to:", newSrc);
+    })
+    .catch(err => {
+        console.error("❌ Failed to load avatar image paths:", err);
+    });
+}
+
+
+
 
 function fetchRecommendations() {
     const event = document.getElementById("event-select").value;
@@ -330,77 +499,179 @@ function fetchRecommendations() {
     });
 }
 
-function updateUI() {
+async function updateUI() {
     const top = topProducts[topIndex];
     const bottom = bottomProducts[bottomIndex];
+    const isBack = !showingFront;
 
-    // Render product info cards
+    const pose = top?.pose === 'low' ? 'low' : 'high';
+    await updateAvatarImageBasedOnPose(pose);
+
+    // ✅ Force reload of avatar image after pose change
+    const avatarImage = document.getElementById("avatar-image");
+    if (avatarImage && avatarImage.dataset) {
+        const newSrc = (showingFront ? avatarImage.dataset.front : avatarImage.dataset.back) + '?v=' + Date.now();
+        avatarImage.src = newSrc;
+        console.log("✅ Pose applied, new avatar src set:", newSrc);
+    }
+
+    const topOverlay = document.getElementById("top-overlay");
+    const bottomOverlay = document.getElementById("bottom-overlay");
+    const avatarPixelHeight = avatarImage.clientHeight || 480;
+    const avatarContainer = document.getElementById("avatar-container");
+
+    const rawHeight = parseFloat(avatarContainer.dataset.avatarHeight);
+    const rawUnit = avatarContainer.dataset.heightUnit || "cm";
+    const normalizedUnit = rawUnit.trim().toLowerCase();
+    const avatarHeightInCm = (normalizedUnit === "inches" || normalizedUnit === "in") ? rawHeight * 2.54 : rawHeight;
+
+    if (isNaN(avatarHeightInCm)) {
+        console.warn("❌ Invalid avatar height. Aborting updateUI.");
+        return;
+    }
+
+    console.log(`📏 Normalized Height: ${avatarHeightInCm} cm (from ${rawHeight} ${normalizedUnit})`);
+
+    // 🎯 Fixed pixel offsets for alignment (tweak here for fine-tuning)
+    const neckOffsetPx = 125;     // 🔧 fine-tune until shirt aligns with neck
+    const waistOffsetPx = 230;   // 🔧 fine-tune until pants align with waist
+
+    // Update product info cards
     document.getElementById("top-product").innerHTML = top ? renderProduct('Top', top) : '<p>No top found.</p>';
     document.getElementById("bottom-product").innerHTML = bottom ? renderProduct('Bottom', bottom) : '<p>No bottom found.</p>';
 
-    // Get overlay elements
-    const topOverlay = document.getElementById("top-overlay");
-    const bottomOverlay = document.getElementById("bottom-overlay");
+    // ⬇️ Dropdown logic
+    const topSizeSelect = document.getElementById("top-size-select");
+    const bottomSizeSelect = document.getElementById("bottom-size-select");
 
-    // Get current view (front or back)
-    const isBack = !showingFront;
+    if (top && top.size_chart) {
+        const sizeChart = top.size_chart;
+        topSizeSelect.innerHTML = "";
+        Object.keys(sizeChart).forEach(size => {
+            const option = document.createElement("option");
+            option.value = size;
+            option.textContent = size;
+            topSizeSelect.appendChild(option);
+        });
+        if (!selectedTopSize || !(selectedTopSize in sizeChart)) {
+            selectedTopSize = Object.keys(sizeChart)[0];
+        }
+        topSizeSelect.value = selectedTopSize;
+    }
 
-    // Assign overlay images based on current view
-    if (top) {
-        topOverlay.src = isBack ? top.back_image : top.front_image;
+    if (bottom && bottom.size_chart) {
+        const sizeChart = bottom.size_chart;
+        bottomSizeSelect.innerHTML = "";
+        Object.keys(sizeChart).forEach(size => {
+            const option = document.createElement("option");
+            option.value = size;
+            option.textContent = size;
+            bottomSizeSelect.appendChild(option);
+        });
+        if (!selectedBottomSize || !(selectedBottomSize in sizeChart)) {
+            selectedBottomSize = Object.keys(sizeChart)[0];
+        }
+        bottomSizeSelect.value = selectedBottomSize;
+    }
+
+    // 🔄 Top overlay logic
+    if (top && top.size_chart && selectedTopSize) {
+        const topLengthCm = top.size_chart[selectedTopSize]?.length || 30;
+        const pixelHeight = (topLengthCm / avatarHeightInCm) * avatarPixelHeight;
+
+        const rawSrc = isBack ? top.back_image : top.front_image;
+        const fixedSrc = rawSrc?.startsWith("/storage") ? location.origin + rawSrc : rawSrc;
+
+        topOverlay.src = fixedSrc;
         topOverlay.style.display = "block";
+        topOverlay.style.height = `${pixelHeight}px`;
+        topOverlay.style.top = `${neckOffsetPx}px`;
     } else {
         topOverlay.src = "";
         topOverlay.style.display = "none";
     }
 
-    if (bottom) {
-        bottomOverlay.src = isBack ? bottom.back_image : bottom.front_image;
+    // 🔄 Bottom overlay logic
+    if (bottom && bottom.size_chart && selectedBottomSize) {
+        const bottomLengthCm = bottom.size_chart[selectedBottomSize]?.length || 30;
+        const pixelHeight = (bottomLengthCm / avatarHeightInCm) * avatarPixelHeight;
+
+        const rawSrc = isBack ? bottom.back_image : bottom.front_image;
+        const fixedSrc = rawSrc?.startsWith("/storage") ? location.origin + rawSrc : rawSrc;
+
+        bottomOverlay.src = fixedSrc;
         bottomOverlay.style.display = "block";
+        bottomOverlay.style.height = `${pixelHeight}px`;
+        bottomOverlay.style.top = `${waistOffsetPx}px`;
     } else {
         bottomOverlay.src = "";
         bottomOverlay.style.display = "none";
     }
-    console.log("🔍 Showing front?", showingFront);
-console.log("👕 Top overlay image:", top ? (isBack ? top.back_image : top.front_image) : "none");
-console.log("👖 Bottom overlay image:", bottom ? (isBack ? bottom.back_image : bottom.front_image) : "none");
 
+    console.log("🔍 Front view?", showingFront);
 }
 
 
+
+function getFirstSize(sizeChartObj) {
+    try {
+        const firstKey = Object.keys(sizeChartObj)[0];
+        return sizeChartObj[firstKey];
+    } catch {
+        return null;
+    }
+}
 
 function renderProduct(label, product) {
     return `
         <p class="text-sm font-semibold text-gray-800">${label}:</p>
-        <div class="flex justify-between items-start">
+        <div class="flex justify-between items-start gap-4">
             <div>
                 <p class="font-bold text-md">${product.product_name}</p>
                 <p class="text-sm text-gray-600">₱${parseFloat(product.price).toFixed(2)}</p>
                 <p class="text-sm text-gray-500 mb-2">${product.description}</p>
-                <p class="text-sm text-indigo-500"><a href="${product.product_link}" target="_blank">Visit site ↗</a></p>
+
+                ${renderSizeChart(product.size_chart)} <!-- ⬅️ moved here -->
+
+                <p class="text-sm text-indigo-500 mt-2">
+                    <a href="${product.product_link}" target="_blank">Visit site ↗</a>
+                </p>
             </div>
-            ${renderSizeChart(product.size_chart)}
         </div>`;
 }
-
 function renderSizeChart(jsonStr) {
     try {
-        const data = JSON.parse(jsonStr);
-        let rows = '';
-        for (const size in data) {
-            const { width, length } = data[size];
-            rows += `<tr>
-                        <td class="border px-2 py-1">${size}</td>
-                        <td class="border px-2 py-1">${width}</td>
-                        <td class="border px-2 py-1">${length}</td>
-                     </tr>`;
+        const data = typeof jsonStr === 'string' ? JSON.parse(jsonStr) : jsonStr;
+
+        if (!data || typeof data !== 'object' || Object.keys(data).length === 0) {
+            return '<p class="text-sm text-red-500">⚠️ No size chart available</p>';
         }
-        return `<table class="text-sm border border-gray-500 text-center">
-                    <thead><tr><th></th><th>width</th><th>length</th></tr></thead>
-                    <tbody>${rows}</tbody>
+
+        const sizes = Object.keys(data);
+        const widthRow = sizes.map(size => `<td class="border px-2 py-1">${data[size]?.width ?? '--'}</td>`).join('');
+        const lengthRow = sizes.map(size => `<td class="border px-2 py-1">${data[size]?.length ?? '--'}</td>`).join('');
+
+        return `<table class="text-sm border border-gray-500 text-center mt-2">
+                    <thead>
+                        <tr>
+                            <th class="border px-2 py-1">Size</th>
+                            ${sizes.map(size => `<th class="border px-2 py-1">${size}</th>`).join('')}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="border px-2 py-1 font-semibold">Width</td>
+                            ${widthRow}
+                        </tr>
+                        <tr>
+                            <td class="border px-2 py-1 font-semibold">Length</td>
+                            ${lengthRow}
+                        </tr>
+                    </tbody>
                 </table>`;
-    } catch {
-        return '<p>Invalid size chart</p>';
+    } catch (e) {
+        console.warn('❌ Failed to parse size_chart:', jsonStr, e);
+        return '<p class="text-sm text-red-500">⚠️ Invalid size chart format</p>';
     }
 }
 
@@ -458,6 +729,6 @@ function getWeatherCategory(label, temp) {
     return "Cool";
 }
 </script>
-
-
+            </main>
+        </div>
 </x-app-layout>

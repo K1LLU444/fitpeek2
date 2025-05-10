@@ -141,4 +141,7 @@ Route::post('/clean-image', [ImageCleanController::class, 'process'])->name('cle
 Route::post('/fetch-recommendations', [\App\Http\Controllers\ProductRecommendationController::class, 'fetch']);
 
 
+Route::post('/get-avatar-path', [AvatarController::class, 'getAvatarPath']);
+
+
 require __DIR__.'/auth.php';

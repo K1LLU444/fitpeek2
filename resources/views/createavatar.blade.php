@@ -1,5 +1,11 @@
 <script>
+    const SHOULD_CAPTURE = {{ session('shouldCapture', false) ? 'true' : 'false' }};
+    @php
+        session()->forget('shouldCapture');
+    @endphp
+
     const aPoseObjPath = "{{ $avatar && $avatar->avatar_apose_path ? asset($avatar->avatar_apose_path) : '' }}";
+    const aPoseLowerPath = "{{ $avatar && $avatar->avatar_apose_lower_path ? asset($avatar->avatar_apose_lower_path) : '' }}";
     const tPoseObjPath = "{{ $avatar && $avatar->avatar_path ? asset($avatar->avatar_path) : '' }}";
 </script>
 
@@ -7,15 +13,25 @@
     <body class="bg-gray-100 px-6 py-10 min-h-screen">
         <div class="flex flex-col lg:flex-row gap-8 max-w-screen-xl mx-auto pt-28">
 
-            @if($avatar && $avatar->avatar_path)
+            <div id="avatar-loader" class="fixed inset-0 bg-white bg-opacity-80 flex items-center justify-center z-50 hidden">
+                <div class="text-center">
+                    <div class="animate-spin h-10 w-10 border-4 border-gray-300 border-t-blue-500 rounded-full mx-auto mb-4"></div>
+                    <p class="text-lg font-medium text-gray-800">Generating avatar poses...</p>
+                </div>
+            </div>
+
             <!-- Avatar Preview Section -->
             <div class="flex-1 bg-gray-100 flex flex-col items-center justify-center">
                 <h2 class="text-xl font-semibold mb-4 text-gray-700">Your Avatar</h2>
                 <div class="w-full max-w-md h-[420px] bg-white rounded-lg shadow-inner flex items-center justify-center">
-                    <div id="avatar-canvas-container" class="w-full h-full"></div>
+                    @if($avatar && $avatar->avatar_path)
+                        <div id="avatar-canvas-container" class="w-full h-full"></div>
+                    @else
+                        <p class="text-gray-400">No avatar found. Fill in the form to generate your avatar.</p>
+                    @endif
+
                 </div>
             </div>
-            @endif
 
             <!-- Form Section -->
             <div class="flex-1 bg-white px-4 sm:px-6 md:px-10 py-6">
@@ -174,6 +190,11 @@
                 </div>
                 
             <!-- JavaScript: Dynamic min/max based on selected sex and unit -->
+
+            <script src="https://cdn.jsdelivr.net/npm/three@0.140.0/build/three.min.js"></script>
+            <script src="https://cdn.jsdelivr.net/npm/three@0.140.0/examples/js/loaders/OBJLoader.js"></script>
+            <script src="https://cdn.jsdelivr.net/npm/three@0.140.0/examples/js/controls/OrbitControls.js"></script>
+
             <script>
                 document.addEventListener('DOMContentLoaded', function () {
                     const sexSelect = document.getElementById('sex');
@@ -211,46 +232,39 @@
                     updateMinMax();
                 });
             </script>
-
+                <!-- Avatar loading overlay -->
     </body>
 </x-app-layout>
 
-@if($avatar && $avatar->avatar_path)
-    <script src="https://cdn.jsdelivr.net/npm/three@0.140.0/build/three.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.140.0/examples/js/loaders/OBJLoader.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.140.0/examples/js/controls/OrbitControls.js"></script>
-
-    <script>
+        <script>
         document.addEventListener('DOMContentLoaded', function () {
+            const overlayLoader = document.getElementById('avatar-loader');
             const container = document.getElementById('avatar-canvas-container');
             const scene = new THREE.Scene();
             scene.background = null;
-        
+
             const camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 1000);
             camera.position.set(0, 1.4, 3.5);
-        
+
             const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
             renderer.setSize(container.clientWidth, container.clientHeight);
             container.appendChild(renderer.domElement);
-        
+
             const controls = new THREE.OrbitControls(camera, renderer.domElement);
             controls.enableDamping = true;
             controls.target.set(0, 1.2, 0);
             controls.update();
-        
-            const ambient = new THREE.AmbientLight(0xffffff, 0.4);
-            scene.add(ambient);
-        
+
+            scene.add(new THREE.AmbientLight(0xffffff, 0.4));
             const directional = new THREE.DirectionalLight(0xffffff, 0.6);
             directional.position.set(3, 5, 2);
             scene.add(directional);
-        
             const backLight = new THREE.DirectionalLight(0xffffff, 0.3);
             backLight.position.set(-3, 3, -3);
             scene.add(backLight);
-        
+
             let avatarObject = null;
-        
+
             function loadOBJ(path, callback) {
                 const loader = new THREE.OBJLoader();
                 loader.load(path, function (object) {
@@ -266,91 +280,126 @@
                     callback(object);
                 });
             }
-        
+
             function replaceAvatar(object) {
                 if (avatarObject) scene.remove(avatarObject);
                 scene.add(object);
                 avatarObject = object;
             }
-        
-            function captureAvatar(view, callback) {
-                if (!avatarObject) return console.error('❌ Avatar not loaded');
-        
-                controls.enabled = false;
-        
-                if (view === 'front') {
-                    camera.position.set(0, 1.4, 3.5);
-                } else if (view === 'back') {
-                    camera.position.set(0, 1.4, -3.5);
-                }
-        
-                controls.target.set(0, 1.2, 0);
-                controls.update();
-                renderer.render(scene, camera);
-        
-                const dataURL = renderer.domElement.toDataURL('image/png');
-                fetch('{{ route('avatar.upload') }}', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                    },
-                    body: JSON.stringify({ image: dataURL, view: view })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    console.log(`✅ Screenshot (${view}) uploaded:`, data);
-                    if (callback) callback(); // proceed to next step
-                })
-                .catch(error => {
-                    console.error('❌ Upload error:', error);
-                })
-                .finally(() => {
-                    controls.enabled = true;
-                });
-            }
-        
+
+            function captureAvatar(view, callback, pose = 'apose') {
+    if (!avatarObject) return;
+
+    controls.enabled = false;
+    camera.position.set(0, 1.4, view === 'front' ? 3.5 : -3.5);
+    controls.target.set(0, 1.2, 0);
+    controls.update();
+    renderer.render(scene, camera);
+
+    // ✅ Delay screenshot by waiting for 3 frames (reliable render)
+    let frameCount = 0;
+    function waitFrames() {
+        frameCount++;
+        renderer.render(scene, camera);
+        if (frameCount < 3) {
+            requestAnimationFrame(waitFrames);
+        } else {
+            const dataURL = renderer.domElement.toDataURL('image/png');
+
+            fetch('{{ route('avatar.upload') }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                body: JSON.stringify({ image: dataURL, view: view, pose: pose })
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log(`📸 Screenshot (${pose}-${view}) uploaded.`);
+                if (callback) callback();
+            })
+            .catch(error => {
+                console.error('❌ Upload error:', error);
+            })
+            .finally(() => {
+                controls.enabled = true;
+            });
+        }
+    }
+
+    requestAnimationFrame(waitFrames);
+}
+
+
+
             function animate() {
                 requestAnimationFrame(animate);
                 controls.update();
                 renderer.render(scene, camera);
             }
             animate();
-        
-            // 🔁 Step-by-step: A-pose → front screenshot → back screenshot → switch to T-pose
-            loadOBJ(aPoseObjPath, function (aposeAvatar) {
-                replaceAvatar(aposeAvatar);
-                console.log('🟡 A-pose loaded for screenshot');
-        
+            if (SHOULD_CAPTURE && aPoseObjPath && aPoseLowerPath && tPoseObjPath) {
+    overlayLoader.classList.remove('hidden');
+
+    loadOBJ(aPoseObjPath, function (aposeAvatar) {
+        replaceAvatar(aposeAvatar);
+        setTimeout(() => {
+            captureAvatar('front', () => {
                 setTimeout(() => {
-                    captureAvatar('front', () => {
-                        // after front screenshot
+                    captureAvatar('back', () => {
                         setTimeout(() => {
-                            captureAvatar('back', () => {
-                                // after back screenshot
+                            loadOBJ(aPoseLowerPath, function (loweredAvatar) {
+                                replaceAvatar(loweredAvatar);
                                 setTimeout(() => {
-                                    loadOBJ(tPoseObjPath, function (tposeAvatar) {
-                                        replaceAvatar(tposeAvatar);
-                                        console.log('✅ Switched to T-pose');
-
-                                        camera.position.set(0, 1.4, 3.5);
-                                        controls.target.set(0, 1.2, 0);
-                                        controls.update();
-                                    });
-                                }, 800); // short delay before switching
+                                    captureAvatar('front', () => {
+                                        setTimeout(() => {
+                                            captureAvatar('back', () => {
+                                                setTimeout(() => {
+                                                    loadOBJ(tPoseObjPath, function (tposeAvatar) {
+                                                        replaceAvatar(tposeAvatar);
+                                                        setTimeout(() => {
+                                                            captureAvatar('front', () => {
+                                                                setTimeout(() => {
+                                                                    captureAvatar('back', () => {
+                                                                        // ✅ Reset to front-facing after all captures
+                                                                        camera.position.set(0, 1.4, 3.5);
+                                                                        controls.target.set(0, 1.2, 0);
+                                                                        controls.update();
+                                                                        overlayLoader.classList.add('hidden');
+                                                                    }, 'tpose');
+                                                                }, 1000);
+                                                            }, 'tpose');
+                                                        }, 1000);
+                                                    });
+                                                }, 1000);
+                                            }, 'apose_lower');
+                                        }, 1000);
+                                    }, 'apose_lower');
+                                }, 1200);
                             });
-                        }, 1000);
-                    });
-                }, 1200); // wait for A-pose render
-            });
-        });
-        </script>
-        
-        
-        
-        <!-- hidden buttons -->
-        <button id="captureFront" class="hidden">Capture Front</button>
-        <button id="captureBack" class="hidden">Capture Back</button>
-        
-@endif
+                        }, 800);
+                    }, 'apose');
+                }, 1000);
+            }, 'apose');
+        }, 1200);
+    });
+}
 
+        else if (tPoseObjPath) {
+            // Load T-pose if no capture is needed
+            loadOBJ(tPoseObjPath, function (tposeAvatar) {
+                replaceAvatar(tposeAvatar);
+            });
+        }
+
+        console.log("SHOULD_CAPTURE =", SHOULD_CAPTURE);
+
+        
+    });
+    </script>
+
+    <!-- hidden buttons -->
+    <button id="captureFront" class="hidden">Capture Front</button>
+    <button id="captureBack" class="hidden">Capture Back</button>
+    

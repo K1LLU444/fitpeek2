@@ -4,12 +4,22 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
+use App\Models\Avatar;
+use Illuminate\Support\Facades\Log;
 
 class WeatherController extends Controller
 {
     public function index()
     {
-        return view('weather');
+        $avatar = Avatar::where('user_id', auth()->id())->first();
+
+        if ($avatar) {
+            Log::info('🧍 Avatar height loaded:', ['height' => $avatar->height, 'unit' => $avatar->unit]);
+        } else {
+            Log::warning('⚠️ No avatar found for user ID: ' . auth()->id());
+        }
+
+        return view('weather', compact('avatar'));
     }
 
     public function getWeather(Request $request)

@@ -29,33 +29,36 @@ def main():
     decoded_betas = base64.b64decode(encoded_betas).decode('utf-8')
     betas = json.loads(decoded_betas)
 
-    # === A-pose: Rotate shoulders ===
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    avatars_dir = os.path.join(base_dir, 'storage', 'app', 'public', 'avatars')
+    os.makedirs(avatars_dir, exist_ok=True)
+
+    # === A-pose: Regular
     body_pose = torch.zeros([1, 63], dtype=torch.float32)
+    left_shoulder  = [-0.58, 0.12, 0.62]
+    right_shoulder = [-0.65, 0.15, 0.35]
 
-    left_shoulder  = [-0.58, 0.12, 0.62]   # ⬅️ boosted Z to rotate arm downward AND outward
-    right_shoulder = [-0.65, 0.15, 0.35]   # ✅ stable and clean
-
-    # Left Shoulder
     body_pose[0, 16 * 3 + 0] = left_shoulder[0]
     body_pose[0, 16 * 3 + 1] = left_shoulder[1]
     body_pose[0, 16 * 3 + 2] = left_shoulder[2]
 
-    # Right Shoulder
     body_pose[0, 17 * 3 + 0] = right_shoulder[0]
     body_pose[0, 17 * 3 + 1] = right_shoulder[1]
     body_pose[0, 17 * 3 + 2] = right_shoulder[2]
 
-    # Output paths
-    base_dir = os.path.dirname(os.path.abspath(__file__))
-    avatars_dir = os.path.join(base_dir, 'storage', 'app', 'public', 'avatars')
+    # === A-pose Lower: Arms lowered slightly
+    body_pose_lower = torch.zeros([1, 63], dtype=torch.float32)
+    body_pose_lower[0, 16 * 3 + 2] = 1.15   # Left shoulder Z
+    body_pose_lower[0, 17 * 3 + 2] = 0.35  # Right shoulder Z
 
-    # 🔧 Make sure the directory exists
-    os.makedirs(avatars_dir, exist_ok=True)
-
+    # === Output paths
     a_pose_obj = os.path.join(avatars_dir, f"{base_name}_apose.obj")
+    a_pose_lower_obj = os.path.join(avatars_dir, f"{base_name}_apose_lower.obj")
     t_pose_obj = os.path.join(avatars_dir, f"{base_name}_tpose.obj")
 
+    # === Generate all poses
     create_avatar(betas, a_pose_obj, gender, body_pose)
+    create_avatar(betas, a_pose_lower_obj, gender, body_pose_lower)
     create_avatar(betas, t_pose_obj, gender)
 
 if __name__ == "__main__":

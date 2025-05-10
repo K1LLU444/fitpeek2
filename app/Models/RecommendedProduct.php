@@ -21,7 +21,8 @@ class RecommendedProduct extends Model
         'front_image',
         'back_image',
         'product_type',
-    ];
+        'pose', // ✅ Add this
+    ];    
 
     protected $casts = [
         'tag_styles' => 'array',

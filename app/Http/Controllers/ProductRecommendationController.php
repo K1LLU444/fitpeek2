@@ -34,8 +34,32 @@ class ProductRecommendationController extends Controller
         $products = $query->get()->groupBy('product_type');
 
         return response()->json([
-            'top' => $products->get('top', collect())->values(),
-            'bottom' => $products->get('bottom', collect())->values(),
+            'top' => $products->get('top', collect())->values()->map(function ($product) {
+                return $product->only([
+                    'product_name',
+                    'product_link',
+                    'price',
+                    'description',
+                    'size_chart',
+                    'product_type',
+                    'pose', // ✅ Add this line
+                    'front_image',
+                    'back_image'
+                ]);
+            }),
+            'bottom' => $products->get('bottom', collect())->values()->map(function ($product) {
+                return $product->only([
+                    'product_name',
+                    'product_link',
+                    'price',
+                    'description',
+                    'size_chart',
+                    'product_type',
+                    'pose', // ✅ Add this line
+                    'front_image',
+                    'back_image'
+                ]);
+            }),
         ]);
     }
 }

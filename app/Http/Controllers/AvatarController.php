@@ -19,6 +19,21 @@ class AvatarController extends Controller
         return view('createavatar', compact('avatar'));
     }
 
+    public function getAvatarPath(Request $request)
+    {
+        $pose = $request->input('pose'); // 'high' or 'low'
+        $avatar = Avatar::where('user_id', auth()->id())->firstOrFail();
+
+        return response()->json([
+            'front' => $pose === 'high' 
+                ? asset($avatar->avatar_cleaned_front_path)
+                : asset($avatar->avatar_cleaned_front_lower_path),
+            'back' => $pose === 'high'
+                ? asset($avatar->avatar_cleaned_back_path)
+                : asset($avatar->avatar_cleaned_back_lower_path),
+        ]);
+    }
+
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -31,41 +46,39 @@ class AvatarController extends Controller
             'inseam' => 'required|numeric',
             'unit' => 'required|string|in:cm,in',
         ]);
-    
+
         $unit = $validated['unit'];
-        session(['last_unit' => $unit]); // persist unit for next form display
-    
-        // Helper function to convert inches to cm
+        session(['last_unit' => $unit]);
+
         function toCm($value, $unit) {
             return $unit === 'in' ? $value * 2.54 : $value;
         }
-    
-        // Convert only for ML usage
+
         $converted = [
             'height' => toCm($validated['height'], $unit),
-            'weight' => $validated['weight'], // always kg
+            'weight' => $validated['weight'],
             'chest'  => toCm($validated['chest'], $unit),
             'waist'  => toCm($validated['waist'], $unit),
             'hips'   => toCm($validated['hips'], $unit),
             'inseam' => toCm($validated['inseam'], $unit),
         ];
-    
+
         \Log::info('Unit: ' . $unit);
         \Log::info('Original input: ' . json_encode($validated));
-        \Log::info('Converted to cm: ' . json_encode($converted));    
+        \Log::info('Converted to cm: ' . json_encode($converted));
 
         $python = '/var/www/fitpeek2/flaskenv/bin/python';
         $generateAvatarScript = base_path('generate_dual_avatars.py');
 
         $sex = strtolower($validated['sex']);
         $measurements = [
-            $converted['height'],   // cm
-            $converted['weight'],   // kg (no conversion)
-            $converted['chest'],    // cm
-            $converted['waist'],    // cm
-            $converted['hips'],     // cm
-            $converted['inseam'],   // cm
-        ];        
+            $converted['height'],
+            $converted['weight'],
+            $converted['chest'],
+            $converted['waist'],
+            $converted['hips'],
+            $converted['inseam'],
+        ];
 
         $response = Http::post('http://127.0.0.1:5000/predict', [
             'measurements' => $measurements,
@@ -86,25 +99,27 @@ class AvatarController extends Controller
 
         $tposeFilename = "avatars/{$baseName}_tpose.obj";
         $aposeFilename = "avatars/{$baseName}_apose.obj";
+        $aposeLowerFilename = "avatars/{$baseName}_apose_lower.obj";
 
         $tposePath = storage_path("app/public/" . $tposeFilename);
         $aposePath = storage_path("app/public/" . $aposeFilename);
+        $aposeLowerPathFull = storage_path("app/public/" . $aposeLowerFilename);
 
         $command = "\"$python\" \"$generateAvatarScript\" \"$encodedBetas\" \"$baseName\" \"$sex\" 2>&1";
         \Log::info('Running Avatar Command: ' . $command);
         $result = shell_exec($command);
         \Log::info('Python Output: ' . $result);
 
-        if (!file_exists($tposePath) || !file_exists($aposePath)) {
-            \Log::error('One or both .obj files failed to generate.');
-            return back()->with('error', 'One or both .obj files failed to generate.');
+        if (!file_exists($tposePath) || !file_exists($aposePath) || !file_exists($aposeLowerPathFull)) {
+            \Log::error('One or more .obj files failed to generate.');
+            return back()->with('error', 'One or more .obj files failed to generate.');
         }
 
         $avatar = Avatar::updateOrCreate(
             ['user_id' => Auth::id()],
             [
                 'sex' => $validated['sex'],
-                'height' => $validated['height'],   // Save original (in inches or cm)
+                'height' => $validated['height'],
                 'weight' => $validated['weight'],
                 'chest'  => $validated['chest'],
                 'waist'  => $validated['waist'],
@@ -113,10 +128,18 @@ class AvatarController extends Controller
                 'unit' => $unit,
                 'avatar_path' => 'storage/' . $tposeFilename,
                 'avatar_apose_path' => 'storage/' . $aposeFilename,
+                'avatar_apose_lower_path' => 'storage/' . $aposeLowerFilename,
             ]
-        );        
+        );
 
-        return redirect()->route('avatar.create')->with('success', 'Avatar created successfully.');
+        session(['shouldCapture' => true]);
+
+        return redirect()
+        ->route('avatar.create')
+        ->with('success', 'Avatar created successfully.')
+        ->with('shouldCapture', true);
+    
+        
     }
 
     public function tryon()
@@ -141,6 +164,7 @@ class AvatarController extends Controller
 
         $data = $request->input('image');
         $view = $request->input('view');
+        $pose = $request->input('pose', 'apose');
 
         if (!$data || !$view) {
             return response()->json(['error' => 'Invalid data'], 400);
@@ -148,7 +172,7 @@ class AvatarController extends Controller
 
         $data = explode(',', $data);
         $decoded = base64_decode($data[1]);
-        $filename = $view . '_' . Str::random(10) . '.png';
+        $filename = $pose . '_' . $view . '_' . Str::random(10) . '.png';
 
         $path = 'avatars/' . $filename;
         $fullPath = public_path('storage/' . $path);
@@ -161,44 +185,50 @@ class AvatarController extends Controller
 
         $python = '/var/www/fitpeek2/flaskenv/bin/python';
 
-        if ($view === 'front') {
-            $avatar->avatar_front_path = 'storage/' . $path;
+        $mirrorScript = match ("{$pose}_{$view}") {
+            'apose_front'        => base_path('mirror_half_to_full.py'),
+            'apose_back'         => base_path('mirror_back_half.py'),
+            'apose_lower_front'  => base_path('mirror_half_lower.py'),
+            'apose_lower_back'   => base_path('mirror_back_lower.py'),
+            default              => null,
+        };
+        
+        if (!$mirrorScript || !file_exists($mirrorScript)) {
+            \Log::error("❌ Mirror script not found for pose/view: {$pose}_{$view}");
+            return response()->json(['error' => 'Invalid pose or view'], 400);
+        }
+        
+        $inputPath = str_replace('/', DIRECTORY_SEPARATOR, public_path('storage/' . $path));
+        $cleanedFilename = $pose . '_cleaned_' . $view . '_user' . $avatar->user_id . '.png';
+        $outputPath = str_replace('/', DIRECTORY_SEPARATOR, public_path('storage/avatars/' . $cleanedFilename));
 
-            $mirrorScript = base_path('mirror_half_to_full.py');
-            $frontPath = str_replace('/', DIRECTORY_SEPARATOR, public_path($avatar->avatar_front_path));
-            $cleanedFilename = 'front_cleaned_user' . $avatar->user_id . '.png';
-            $outputPath = str_replace('/', DIRECTORY_SEPARATOR, public_path('storage/avatars/' . $cleanedFilename));
+        if (file_exists($outputPath)) {
+            unlink($outputPath);
+        }
 
-            if (file_exists($outputPath)) {
-                unlink($outputPath);
-            }
+        $mirrorCommand = "\"$python\" \"$mirrorScript\" \"$inputPath\" \"$outputPath\"";
+        \Log::info("Running mirror command: $mirrorCommand");
+        shell_exec($mirrorCommand);
 
-            $mirrorCommand = "\"$python\" \"$mirrorScript\" \"$frontPath\" \"$outputPath\"";
-            \Log::info("Running mirror command: $mirrorCommand");
-            shell_exec($mirrorCommand);
+        $publicCleanedPath = 'storage/avatars/' . $cleanedFilename;
 
-            if (file_exists($outputPath)) {
-                $avatar->avatar_cleaned_front_path = 'storage/avatars/' . $cleanedFilename;
-            }
-        } elseif ($view === 'back') {
-            $avatar->avatar_back_path = 'storage/' . $path;
-
-            $mirrorScript = base_path('mirror_back_half.py');
-            $backPath = str_replace('/', DIRECTORY_SEPARATOR, public_path($avatar->avatar_back_path));
-            $cleanedFilename = 'back_cleaned_user' . $avatar->user_id . '.png';
-            $outputPath = str_replace('/', DIRECTORY_SEPARATOR, public_path('storage/avatars/' . $cleanedFilename));
-
-            if (file_exists($outputPath)) {
-                unlink($outputPath);
-            }
-
-            $mirrorCommand = "\"$python\" \"$mirrorScript\" \"$backPath\" \"$outputPath\"";
-            \Log::info("Running mirror command for BACK: $mirrorCommand");
-            shell_exec($mirrorCommand);
-
-            if (file_exists($outputPath)) {
-                $avatar->avatar_cleaned_back_path = 'storage/avatars/' . $cleanedFilename;
-            }
+        switch ("{$pose}_{$view}") {
+            case 'apose_front':
+                $avatar->avatar_front_path = 'storage/' . $path;
+                $avatar->avatar_cleaned_front_path = $publicCleanedPath;
+                break;
+            case 'apose_back':
+                $avatar->avatar_back_path = 'storage/' . $path;
+                $avatar->avatar_cleaned_back_path = $publicCleanedPath;
+                break;
+            case 'apose_lower_front':
+                $avatar->avatar_front_lower_path = 'storage/' . $path;
+                $avatar->avatar_cleaned_front_lower_path = $publicCleanedPath;
+                break;
+            case 'apose_lower_back':
+                $avatar->avatar_back_lower_path = 'storage/' . $path;
+                $avatar->avatar_cleaned_back_lower_path = $publicCleanedPath;
+                break;
         }
 
         $avatar->save();
