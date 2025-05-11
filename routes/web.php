@@ -13,7 +13,8 @@ use App\Http\Controllers\ShirtOverlayController;
 use App\Http\Controllers\ChatSupportController;
 use App\Http\Controllers\WeatherController;
 use App\Http\Controllers\TryOnController;
-
+use App\Http\Controllers\ProductController;
+use App\Http\Controllers\DashboardController;
 
 
 // Default home page
@@ -31,10 +32,7 @@ Route::get('/register', [RegisteredUserController::class, 'create'])->name('regi
 Route::post('/register', [RegisteredUserController::class, 'store']);
 
 // Dashboard - requires authentication & email verification
-Route::get('/dashboard', function () {
-    $products = Product::latest()->take(12)->get();
-    return view('dashboard', compact('products'));
-})->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('/dashboard', [DashboardController::class, 'index'])->middleware(['auth', 'verified'])->name('dashboard');
 
 // Email Verification Routes
 Route::get('/email/verify', function () {
@@ -70,10 +68,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
 Route::post('/scrape-product', [ProductScrapeController::class, 'scrape'])
     ->middleware(['auth', 'verified'])
     ->name('scrape.product');
-
-Route::get('/product/{product}', [ProductScrapeController::class, 'show'])
-    ->middleware(['auth', 'verified'])
-    ->name('product.show');
 
 // Product select
 Route::post('/products/select-images', [ProductScrapeController::class, 'selectImages'])->name('products.select-images');
@@ -135,13 +129,15 @@ Route::post('/get-weather', [WeatherController::class, 'getWeather']);
 
 Route::get('/weather', [TryOnController::class, 'show'])->name('weather');
 
-Route::get('/clean-image', [ImageCleanController::class, 'index'])->name('clean.index');
-Route::post('/clean-image', [ImageCleanController::class, 'process'])->name('clean.process');
+// Route::get('/clean-image', [ImageCleanController::class, 'index'])->name('clean.index');
+// Route::post('/clean-image', [ImageCleanController::class, 'process'])->name('clean.process');
 
 Route::post('/fetch-recommendations', [\App\Http\Controllers\ProductRecommendationController::class, 'fetch']);
 
 
 Route::post('/get-avatar-path', [AvatarController::class, 'getAvatarPath']);
+
+Route::get('/product/{id}', [ProductController::class, 'show'])->name('product.show');
 
 
 require __DIR__.'/auth.php';

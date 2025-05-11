@@ -91,6 +91,9 @@
         <a class="block w-full ps-3 pe-4 py-2 border-l-4 border-transparent text-start text-base font-medium text-gray-600 hover:text-gray-800 hover:bg-gray-50 hover:border-gray-300 focus:outline-none focus:text-gray-800 focus:bg-gray-50 focus:border-gray-300 transition duration-150 ease-in-out" href="https://fitpeek.online/aboutus">
     About Us
 </a>
+        <a class="block w-full ps-3 pe-4 py-2 border-l-4 border-transparent text-start text-base font-medium text-gray-600 hover:text-gray-800 hover:bg-gray-50 hover:border-gray-300 focus:outline-none focus:text-gray-800 focus:bg-gray-50 focus:border-gray-300 transition duration-150 ease-in-out" href="https://fitpeek.online/weather">
+    Recommendation
+</a>
 
         <!-- Mobile Profile -->
         <div class="mt-2 border-t border-gray-100 pt-2">
@@ -150,16 +153,126 @@
         </div>
     </div>
 
-    <!-- ROW 2: OUTFIT RECOMMENDATION -->
-    <div class="w-full sm:max-w-[1100px] mx-auto p-6">
-        <div class="flex flex-col lg:flex-row gap-6">
+<!-- ROW 2: OUTFIT RECOMMENDATION -->
+<div class="w-full sm:max-w-[1100px] mx-auto p-6">
+    <div class="grid grid-cols-1 lg:grid-cols-[45%_55%] gap-6">
 
-            <!-- LEFT: Filter + Product Cards -->
-        <div class="bg-white rounded-2xl shadow-md p-6 w-full lg:w-1/2">
-            <!-- Form wrapper -->
+        <!-- LEFT: Avatar/Overlay Box -->
+        <div class="bg-white rounded-2xl shadow-md p-6 flex flex-col items-center justify-start gap-4 h-[700px] overflow-hidden">
+
+            <!-- 🔘 Top Controls -->
+            <div class="w-full flex flex-wrap items-center justify-center gap-4">
+
+                <div class="flex items-center gap-1">
+                    <label for="top-size-select" class="text-xs font-medium text-gray-600">Top:</label>
+                    <select id="top-size-select" class="rounded-md border border-gray-300 text-xs w-[50px] px-2 py-1 shadow-sm text-left">
+                        <option value="">--</option>
+                    </select>
+                </div>
+
+                <div class="flex items-center gap-1">
+                    <label for="bottom-size-select" class="text-xs font-medium text-gray-600">Bottom:</label>
+                    <select id="bottom-size-select" class="rounded-md border border-gray-300 text-xs w-[50px] px-2 py-1 shadow-sm text-left">
+                        <option value="">--</option>
+                    </select>
+                </div>
+
+                <button id="toggle-avatar-view" class="bg-white hover:bg-gray-200 border border-gray-300 text-xs font-semibold px-2 py-1 rounded">Front</button>
+
+                <button id="switch-overlay-order" class="bg-white hover:bg-gray-200 border border-gray-300 text-xs font-semibold px-2 py-1 rounded flex items-center justify-center" title="Switch Overlay Order">
+                    <img id="overlay-icon" src="/images/weather/top-overlays.png" alt="Overlay Icon" class="w-4 h-4">
+                </button>
+
+                <button id="toggle-overlay-visibility" class="bg-white hover:bg-gray-200 border border-gray-300 text-xs font-semibold px-2 py-1 rounded flex items-center justify-center" title="Toggle Overlay Visibility">
+                    <img id="visibility-icon" src="/images/weather/top-bottom.png" alt="Visibility Icon" class="w-4 h-4">
+                </button>
+                            <!-- 🟡 Dropdown Icon (Same Height & Style as Buttons) -->
+                <div x-data="{ open: false }" class="relative">
+                    <button @click="open = !open"
+                            class="bg-white hover:bg-gray-200 border border-gray-300 text-xs font-semibold px-2 py-1 rounded flex items-center justify-center">
+                        <img src="/images/weather/background.png" alt="Dropdown Icon" class="w-4 h-4">
+                    </button>
+
+                <!-- Dropdown Panel -->
+                <div x-show="open" @click.away="open = false"
+                    x-transition
+                    class="absolute right-0 mt-2 w-72 bg-white rounded-xl shadow-xl border border-gray-200 p-4 z-50 max-h-[360px] overflow-y-auto">
+
+                        <div class="grid grid-cols-3 gap-4 text-center">
+                            <!-- Sample App Item -->
+                            <div class="image-grid-item flex flex-col items-center p-2 hover:bg-gray-100 rounded-lg cursor-pointer">
+                                <img src="/images/background/school1.png" alt="Item 1" class="w-16 h-16 object-cover rounded-md">
+                            </div>
+                            <div class="image-grid-item flex flex-col items-center p-2 hover:bg-gray-100 rounded-lg cursor-pointer">
+                                <img src="/images/background/city-day.png" alt="Item 2" class="w-16 h-16 object-cover rounded-md">
+                            </div>
+                            <div class="image-grid-item flex flex-col items-center p-2 hover:bg-gray-100 rounded-lg cursor-pointer">
+                                <img src="/images/background/city-night.png" alt="Item 3" class="w-16 h-16 object-cover rounded-md">
+                            </div>
+                            <div class="image-grid-item flex flex-col items-center p-2 hover:bg-gray-100 rounded-lg cursor-pointer">
+                                <img src="/images/background/garden-day.png" alt="Item 4" class="w-16 h-16 object-cover rounded-md">
+                            </div>
+                            <div class="image-grid-item flex flex-col items-center p-2 hover:bg-gray-100 rounded-lg cursor-pointer">
+                                <img src="/images/background/rainy.png" alt="Item 5" class="w-16 h-16 object-cover rounded-md">
+                            </div>
+                            <div class="image-grid-item flex flex-col items-center p-2 hover:bg-gray-100 rounded-lg cursor-pointer">
+                                <img src="/images/background/rainy-night.png" alt="Item 6" class="w-16 h-16 object-cover rounded-md">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <script>
+                document.querySelectorAll('.image-grid-item').forEach(item => {
+                    item.addEventListener('click', function () {
+                        const avatarContainer = document.getElementById('avatar-container');
+                        const img = this.querySelector('img');
+                        const imageUrl = img.getAttribute('src');
+
+                        // Check if already applied
+                        const currentBg = avatarContainer.style.backgroundImage;
+                        if (currentBg.includes(imageUrl)) {
+                            avatarContainer.style.backgroundImage = '';
+                            avatarContainer.classList.add('bg-gray-100');
+                        } else {
+                            avatarContainer.style.backgroundImage = `url('${imageUrl}')`;
+                            avatarContainer.style.backgroundSize = 'cover';
+                            avatarContainer.style.backgroundPosition = 'center';
+                            avatarContainer.classList.remove('bg-gray-100');
+                        }
+                    });
+                });
+                </script>
+
+
+            </div>
+
+            <!-- Avatar Display + Overlays -->
+            <div id="avatar-container"
+                data-avatar-height="{{ $avatar->height }}"
+                data-height-unit="{{ $avatar->unit }}"
+                class="relative w-full h-[600px] p-6 bg-gray-100 rounded-xl flex items-center justify-center shadow overflow-visible">
+
+                <img id="avatar-image" src="" data-front="" data-back="" alt="Avatar Overlay"
+                    class="max-h-full object-contain mx-auto pointer-events-none transition-all duration-300">
+
+                <img id="top-overlay" src="" alt="Shirt Overlay"
+                    class="absolute left-0 right-0 mx-auto object-contain pointer-events-none transition-all duration-300 ease-in-out border border-xl"
+                    style="display: none;">
+
+                <img id="bottom-overlay" src="" alt="Pants Overlay"
+                    class="absolute left-0 right-0 mx-auto object-fill pointer-events-none transition-all duration-300 ease-in-out border border-xl"
+                    style="display: none;">
+
+                <button id="upper-left-avatar" class="absolute left-3 top-20 text-3xl font-bold text-gray-700 hover:text-black">❮</button>
+                <button id="upper-right-avatar" class="absolute right-3 top-20 text-3xl font-bold text-gray-700 hover:text-black">❯</button>
+                <button id="lower-left-avatar" class="absolute left-3 bottom-20 text-3xl font-bold text-gray-700 hover:text-black">❮</button>
+                <button id="lower-right-avatar" class="absolute right-3 bottom-20 text-3xl font-bold text-gray-700 hover:text-black">❯</button>
+            </div>
+        </div>
+        <!-- RIGHT: Filter + Product Cards -->
+        <div class="bg-white rounded-2xl shadow-md p-6 w-full overflow-y-auto max-h-[700px]">
             <div id="filter-form" class="mb-6">
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <!-- Events -->
                     <div>
                         <label for="event-select" class="block text-sm font-medium text-gray-700 mb-1">Events:</label>
                         <select id="event-select" name="event"
@@ -172,8 +285,6 @@
                             <option value="Special Occasion">Special Occasion</option>
                         </select>
                     </div>
-
-                    <!-- Styles -->
                     <div>
                         <label for="style-select" class="block text-sm font-medium text-gray-700 mb-1">Styles:</label>
                         <select id="style-select" name="style"
@@ -189,125 +300,77 @@
                 </div>
             </div>
 
-            <!-- Conversion & Weather Toggle Buttons -->
             <div class="flex flex-wrap gap-4 mt-4">
                 <button id="toggle-unit-btn"
                     class="bg-indigo-100 hover:bg-indigo-200 text-indigo-700 text-xs px-3 py-1 rounded">
                     Switch to Inches
                 </button>
-
                 <button id="toggle-weather-btn"
                     class="bg-yellow-100 hover:bg-yellow-200 text-yellow-800 text-xs px-3 py-1 rounded">
                     Ignore Weather
                 </button>
             </div>
 
+            <!-- Product Details -->
+            <div id="top-product" class="border-t pt-4 mb-6">
+                <p class="text-sm font-semibold text-gray-800">Top:</p>
+                <div class="flex justify-between items-start">
+                    <div>
+                        <p class="font-bold text-md"></p>
+                        <p class="text-sm text-gray-600"></p>
+                        <p class="text-sm text-gray-500 mb-2"></p>
+                        <p class="text-sm text-indigo-500"><a href="#" target="_blank"></a></p>
+                    </div>
+                </div>
+            </div>
 
-        <!-- Top Product -->
-        <div id="top-product" class="border-t pt-4 mb-6">
-            <p class="text-sm font-semibold text-gray-800">Top:</p>
-            <div class="flex justify-between items-start">
-                <div>
-                    <p class="font-bold text-md"></p>
-                    <p class="text-sm text-gray-600"></p>
-                    <p class="text-sm text-gray-500 mb-2"></p>
-                    <p class="text-sm text-indigo-500"><a href="#" target="_blank"></a></p>
+            <div id="bottom-product" class="border-t pt-4">
+                <p class="text-sm font-semibold text-gray-800">Bottom:</p>
+                <div class="flex justify-between items-start">
+                    <div>
+                        <p class="font-bold text-md"></p>
+                        <p class="text-sm text-gray-600"></p>
+                        <p class="text-sm text-gray-500 mb-2"></p>
+                        <p class="text-sm text-indigo-500"><a href="#" target="_blank"></a></p>
+                    </div>
                 </div>
             </div>
         </div>
+                <script>
+        // ✅ Arrow navigation setup – clean and stable
+        function setupArrowNavigation() {
+            document.getElementById("upper-left-avatar").addEventListener("click", () => {
+                if (topIndex > 0) {
+                    topIndex--;
+                    updateUI();
+                }
+            });
+            document.getElementById("upper-right-avatar").addEventListener("click", () => {
+                if (topIndex < topProducts.length - 1) {
+                    topIndex++;
+                    updateUI();
+                }
+            });
+            document.getElementById("lower-left-avatar").addEventListener("click", () => {
+                if (bottomIndex > 0) {
+                    bottomIndex--;
+                    updateUI();
+                }
+            });
+            document.getElementById("lower-right-avatar").addEventListener("click", () => {
+                if (bottomIndex < bottomProducts.length - 1) {
+                    bottomIndex++;
+                    updateUI();
+                }
+            });
+        }
 
-        <!-- Bottom Product -->
-        <div id="bottom-product" class="border-t pt-4">
-            <p class="text-sm font-semibold text-gray-800">Bottom:</p>
-            <div class="flex justify-between items-start">
-                <div>
-                    <p class="font-bold text-md"></p>
-                    <p class="text-sm text-gray-600"></p>
-                    <p class="text-sm text-gray-500 mb-2"></p>
-                    <p class="text-sm text-indigo-500"><a href="#" target="_blank"></a></p>
-                </div>
-            </div>
-        </div>
-    </div>
-
-
-<!-- RIGHT: Avatar/Overlay Box -->
-<div class="bg-gray-100 rounded-2xl shadow-inner w-full lg:w-1/2 p-6 flex flex-col items-center justify-center gap-4">
-
-    <!-- 🔘 Top Controls: View Toggle + Size Selects -->
-<div class="w-full flex flex-wrap items-center justify-center gap-4">
-    <!-- Toggle Front/Back -->
-    <button id="toggle-avatar-view"
-        class="bg-white hover:bg-gray-200 border border-gray-300 text-xs font-semibold px-3 py-1 rounded">
-        Front
-    </button>
-    <!-- Overlay Switch Button -->
-    <!-- Overlay Switch Icon -->
-    <button id="switch-overlay-order"
-        class="bg-white hover:bg-gray-200 border border-gray-300 text-xs font-semibold px-3 py-1 rounded flex items-center justify-center"
-        title="Switch Overlay Order">
-        <img id="overlay-icon" src="/images/weather/top-overlays.png" alt="Overlay Icon" class="w-4 h-4">
-    </button>
-
-
-
-    <!-- Top Size Inline -->
-    <div class="flex items-center gap-1">
-        <label for="top-size-select" class="text-xs font-medium text-gray-600">Top Size:</label>
-        <select id="top-size-select"
-            class="rounded-md border border-gray-300 text-xs px-4 py-1 shadow-sm">
-            <option value="">--</option>
-        </select>
-    </div>
-
-    <!-- Bottom Size Inline -->
-    <div class="flex items-center gap-1">
-        <label for="bottom-size-select" class="text-xs font-medium text-gray-600">Bottom Size:</label>
-        <select id="bottom-size-select"
-            class="rounded-md border border-gray-300 text-xs px-4 py-1 shadow-sm">
-            <option value="">--</option>
-        </select>
-    </div>
-    
-</div>
-
-
-    <!-- Avatar Display + Overlays -->
-    <div id="avatar-container"
-        data-avatar-height="{{ $avatar->height }}"
-        data-height-unit="{{ $avatar->unit }}"
-        class="relative w-full h-[480px] bg-white rounded-xl flex items-center justify-center shadow overflow-visible">
-
-        <img id="avatar-image"
-            src=""
-            data-front=""
-            data-back=""
-            alt="Avatar Overlay"
-            class="max-h-full transition-all duration-300 object-contain">
-
-        <img id="top-overlay"
-            src=""
-            alt="Shirt Overlay"
-            class="absolute left-0 right-0 mx-auto object-contain pointer-events-none"
-            style="top: 0; display: none;">
-
-        <img id="bottom-overlay"
-            src=""
-            alt="Pants Overlay"
-            class="absolute left-0 right-0 mx-auto object-contain pointer-events-none"
-            style="top: 0; display: none;">
-
-        <!-- ARROWS -->
-        <button id="upper-left-avatar"
-            class="absolute left-3 top-20 text-3xl font-bold text-gray-700 hover:text-black">❮</button>
-        <button id="upper-right-avatar"
-            class="absolute right-3 top-20 text-3xl font-bold text-gray-700 hover:text-black">❯</button>
-        <button id="lower-left-avatar"
-            class="absolute left-3 bottom-20 text-3xl font-bold text-gray-700 hover:text-black">❮</button>
-        <button id="lower-right-avatar"
-            class="absolute right-3 bottom-20 text-3xl font-bold text-gray-700 hover:text-black">❯</button>
+        // ⏳ Wait for DOM to be ready
+        document.addEventListener("DOMContentLoaded", setupArrowNavigation);
+        </script>
     </div>
 </div>
+
 
 
 <!-- 🔁 Toggle Front/Back Script -->
@@ -325,34 +388,36 @@
             avatarImage.src = showingFront ? avatarImage.dataset.front : avatarImage.dataset.back;
             toggleButton.textContent = showingFront ? 'Front' : 'Back';
             updateUI(); // 🔄 Update overlays
+            applyOverlayVisibility();
         });
-    });
-    // 🔼 UPPER ARROWS – browse TOP products only
-    document.getElementById("upper-left-avatar").addEventListener("click", () => {
-        if (topIndex > 0) {
-            topIndex--;
-            updateUI();
-        }
-    });
-    document.getElementById("upper-right-avatar").addEventListener("click", () => {
-        if (topIndex < topProducts.length - 1) {
-            topIndex++;
-            updateUI();
-        }
-    });
+    let avatarLoaded = false;
+    let dataLoaded = false;
 
-    // 🔽 LOWER ARROWS – browse BOTTOM products only
-    document.getElementById("lower-left-avatar").addEventListener("click", () => {
-        if (bottomIndex > 0) {
-            bottomIndex--;
-            updateUI();
+    const tryUpdate = () => {
+        if (avatarLoaded && dataLoaded) {
+            setTimeout(updateUI, 50); // Give DOM a slight delay to layout
         }
-    });
-    document.getElementById("lower-right-avatar").addEventListener("click", () => {
-        if (bottomIndex < bottomProducts.length - 1) {
-            bottomIndex++;
-            updateUI();
+    };
+
+    // ✅ Detect when avatar image has loaded
+    if (avatarImage.complete) {
+        avatarLoaded = true;
+        tryUpdate();
+    } else {
+        avatarImage.onload = () => {
+            avatarLoaded = true;
+            tryUpdate();
+        };
+    }
+
+    // ✅ Wait for product data to be ready
+    const checkProductsReady = setInterval(() => {
+        if (typeof topProducts !== 'undefined' && topProducts.length > 0) {
+            dataLoaded = true;
+            clearInterval(checkProductsReady);
+            tryUpdate();
         }
+    }, 50); // Check every 50ms
     });
 
 </script>
@@ -361,7 +426,7 @@
     </div>
 
 
-    <script>
+<script>
 let weatherCondition = "";
 let topIndex = 0;
 let bottomIndex = 0;
@@ -369,7 +434,9 @@ let topProducts = [];
 let bottomProducts = [];
 let selectedTopSize = "";
 let selectedBottomSize = "";
-let overlayOnTop = "top"; // "top" or "bottom"
+
+ // "top" or "bottom"
+
 
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -415,26 +482,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     document.getElementById("event-select").addEventListener("change", fetchRecommendations);
     document.getElementById("style-select").addEventListener("change", fetchRecommendations);
-
-    // 🔁 Top arrows
-    document.getElementById("upper-left-avatar").addEventListener("click", () => {
-        if (topIndex > 0) topIndex--;
-        updateUI();
-    });
-    document.getElementById("upper-right-avatar").addEventListener("click", () => {
-        if (topIndex < topProducts.length - 1) topIndex++;
-        updateUI();
-    });
-
-    // 🔁 Bottom arrows
-    document.getElementById("lower-left-avatar").addEventListener("click", () => {
-        if (bottomIndex > 0) bottomIndex--;
-        updateUI();
-    });
-    document.getElementById("lower-right-avatar").addEventListener("click", () => {
-        if (bottomIndex < bottomProducts.length - 1) bottomIndex++;
-        updateUI();
-    });
     document.getElementById("top-size-select").addEventListener("change", (e) => {
     selectedTopSize = e.target.value;
     updateUI();
@@ -443,6 +490,7 @@ document.addEventListener("DOMContentLoaded", () => {
         selectedBottomSize = e.target.value;
         updateUI();
     });
+    let overlayOnTop = "top";
     document.getElementById("switch-overlay-order").addEventListener("click", () => {
         overlayOnTop = overlayOnTop === "top" ? "bottom" : "top";
 
@@ -460,6 +508,44 @@ document.addEventListener("DOMContentLoaded", () => {
             document.getElementById("overlay-icon").src = "/images/weather/top-overlays.png";
         }
     });
+
+let overlayVisibilityState = 0; // 1 = both visible, 2 = top only, 0 = bottom only
+function applyOverlayVisibility() {
+    const topOverlay = document.getElementById("top-overlay");
+    const bottomOverlay = document.getElementById("bottom-overlay");
+    const icon = document.getElementById("visibility-icon");
+
+    const topSrc = topOverlay.src || "";
+    const bottomSrc = bottomOverlay.src || "";
+
+    const topValid = topSrc.trim() !== "" && !topSrc.includes("undefined");
+    const bottomValid = bottomSrc.trim() !== "" && !bottomSrc.includes("undefined");
+
+    if (overlayVisibilityState === 0) {
+        // 1️⃣ Both visible (if valid)
+        topOverlay.style.display = topValid ? "block" : "none";
+        bottomOverlay.style.display = bottomValid ? "block" : "none";
+        icon.src = "/images/weather/top-bottom.png";
+    } else if (overlayVisibilityState === 1) {
+        // 2️⃣ Only top visible (if valid)
+        topOverlay.style.display = topValid ? "block" : "none";
+        bottomOverlay.style.display = "none";
+        icon.src = "/images/weather/top-only.png";
+    } else if (overlayVisibilityState === 2) {
+        // 3️⃣ Only bottom visible (if valid)
+        topOverlay.style.display = "none";
+        bottomOverlay.style.display = bottomValid ? "block" : "none";
+        icon.src = "/images/weather/bottom-only.png";
+    }
+}
+
+document.getElementById("toggle-overlay-visibility").addEventListener("click", () => {
+    overlayVisibilityState = (overlayVisibilityState + 1) % 3;
+    applyOverlayVisibility();
+});
+
+
+
 
 });
 function updateAvatarImageBasedOnPose(pose) {
@@ -510,6 +596,7 @@ function fetchRecommendations() {
         topIndex = 0;
         bottomIndex = 0;
         updateUI();
+        setTimeout(updateUI, 50);
     });
 }
 
@@ -521,40 +608,34 @@ async function updateUI() {
     const pose = top?.pose === 'low' ? 'low' : 'high';
     await updateAvatarImageBasedOnPose(pose);
 
-    // ✅ Force reload of avatar image after pose change
     const avatarImage = document.getElementById("avatar-image");
+    const avatarContainer = document.getElementById("avatar-container");
+
     if (avatarImage && avatarImage.dataset) {
         const newSrc = (showingFront ? avatarImage.dataset.front : avatarImage.dataset.back) + '?v=' + Date.now();
         avatarImage.src = newSrc;
-        console.log("✅ Pose applied, new avatar src set:", newSrc);
     }
 
     const topOverlay = document.getElementById("top-overlay");
     const bottomOverlay = document.getElementById("bottom-overlay");
     const avatarPixelHeight = avatarImage.clientHeight || 480;
-    const avatarContainer = document.getElementById("avatar-container");
 
     const rawHeight = parseFloat(avatarContainer.dataset.avatarHeight);
     const rawUnit = avatarContainer.dataset.heightUnit || "cm";
     const normalizedUnit = rawUnit.trim().toLowerCase();
     const avatarHeightInCm = (normalizedUnit === "inches" || normalizedUnit === "in") ? rawHeight * 2.54 : rawHeight;
 
-    if (isNaN(avatarHeightInCm)) {
-        console.warn("❌ Invalid avatar height. Aborting updateUI.");
-        return;
-    }
+    // Align overlay position relative to avatar image
+    const imageBox = avatarImage.getBoundingClientRect();
+    const containerBox = avatarContainer.getBoundingClientRect();
+    const topOffsetPx = imageBox.top - containerBox.top;
 
-    console.log(`📏 Normalized Height: ${avatarHeightInCm} cm (from ${rawHeight} ${normalizedUnit})`);
+    const neckOffsetPx = topOffsetPx + 43;
+    const waistOffsetPx = topOffsetPx + 132;
 
-    // 🎯 Fixed pixel offsets for alignment (tweak here for fine-tuning)
-    const neckOffsetPx = 125;     // 🔧 fine-tune until shirt aligns with neck
-    const waistOffsetPx = 230;   // 🔧 fine-tune until pants align with waist
-
-    // Update product info cards
     document.getElementById("top-product").innerHTML = top ? renderProduct('Top', top) : '<p>No top found.</p>';
     document.getElementById("bottom-product").innerHTML = bottom ? renderProduct('Bottom', bottom) : '<p>No bottom found.</p>';
 
-    // ⬇️ Dropdown logic
     const topSizeSelect = document.getElementById("top-size-select");
     const bottomSizeSelect = document.getElementById("bottom-size-select");
 
@@ -588,7 +669,7 @@ async function updateUI() {
         bottomSizeSelect.value = selectedBottomSize;
     }
 
-    // 🔄 Top overlay logic
+    // 🔄 Top overlay
     if (top && top.size_chart && selectedTopSize) {
         const topLengthCm = top.size_chart[selectedTopSize]?.length || 30;
         const pixelHeight = (topLengthCm / avatarHeightInCm) * avatarPixelHeight;
@@ -600,30 +681,75 @@ async function updateUI() {
         topOverlay.style.display = "block";
         topOverlay.style.height = `${pixelHeight}px`;
         topOverlay.style.top = `${neckOffsetPx}px`;
+        topOverlay.style.clipPath = "none";
     } else {
         topOverlay.src = "";
         topOverlay.style.display = "none";
     }
 
-    // 🔄 Bottom overlay logic
-    if (bottom && bottom.size_chart && selectedBottomSize) {
-        const bottomLengthCm = bottom.size_chart[selectedBottomSize]?.length || 30;
-        const pixelHeight = (bottomLengthCm / avatarHeightInCm) * avatarPixelHeight;
+// 🔄 Bottom overlay scaling based on size_chart.length and natural image size
+if (bottom && bottom.size_chart && selectedBottomSize) {
+    const selected = bottom.size_chart[selectedBottomSize];
+    const sizeChart = bottom.size_chart;
 
-        const rawSrc = isBack ? bottom.back_image : bottom.front_image;
-        const fixedSrc = rawSrc?.startsWith("/storage") ? location.origin + rawSrc : rawSrc;
+    // 📏 Find the base (smallest) length from size chart
+    const allLengths = Object.values(sizeChart).map(s => s.length || 1);
+    const baseLengthCm = Math.min(...allLengths);
+    const selectedLengthCm = selected.length || baseLengthCm;
+
+    // 🧮 Scale factor relative to base length
+    const scaleFactor = selectedLengthCm / baseLengthCm;
+
+    // ✅ Reference image source
+    // ✅ Reference image source
+    const rawSrc = isBack ? bottom.back_image : bottom.front_image;
+    console.log("🖼 Raw bottom image source:", rawSrc);
+
+    const fixedSrc = rawSrc?.startsWith("/storage") ? location.origin + rawSrc : rawSrc;
+    console.log("✅ Resolved bottom image source:", fixedSrc);
+
+
+    // 🖼 Load the image to get natural size
+    const img = new Image();
+    img.src = fixedSrc;
+
+    img.onload = () => {
+        const aspectRatio = img.naturalWidth / img.naturalHeight;
+
+        // 🟢 Convert length from cm → px using avatar scale
+        const heightPx = (selectedLengthCm / avatarHeightInCm) * avatarPixelHeight;
+        const widthPx = heightPx * aspectRatio;
+
+        console.log("👖 Bottom Length CM:", selectedLengthCm);
+        console.log("📐 Calculated Height (px):", heightPx);
+        console.log("📐 Aspect Ratio:", aspectRatio);
+        console.log("📏 Width (px):", widthPx);
 
         bottomOverlay.src = fixedSrc;
         bottomOverlay.style.display = "block";
-        bottomOverlay.style.height = `${pixelHeight}px`;
+        bottomOverlay.style.height = `${heightPx}px`;
+        bottomOverlay.style.width = `${widthPx}px`;
         bottomOverlay.style.top = `${waistOffsetPx}px`;
-    } else {
-        bottomOverlay.src = "";
-        bottomOverlay.style.display = "none";
-    }
+        bottomOverlay.style.left = "0";
+        bottomOverlay.style.right = "0";
+        bottomOverlay.style.margin = "0 auto";
+        bottomOverlay.style.clipPath = "none";
 
-    console.log("🔍 Front view?", showingFront);
+        // ✅ Re-apply visibility mode
+        applyOverlayVisibility?.();
+    };
+} else {
+    bottomOverlay.src = "";
+    bottomOverlay.style.display = "none";
 }
+    
+}
+
+
+
+
+
+
 
 
 
@@ -782,4 +908,5 @@ document.getElementById("toggle-weather-btn").addEventListener("click", () => {
 
             </main>
         </div>
+        <x-footer />
 </x-app-layout>

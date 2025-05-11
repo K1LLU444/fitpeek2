@@ -1,18 +1,10 @@
 <x-app-layout>
     <div class="w-full">
-        <div class="mt-1">
+        <div class="mt-16 md:mt-3">
             <img src="{{ asset('images/banner-home.jpg') }}" 
                  alt="Home Page Background" 
-                 class="w-full mb-10">
+                 class="w-full">
         </div> 
-        
-        <div class="block md:hidden px-4 mb-4">
-            <button @click="openFilters = !openFilters" 
-                class="w-full bg-gray-200 py-2 rounded-lg text-gray-700 font-semibold text-center">
-                Filter
-            </button>
-        </div>
-
 
         <!-- Main Grid Layout -->
         <div class="grid grid-cols-1 lg:grid-cols-4 bg-gray-100">
@@ -31,78 +23,63 @@
         <!-- Main Content -->
         <div class="lg:col-span-3 p-4">
             <!-- Search Header -->
-            <div class="max-w-7xl mx-auto text-left mb-6">
-                <h1 class="text-2xl font-semibold mb-4 text-center lg:text-left">What’s your style?</h1>
+            <div class="max-w-7xl mx-auto text-left">
 
-                <!-- Search Bar + Button (Responsive) -->
-                <form method="POST" action="{{ route('scrape.product') }}" class="flex flex-col sm:flex-row items-center space-y-3 sm:space-y-0 sm:space-x-2" id="scrapeForm">
-                    @csrf
-                    <div class="relative w-full">
-                        <img src="{{ asset('images/searchbar.svg') }}" 
-                            alt="Search" 
-                            class="w-5 h-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-600">
-                        <input type="text" 
-                            name="product_url"
-                            placeholder="Paste here the link" 
-                            required
-                            class="rounded-3xl p-2 shadow-sm w-full pl-10 text-gray-700 border border-gray-300">
-                    </div>
-                    {{-- Output or error message --}}
-                    @if(session('message'))
-                        <div class="mt-4 text-green-600">{{ session('message') }}</div>
-                    @endif
-                    @if(session('error'))
-                        <div class="mt-4 text-red-600">{{ session('error') }}</div>
-                    @endif
-                    <button type="submit" class="bg-black text-white px-4 py-2 rounded-lg w-full sm:w-auto">Submit</button>
-                </form>
+        </div>
 
-                <div id="loader" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 hidden">
-                    <div class="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
-                    <span class="text-white ml-4">Fetching product...</span>
-                </div>
+<div class="grid grid-cols-2 md:grid-cols-5 gap-4 max-w-xl md:max-w-7xl mx-auto mb-6">
+    <!-- Row 1 -->
+    <select id="filter-sex" class="w-full md:w-auto border rounded px-3 py-2 text-sm">
+        <option value="">All Sex</option>
+        <option value="male">Male</option>
+        <option value="female">Female</option>
+        <option value="unisex">Unisex</option>
+    </select>
 
-                <script>
-                    const form = document.getElementById('scrapeForm');
+    <select id="filter-weather" class="w-full border rounded px-3 py-2 text-sm">
+        <option value="">All Weather</option>
+        <option value="Hot">Hot</option>
+        <option value="Rainy">Rainy</option>
+        <option value="Cool">Cool</option>
+    </select>
 
-                    form.addEventListener('submit', function(e) {
-                        e.preventDefault();
-                        document.getElementById('loader').classList.remove('hidden');
+    <!-- Row 2 -->
+    <select id="filter-events" class="w-full border rounded px-3 py-2 text-sm">
+        <option value="">All Events</option>
+        <option value="Casual Outing">Casual Outing</option>
+        <option value="Work">Work</option>
+        <option value="School">School</option>
+        <option value="Fitness">Fitness</option>
+        <option value="Special Occasion">Special Occasion</option>
+    </select>
 
-                        // Small delay to allow spinner to appear before actual submission
-                        setTimeout(() => {
-                            form.submit();
-                        }, 100); // 100ms is enough
-                    });
-                </script>
-            </div>
+    <select id="filter-style" class="w-full border rounded px-3 py-2 text-sm">
+        <option value="">All Styles</option>
+        <option value="Casual">Casual</option>
+        <option value="Smart Casual">Smart Casual</option>
+        <option value="Athleisure">Athleisure</option>
+        <option value="Streetwear">Streetwear</option>
+        <option value="Breezy">Breezy</option>
+    </select>
+
+    <!-- Row 3: Centered -->
+    <div class="col-span-2 md:col-span-1 flex justify-center">
+        <select id="filter-type" class="w-full md:w-full border rounded px-3 py-2 text-sm">
+            <option value="">All Clothing</option>
+            <option value="top">Tops Only</option>
+            <option value="bottom">Bottoms Only</option>
+        </select>
+    </div>
+</div>
+
+
 
             <div class="max-w-7xl mx-auto space-y-8">
-                <h2 class="text-lg font-semibold mb-3 text-center lg:text-left">Previous Search</h2>
 
-                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-5 justify-center">
-                    @forelse ($products as $product)
-                        <div class="flex justify-center">
-                        @php
-                            $fallbackImage = $product->back_image ?? null;
-                            $displayImage = $product->front_image ?: $fallbackImage;
-                            $imageSrc = Str::startsWith($displayImage, ['http://', 'https://'])
-                                ? $displayImage
-                                : asset($displayImage);
-                        @endphp
-
-                        <x-card 
-                            :link="route('product.show', $product->id)"
-                            image="{{ $displayImage ? $imageSrc : asset('images/placeholder.png') }}"
-                            text="{{ $product->product_name }}"
-                            price="{{ $product->price }}"
-                        />
-
-                        </div>
-                    @empty
-                        <p class="text-center text-gray-500 col-span-full">No products found.</p>
-                    @endforelse
+                <div id="product-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 justify-center">
+                    @include('partials.product_cards')
                 </div>
+
             </div>
 
         </div>
@@ -199,6 +176,29 @@
     </script>
 
     @endif
+
+    <script>
+        function fetchFilteredProducts() {
+            const sex = document.getElementById('filter-sex').value;
+            const weather = document.getElementById('filter-weather').value;
+            const events = document.getElementById('filter-events').value;
+            const style = document.getElementById('filter-style').value;
+            const type = document.getElementById('filter-type').value;
+
+            const params = new URLSearchParams({ sex, weather, events, style, type });
+
+            fetch(`{{ route('dashboard') }}?${params.toString()}`, {
+                headers: { 'X-Requested-With': 'XMLHttpRequest' }
+            })
+            .then(response => response.text())
+            .then(html => {
+                document.getElementById('product-grid').innerHTML = html;
+            });
+        }
+
+        document.querySelectorAll('#filter-sex, #filter-weather, #filter-events, #filter-style, #filter-type')
+            .forEach(select => select.addEventListener('change', fetchFilteredProducts));
+    </script>
 
 
 </x-app-layout>

@@ -91,6 +91,9 @@
         <x-responsive-nav-link :href="route('aboutus')" :active="request()->routeIs('aboutus')">
             {{ __('About Us') }}
         </x-responsive-nav-link>
+        <x-responsive-nav-link :href="route('weather')" :active="request()->routeIs('weather')">
+            {{ __('Recommendation') }}
+        </x-responsive-nav-link>
 
         <!-- Mobile Profile -->
         <div class="mt-2 border-t border-gray-100 pt-2">
