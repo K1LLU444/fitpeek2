@@ -5,41 +5,40 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\RecommendedProduct;
 use App\Models\Avatar;
+use App\Services\OpenAIService; // ✅ Make sure this is included
 
 class ProductRecommendationController extends Controller
 {
     public function fetch(Request $request)
     {
-        // 📌 Normalize input filters
         $weather = ucfirst(strtolower($request->input('weather')));
         $event   = ucwords(strtolower($request->input('event')));
         $style   = ucwords(strtolower($request->input('style')));
 
         \Log::info('🎯 Filters received', compact('weather', 'event', 'style'));
 
-        // 🔐 Get authenticated user and avatar
+        // 🔐 Fetch user and avatar
         $user = $request->user();
         $avatar = Avatar::where('user_id', $user->id)->first();
 
         if (!$avatar) {
+            \Log::warning("🚫 No avatar found for user ID {$user->id}");
             return response()->json(['error' => 'No avatar found for this user.'], 404);
         }
 
-        $sex = strtolower($avatar->sex ?? 'unisex'); // default to unisex just in case
+        // ✅ Instantiate OpenAI manually
+        $openAI = new OpenAIService();
+
+        $sex = strtolower($avatar->sex ?? 'unisex');
         \Log::info("🧍 Avatar sex detected: {$sex}");
 
-        // 🧠 Start building the product query
-        $query = RecommendedProduct::query();
+        // 🧠 Query building
+        $query = RecommendedProduct::query()->whereIn('sex', [$sex, 'unisex']);
 
-        // ✅ Filter by sex ('male', 'female', or 'unisex')
-        $query->whereIn('sex', [$sex, 'unisex']);
-
-        // ✅ Filter by weather
         if (!empty($weather)) {
             $query->whereJsonContains('tag_weather', $weather);
         }
 
-        // 🟡 Optional filters
         if (!empty($event) && $event !== '--select--') {
             $query->whereJsonContains('tag_events', $event);
         }
@@ -48,15 +47,15 @@ class ProductRecommendationController extends Controller
             $query->whereJsonContains('tag_styles', $style);
         }
 
-        // 📦 Retrieve and group by product_type
-        $products = $query->get()->groupBy('product_type');
+        $products = $query->orderBy('id', 'desc')->get();
+        \Log::info('🛍 Products matched', ['count' => $products->count()]);
 
-        \Log::info('🛍 Products returned:', ['sexes' => $query->get()->pluck('sex')->toArray()]);
+        $grouped = $products->groupBy('product_type');
 
-        // 🔄 Format response
         return response()->json([
-            'top' => $products->get('top', collect())->values()->map(function ($product) {
+            'top' => $grouped->get('top', collect())->values()->map(function ($product) {
                 return $product->only([
+                    'id',
                     'product_name',
                     'product_link',
                     'price',
@@ -68,8 +67,9 @@ class ProductRecommendationController extends Controller
                     'back_image',
                 ]);
             }),
-            'bottom' => $products->get('bottom', collect())->values()->map(function ($product) {
+            'bottom' => $grouped->get('bottom', collect())->values()->map(function ($product) {
                 return $product->only([
+                    'id',
                     'product_name',
                     'product_link',
                     'price',
@@ -82,5 +82,23 @@ class ProductRecommendationController extends Controller
                 ]);
             }),
         ]);
+    }
+
+    public function aiRecommend(Request $request)
+    {
+        $user = $request->user();
+        $avatar = Avatar::where('user_id', $user->id)->first();
+        $product = RecommendedProduct::find($request->input('product_id'));
+
+        if (!$avatar || !$product) {
+            return response()->json(['error' => 'Missing avatar or product.'], 404);
+        }
+
+        $openAI = new \App\Services\OpenAIService();
+        $recommendation = $openAI->recommendSize($avatar, $product->product_name, $product->size_chart);
+
+        \Log::info("🤖 AI recommendation for {$product->product_name}", ['result' => $recommendation]);
+
+        return response()->json(['recommendation' => $recommendation]);
     }
 }

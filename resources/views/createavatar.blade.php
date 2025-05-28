@@ -92,10 +92,13 @@
                         @endphp
 
                             <div class="mt-4">
-                            <x-input-label 
-    for="{{ $field }}" 
-    :value="__(ucwords(str_replace('_', ' ', $field)) . ($field === 'weight' ? ' (kg)' : ' (' . ($unit == 'in' ? 'in' : 'cm') . ')'))" 
-/>
+                                <label for="{{ $field }}" class="block text-sm font-medium text-gray-700">
+                                    {{ ucwords(str_replace('_', ' ', $field)) }}
+                                    <span class="unit-label text-gray-500 text-sm ml-1" data-field="{{ $field }}">
+                                        {{ $field === 'weight' ? '(kg)' : ($unit === 'in' ? '(in)' : '(cm)') }}
+                                    </span>
+                                </label>
+
                                 <x-text-input
                                     id="{{ $field }}"
                                     name="{{ $field }}"
@@ -224,12 +227,34 @@
 
                     }
 
-                    // Update when unit or sex changes
-                    sexSelect.addEventListener('change', updateMinMax);
-                    unitSelect.addEventListener('change', updateMinMax);
+                    function updateUnitLabels() {
+                        const selectedUnit = unitSelect.value;
+                        const labels = document.querySelectorAll('.unit-label');
 
-                    // Run on initial page load
+                        labels.forEach(label => {
+                            const field = label.getAttribute('data-field');
+                            if (field === 'weight') {
+                                label.textContent = '(kg)';
+                            } else {
+                                label.textContent = selectedUnit === 'in' ? '(in)' : '(cm)';
+                            }
+                        });
+                    }
+                    
+                    sexSelect.addEventListener('change', () => {
+                        updateMinMax();
+                        updateUnitLabels();
+                    });
+
+                    unitSelect.addEventListener('change', () => {
+                        updateMinMax();
+                        updateUnitLabels();
+                    });
+
+                    // On page load
                     updateMinMax();
+                    updateUnitLabels();
+
                 });
             </script>
                 <!-- Avatar loading overlay -->

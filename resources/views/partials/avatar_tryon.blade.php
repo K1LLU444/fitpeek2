@@ -22,7 +22,6 @@
                 <div class="flex items-center gap-1">
                     <label for="product-size-select" class="text-xs font-medium text-gray-600">Size:</label>
                     <select id="product-size-select" class="rounded-md border border-gray-300 text-xs w-[60px] px-2 py-1 shadow-sm text-left">
-                        <option value="">--</option>
                         @foreach(array_keys($product->size_chart ?? []) as $size)
                             <option value="{{ $size }}">{{ $size }}</option>
                         @endforeach
@@ -65,12 +64,27 @@
             <p class="text-gray-700 font-medium mb-2">₱{{ number_format($product->price, 2) }}</p>
             <p class="text-gray-600 mb-4">{{ $product->description }}</p>
 
+            <!-- 🔘 AI Size Recommendation Trigger -->
+            <p class="text-sm text-indigo-500 mt-2 hover:underline cursor-pointer"
+            onclick="getAIRecommendation({{ $product->id }}, this)">
+                Get AI Size Recommendation
+            </p>
+
+            <!-- 📬 AI Result Container -->
+            <div class="text-sm text-green-600 ai-result mt-1"></div>
+
             <p class="text-sm text-gray-500">Style: {{ implode(', ', $product->tag_styles ?? []) }}</p>
             <p class="text-sm text-gray-500">Event: {{ implode(', ', $product->tag_events ?? []) }}</p>
             <p class="text-sm text-gray-500">Weather: {{ implode(', ', $product->tag_weather ?? []) }}</p>
 
             @if($product->size_chart)
-                <h3 class="text-md font-semibold mt-4 mb-2">Size Chart</h3>
+                <div class="flex flex-wrap items-center mt-4 mb-2">
+                    <h3 class="text-md font-semibold">Size Chart</h3>
+                    <button id="toggle-unit-btn"
+                        class="bg-white hover:bg-gray-200 ml-4 border border-gray-300 text-xs font-semibold px-2 py-1 rounded">
+                        Convert to inches
+                    </button>
+                </div>
                 <table class="text-sm border w-full">
                     <thead>
                         <tr class="bg-gray-200">
@@ -83,8 +97,8 @@
                         @foreach($product->size_chart as $size => $entry)
                         <tr>
                             <td class="border px-2 py-1">{{ $size }}</td>
-                            <td class="border px-2 py-1">{{ $entry['width'] ?? '-' }}</td>
-                            <td class="border px-2 py-1">{{ $entry['length'] ?? '-' }}</td>
+                            <td class="border px-2 py-1 width-cell">{{ $entry['width'] ?? '-' }}</td>   {{-- ✅ ADD CLASS --}}
+                            <td class="border px-2 py-1 length-cell">{{ $entry['length'] ?? '-' }}</td> {{-- ✅ ADD CLASS --}}
                         </tr>
                         @endforeach
                     </tbody>
@@ -182,3 +196,73 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 });
 </script>
+
+<script>
+function getAIRecommendation(productId, buttonElement) {
+    buttonElement.textContent = "Loading...";
+
+    fetch('/ai-recommendation', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+        },
+        body: JSON.stringify({ product_id: productId })
+    })
+    .then(res => res.json())
+    .then(data => {
+        const result = data.recommendation;
+        const resultBox = buttonElement.nextElementSibling;
+
+        if (result && result.best) {
+            resultBox.innerHTML = `
+                <p class="text-green-600 font-medium">Recommended size: ${result.best}</p>
+                <p class="text-s text-gray-600">Backup: ${result.second}</p>
+                <p class="text-xs text-gray-500 italic mb-3">${result.reason}</p>
+            `;
+        } else {
+            resultBox.textContent = "⚠️ No recommendation available.";
+        }
+
+        buttonElement.textContent = "Get AI Size Recommendation";
+    })
+    .catch(err => {
+        console.error("❌ AI recommendation error:", err);
+        buttonElement.nextElementSibling.textContent = "Error fetching recommendation.";
+        buttonElement.textContent = "Get AI Size Recommendation";
+    });
+}
+</script>
+
+<script>
+let currentChartUnit = 'cm';
+
+document.getElementById("toggle-unit-btn").addEventListener("click", () => {
+    const widthCells = document.querySelectorAll(".width-cell");
+    const lengthCells = document.querySelectorAll(".length-cell");
+
+    widthCells.forEach(cell => {
+        const value = parseFloat(cell.textContent);
+        if (!isNaN(value)) {
+            cell.textContent = currentChartUnit === 'cm'
+                ? (value / 2.54).toFixed(2)
+                : (value * 2.54).toFixed(2);
+        }
+    });
+
+    lengthCells.forEach(cell => {
+        const value = parseFloat(cell.textContent);
+        if (!isNaN(value)) {
+            cell.textContent = currentChartUnit === 'cm'
+                ? (value / 2.54).toFixed(2)
+                : (value * 2.54).toFixed(2);
+        }
+    });
+
+    currentChartUnit = currentChartUnit === 'cm' ? 'in' : 'cm';
+    document.getElementById("toggle-unit-btn").textContent =
+        currentChartUnit === 'cm' ? "Convert to inches" : "Convert to cm";
+});
+</script>
+
+

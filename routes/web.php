@@ -15,6 +15,13 @@ use App\Http\Controllers\WeatherController;
 use App\Http\Controllers\TryOnController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\SizeRecommendationController;
+
+//size recommendation new
+Route::post('/recommend-size/{productId}', [SizeRecommendationController::class, 'recommend'])->middleware('auth');
+Route::post('/ai-recommendation', [ProductRecommendationController::class, 'aiRecommend']);
+Route::post('/ai-recommendation', [\App\Http\Controllers\ProductRecommendationController::class, 'aiRecommend'])
+    ->middleware('auth');
 
 
 // Default home page

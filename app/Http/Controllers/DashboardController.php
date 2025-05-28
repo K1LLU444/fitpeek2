@@ -32,7 +32,7 @@ class DashboardController extends Controller
         }
         
     
-        $products = $query->orderBy('id', 'asc')->get();
+        $products = $query->orderBy('id', 'desc')->get();
     
         // If AJAX, return partial view only
         if ($request->ajax()) {

@@ -218,6 +218,15 @@
                             <div class="image-grid-item flex flex-col items-center p-2 hover:bg-gray-100 rounded-lg cursor-pointer">
                                 <img src="/images/background/rainy-night.png" alt="Item 6" class="w-16 h-16 object-cover rounded-md">
                             </div>
+                            <div class="image-grid-item flex flex-col items-center p-2 hover:bg-gray-100 rounded-lg cursor-pointer">
+                                <img src="/images/background/office.png" alt="Item 7" class="w-16 h-16 object-cover rounded-md">
+                            </div>
+                            <div class="image-grid-item flex flex-col items-center p-2 hover:bg-gray-100 rounded-lg cursor-pointer">
+                                <img src="/images/background/wedding.png" alt="Item 8" class="w-16 h-16 object-cover rounded-md">
+                            </div>
+                            <div class="image-grid-item flex flex-col items-center p-2 hover:bg-gray-100 rounded-lg cursor-pointer">
+                                <img src="/images/background/gnarly.png" alt="Item 9" class="w-16 h-16 object-cover rounded-md">
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -256,11 +265,11 @@
                     class="max-h-full object-contain mx-auto pointer-events-none transition-all duration-300">
 
                 <img id="top-overlay" src="" alt="Shirt Overlay"
-                    class="absolute left-0 right-0 mx-auto object-contain pointer-events-none transition-all duration-300 ease-in-out border border-xl"
+                    class="absolute left-0 right-0 mx-auto object-contain pointer-events-none transition-all duration-300 ease-in-out"
                     style="display: none;">
 
                 <img id="bottom-overlay" src="" alt="Pants Overlay"
-                    class="absolute left-0 right-0 mx-auto object-fill pointer-events-none transition-all duration-300 ease-in-out border border-xl"
+                    class="absolute left-0 right-0 mx-auto object-fill pointer-events-none transition-all duration-300 ease-in-out"
                     style="display: none;">
 
                 <button id="upper-left-avatar" class="absolute left-3 top-20 text-3xl font-bold text-gray-700 hover:text-black">❮</button>
@@ -302,11 +311,11 @@
 
             <div class="flex flex-wrap gap-4 mt-4">
                 <button id="toggle-unit-btn"
-                    class="bg-indigo-100 hover:bg-indigo-200 text-indigo-700 text-xs px-3 py-1 rounded">
-                    Switch to Inches
+                    class="bg-white hover:bg-gray-200 border border-gray-300 text-xs font-semibold px-2 py-1 rounded">
+                    Switch to inches
                 </button>
                 <button id="toggle-weather-btn"
-                    class="bg-yellow-100 hover:bg-yellow-200 text-yellow-800 text-xs px-3 py-1 rounded">
+                    class="bg-white hover:bg-gray-200 border border-gray-300 text-xs font-semibold px-2 py-1 rounded">
                     Ignore Weather
                 </button>
             </div>
@@ -363,7 +372,7 @@
                     updateUI();
                 }
             });
-        }
+      }
 
         // ⏳ Wait for DOM to be ready
         document.addEventListener("DOMContentLoaded", setupArrowNavigation);
@@ -624,6 +633,15 @@ async function updateUI() {
     const rawUnit = avatarContainer.dataset.heightUnit || "cm";
     const normalizedUnit = rawUnit.trim().toLowerCase();
     const avatarHeightInCm = (normalizedUnit === "inches" || normalizedUnit === "in") ? rawHeight * 2.54 : rawHeight;
+    const avatarHeightInInches = avatarHeightInCm / 2.54;
+
+    // 🧪 LOG avatar height
+    console.log("🧍 Avatar Height:", {
+        raw: rawHeight,
+        unit: normalizedUnit,
+        cm: avatarHeightInCm.toFixed(2),
+        in: avatarHeightInInches.toFixed(2)
+    });
 
     // Align overlay position relative to avatar image
     const imageBox = avatarImage.getBoundingClientRect();
@@ -631,7 +649,7 @@ async function updateUI() {
     const topOffsetPx = imageBox.top - containerBox.top;
 
     const neckOffsetPx = topOffsetPx + 43;
-    const waistOffsetPx = topOffsetPx + 132;
+    const waistOffsetPx = topOffsetPx + 137;
 
     document.getElementById("top-product").innerHTML = top ? renderProduct('Top', top) : '<p>No top found.</p>';
     document.getElementById("bottom-product").innerHTML = bottom ? renderProduct('Bottom', bottom) : '<p>No bottom found.</p>';
@@ -674,6 +692,13 @@ async function updateUI() {
         const topLengthCm = top.size_chart[selectedTopSize]?.length || 30;
         const pixelHeight = (topLengthCm / avatarHeightInCm) * avatarPixelHeight;
 
+        // 🧪 LOG top overlay values
+        console.log("👕 Top Overlay:", {
+            selectedSize: selectedTopSize,
+            lengthCm: topLengthCm,
+            heightPx: pixelHeight.toFixed(2)
+        });
+
         const rawSrc = isBack ? top.back_image : top.front_image;
         const fixedSrc = rawSrc?.startsWith("/storage") ? location.origin + rawSrc : rawSrc;
 
@@ -687,63 +712,56 @@ async function updateUI() {
         topOverlay.style.display = "none";
     }
 
-// 🔄 Bottom overlay scaling based on size_chart.length and natural image size
-if (bottom && bottom.size_chart && selectedBottomSize) {
-    const selected = bottom.size_chart[selectedBottomSize];
-    const sizeChart = bottom.size_chart;
+    // 🔄 Bottom overlay
+    if (bottom && bottom.size_chart && selectedBottomSize) {
+        const selected = bottom.size_chart[selectedBottomSize];
+        const sizeChart = bottom.size_chart;
 
-    // 📏 Find the base (smallest) length from size chart
-    const allLengths = Object.values(sizeChart).map(s => s.length || 1);
-    const baseLengthCm = Math.min(...allLengths);
-    const selectedLengthCm = selected.length || baseLengthCm;
+        const allLengths = Object.values(sizeChart).map(s => s.length || 1);
+        const baseLengthCm = Math.min(...allLengths);
+        const selectedLengthCm = selected.length || baseLengthCm;
 
-    // 🧮 Scale factor relative to base length
-    const scaleFactor = selectedLengthCm / baseLengthCm;
+        const scaleFactor = selectedLengthCm / baseLengthCm;
 
-    // ✅ Reference image source
-    // ✅ Reference image source
-    const rawSrc = isBack ? bottom.back_image : bottom.front_image;
-    console.log("🖼 Raw bottom image source:", rawSrc);
+        const rawSrc = isBack ? bottom.back_image : bottom.front_image;
+        const fixedSrc = rawSrc?.startsWith("/storage") ? location.origin + rawSrc : rawSrc;
 
-    const fixedSrc = rawSrc?.startsWith("/storage") ? location.origin + rawSrc : rawSrc;
-    console.log("✅ Resolved bottom image source:", fixedSrc);
+        const img = new Image();
+        img.src = fixedSrc;
+
+        img.onload = () => {
+            const aspectRatio = img.naturalWidth / img.naturalHeight;
+
+            const heightPx = (selectedLengthCm / avatarHeightInCm) * avatarPixelHeight;
+            const widthPx = heightPx * aspectRatio;
+
+            // 🧪 LOG bottom overlay values
+            console.log("👖 Bottom Overlay:", {
+                selectedSize: selectedBottomSize,
+                lengthCm: selectedLengthCm,
+                heightPx: heightPx.toFixed(2),
+                aspectRatio: aspectRatio.toFixed(2),
+                widthPx: widthPx.toFixed(2)
+            });
+
+            bottomOverlay.src = fixedSrc;
+            bottomOverlay.style.display = "block";
+            bottomOverlay.style.height = `${heightPx}px`;
+            bottomOverlay.style.width = `${widthPx}px`;
+            bottomOverlay.style.top = `${waistOffsetPx}px`;
+            bottomOverlay.style.left = "0";
+            bottomOverlay.style.right = "0";
+            bottomOverlay.style.margin = "0 auto";
+            bottomOverlay.style.clipPath = "none";
 
 
-    // 🖼 Load the image to get natural size
-    const img = new Image();
-    img.src = fixedSrc;
-
-    img.onload = () => {
-        const aspectRatio = img.naturalWidth / img.naturalHeight;
-
-        // 🟢 Convert length from cm → px using avatar scale
-        const heightPx = (selectedLengthCm / avatarHeightInCm) * avatarPixelHeight;
-        const widthPx = heightPx * aspectRatio;
-
-        console.log("👖 Bottom Length CM:", selectedLengthCm);
-        console.log("📐 Calculated Height (px):", heightPx);
-        console.log("📐 Aspect Ratio:", aspectRatio);
-        console.log("📏 Width (px):", widthPx);
-
-        bottomOverlay.src = fixedSrc;
-        bottomOverlay.style.display = "block";
-        bottomOverlay.style.height = `${heightPx}px`;
-        bottomOverlay.style.width = `${widthPx}px`;
-        bottomOverlay.style.top = `${waistOffsetPx}px`;
-        bottomOverlay.style.left = "0";
-        bottomOverlay.style.right = "0";
-        bottomOverlay.style.margin = "0 auto";
-        bottomOverlay.style.clipPath = "none";
-
-        // ✅ Re-apply visibility mode
-        applyOverlayVisibility?.();
-    };
-} else {
-    bottomOverlay.src = "";
-    bottomOverlay.style.display = "none";
+        };
+    } else {
+        bottomOverlay.src = "";
+        bottomOverlay.style.display = "none";
+    }
 }
-    
-}
+
 
 
 
@@ -771,14 +789,89 @@ function renderProduct(label, product) {
                 <p class="text-sm text-gray-600">₱${parseFloat(product.price).toFixed(2)}</p>
                 <p class="text-sm text-gray-500 mb-2">${product.description}</p>
 
-                ${renderSizeChart(product.size_chart)} <!-- ⬅️ moved here -->
+                <!-- 🔘 AI Size Recommendation Trigger -->
+                <p class="text-sm text-indigo-500 mt-2 hover:underline cursor-pointer"
+                   onclick="getAIRecommendation(${product.id}, this)">
+                    Get AI Size Recommendation
+                </p>
 
-                <p class="text-sm text-indigo-500 mt-2">
+                <!-- 📬 Result Container -->
+                <div class="text-sm text-green-600 ai-result mt-1"></div>
+
+                ${renderSizeChart(product.size_chart)}
+
+                <p class="text-sm text-indigo-500 mt-2 hover:underline">
                     <a href="${product.product_link}" target="_blank">Visit site ↗</a>
                 </p>
             </div>
         </div>`;
 }
+
+function getAIRecommendation(productId, buttonElement) {
+    buttonElement.textContent = "Loading...";
+
+    fetch('/ai-recommendation', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+        },
+        body: JSON.stringify({ product_id: productId })
+    })
+    .then(res => res.json())
+    .then(data => {
+        const result = data.recommendation;
+        const resultBox = buttonElement.nextElementSibling;
+
+        if (result && result.best) {
+            resultBox.innerHTML = `
+                <p class="text-green-600 font-medium">Recommended size: ${result.best}</p>
+                <p class="text-s text-gray-600">Backup: ${result.second}</p>
+                <p class="text-xs text-gray-500 italic">${result.reason}</p>
+            `;
+        } else {
+            resultBox.textContent = "⚠️ No recommendation available.";
+        }
+
+        buttonElement.textContent = "Get AI Size Recommendation";
+    })
+    .catch(err => {
+        console.error("❌ AI recommendation error:", err);
+        buttonElement.nextElementSibling.textContent = "Error fetching recommendation.";
+        buttonElement.textContent = "Get AI Size Recommendation";
+    });
+}
+
+
+
+
+
+// function getSizeRecommendation(productId, button) {
+//     const span = button.nextElementSibling;
+//     span.textContent = 'Loading...';
+
+//     fetch(`/recommend-size/${productId}`, {
+//         method: 'POST',
+//         headers: {
+//             'Content-Type': 'application/json',
+//             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+//         }
+//     })
+//     .then(res => res.json())
+//     .then(data => {
+//         if (data.recommended_size) {
+//             span.textContent = `Recommended size: ${data.recommended_size}`;
+//         } else {
+//             span.textContent = 'No match found.';
+//         }
+//         console.log('📏 Recommended size for product ' + productId + ':', data);
+//     })
+//     .catch(err => {
+//         console.error('❌ Error fetching size recommendation:', err);
+//         span.textContent = 'Error';
+//     });
+// }
+
 function renderSizeChart(jsonStr) {
     try {
         const data = typeof jsonStr === 'string' ? JSON.parse(jsonStr) : jsonStr;
@@ -890,7 +983,7 @@ let ignoreWeather = false;
 
 document.getElementById("toggle-unit-btn").addEventListener("click", () => {
     currentUnit = currentUnit === "cm" ? "in" : "cm";
-    document.getElementById("toggle-unit-btn").textContent = currentUnit === "cm" ? "Switch to Inches" : "Switch to CM";
+    document.getElementById("toggle-unit-btn").textContent = currentUnit === "cm" ? "Switch to inches" : "Switch to cm";
     updateUI(); // 🔄 Re-render with updated unit
 });
 

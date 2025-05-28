@@ -1,5 +1,5 @@
 <x-app-layout>
-    <div class="min-h-screen bg-gray-100 pt-32">
+    <div class="min-h-screen bg-gray-100 pt-24">
         <main>
             @if($avatar)
                 @include('partials.avatar_tryon', ['product' => $product, 'avatar' => $avatar])
